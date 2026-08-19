@@ -40,8 +40,11 @@ assert(s1.ballCount === 1, 'dropping a candy adds one ball to the jar');
 
 // два тира-0 в одной точке падают и сливаются в тир-1, приносят монеты
 await page.evaluate(() => { window.testClearJar(); });
-await page.evaluate(() => { window.testDrop(0.5, 0); window.testDrop(0.5, 0); });
-let beforeMerge = await state();
+// снимок состояния в том же evaluate, что и бросок — иначе кадр rAF успевает слить конфеты (флак)
+let beforeMerge = JSON.parse(await page.evaluate(() => {
+  window.testDrop(0.5, 0); window.testDrop(0.5, 0);
+  return window.render_game_to_text();
+}));
 assert(beforeMerge.ballCount === 2, 'testDrop places two candies for a forced merge test');
 await page.evaluate(() => window.advanceTime(600));
 let afterMerge = await state();

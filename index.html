@@ -47,6 +47,7 @@
   .rbtn{width:44px;height:44px;border-radius:50%;background:var(--paper);border:2.5px solid var(--line);
         box-shadow:0 3px 0 rgba(91,70,54,.28);display:flex;align-items:center;justify-content:center;cursor:pointer}
   .rbtn svg{width:22px;height:22px}
+  .rbtn.lang{font-weight:900;font-size:13px;letter-spacing:.5px;color:var(--ink)}
   .bottom{display:flex;gap:8px;pointer-events:auto}
   .abtn{flex:1;min-height:58px;background:var(--paper);border:2.5px solid var(--line);border-radius:16px;padding:8px 3px;
         font-weight:900;font-size:12.5px;cursor:pointer;box-shadow:0 3px 0 rgba(91,70,54,.28);
@@ -106,6 +107,7 @@
       <div class="rbtn" id="shopBtn" title="Магазин">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="#5B4636" stroke-width="1.7"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M5.6 18.4l1.7-1.7M16.7 7.3l1.7-1.7" stroke="#5B4636" stroke-width="1.7" stroke-linecap="round"/></svg>
       </div>
+      <div class="rbtn lang" id="langBtn" title="Язык / Language">RU</div>
     </div>
   </div>
   <div class="spacer"></div>
@@ -141,9 +143,15 @@ let ysdk=null, player=null, lb=null, saveT=0, booted=false;
 
 // ---------- i18n ----------
 function lang(){
+  try{ if(S && (S.lang==="ru"||S.lang==="en")) return S.lang; }catch(e){} // ручной выбор игрока
   try{ if(ysdk&&ysdk.environment&&ysdk.environment.i18n&&ysdk.environment.i18n.lang)
     return ysdk.environment.i18n.lang==="ru"?"ru":"en"; }catch(e){}
   return (navigator.language||"ru").slice(0,2)==="ru"?"ru":"en";
+}
+function toggleLang(){
+  S.lang = lang()==="ru" ? "en" : "ru";
+  document.documentElement.setAttribute("lang", S.lang);
+  refreshHud(); persist(true); sfx("tap");
 }
 const STR = {
   coins:{ru:"МОНЕТЫ",en:"COINS"}, best:{ru:"РЕКОРД",en:"BEST"},
@@ -197,7 +205,7 @@ function rgba(hex, a){ const [r,g,b]=hexRgb(hex); return 'rgba('+r+','+g+','+b+'
 function fresh(){
   return { v:1, coins:0, bestTier:0, bestScore:0, fillCoins:0, discovered:[0],
     up:{pool:0, luck:0, cap:0}, lastGift:0, lastShake:0, lastDaily:0,
-    balls:[], time:Date.now() };
+    lang:null, balls:[], time:Date.now() };
 }
 let S = fresh();
 
@@ -265,6 +273,7 @@ function refreshHud(){
   $("specialBtn").disabled = S.coins < specialCost();
   $("shopTitle").textContent = T("shopTitle");
   $("collTitle").textContent = T("collTitle");
+  $("langBtn").textContent = lang().toUpperCase();
   renderShop(); renderCollection();
 }
 let toastT;
@@ -1153,12 +1162,14 @@ function closeColl(){ collOpen=false; $("collectionModal").classList.remove('on'
 function boot(raw){
   if(booted) return; booted=true;
   restore(raw);
+  document.documentElement.setAttribute("lang", lang());
   resize();
   nextTier=pickNextTier();
   for(const b of (S.balls||[])) balls.push({x:b.x,y:b.y,r:TIERS[b.t].ratio*unit,t:b.t,vx:0,vy:0,rot:0});
   dailyBonus();
   refreshHud();
   $("shopBtn").onclick=openShop; $("closeShop").onclick=closeShop;
+  $("langBtn").onclick=toggleLang;
   $("collectionBtn").onclick=openColl; $("closeColl").onclick=closeColl;
   $("specialBtn").onclick=doSpecial; $("giftBtn").onclick=doGift; $("shakeBtn").onclick=doShake;
   startMusic();
