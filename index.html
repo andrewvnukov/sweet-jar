@@ -47,6 +47,7 @@
   .rbtn{width:44px;height:44px;border-radius:50%;background:var(--paper);border:2.5px solid var(--line);
         box-shadow:0 3px 0 rgba(91,70,54,.28);display:flex;align-items:center;justify-content:center;cursor:pointer}
   .rbtn svg{width:22px;height:22px}
+  .rbtn.lang{font-weight:900;font-size:13px;letter-spacing:.5px;color:var(--ink)}
   .bottom{display:flex;gap:8px;pointer-events:auto}
   .abtn{flex:1;min-height:58px;background:var(--paper);border:2.5px solid var(--line);border-radius:16px;padding:8px 3px;
         font-weight:900;font-size:12.5px;cursor:pointer;box-shadow:0 3px 0 rgba(91,70,54,.28);
@@ -106,6 +107,7 @@
       <div class="rbtn" id="shopBtn" title="Магазин">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="#5B4636" stroke-width="1.7"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M5.6 18.4l1.7-1.7M16.7 7.3l1.7-1.7" stroke="#5B4636" stroke-width="1.7" stroke-linecap="round"/></svg>
       </div>
+      <div class="rbtn lang" id="langBtn" title="Язык / Language">RU</div>
     </div>
   </div>
   <div class="spacer"></div>
@@ -141,9 +143,15 @@ let ysdk=null, player=null, lb=null, saveT=0, booted=false;
 
 // ---------- i18n ----------
 function lang(){
+  try{ if(S && (S.lang==="ru"||S.lang==="en")) return S.lang; }catch(e){} // ручной выбор игрока
   try{ if(ysdk&&ysdk.environment&&ysdk.environment.i18n&&ysdk.environment.i18n.lang)
     return ysdk.environment.i18n.lang==="ru"?"ru":"en"; }catch(e){}
   return (navigator.language||"ru").slice(0,2)==="ru"?"ru":"en";
+}
+function toggleLang(){
+  S.lang = lang()==="ru" ? "en" : "ru";
+  document.documentElement.setAttribute("lang", S.lang);
+  refreshHud(); persist(true); sfx("tap");
 }
 const STR = {
   coins:{ru:"МОНЕТЫ",en:"COINS"}, best:{ru:"РЕКОРД",en:"BEST"},
@@ -172,22 +180,32 @@ const T = (k,vars) => { let s=(STR[k]||{})[lang()] || (STR[k]||{}).ru || k;
 
 // ---------- Десерты (тиры) ----------
 const TIERS = [
-  {key:'t0', ratio:0.072, value:2,  fill:'#F3F7FA', accent:'#DCE9EE'},
-  {key:'t1', ratio:0.093, value:4,  fill:'#FF9EAE', accent:'#E8637C'},
-  {key:'t2', ratio:0.120, value:8,  fill:'#F2B45C', accent:'#C97F2A'},
-  {key:'t3', ratio:0.153, value:16, fill:'#8A5A3C', accent:'#5B3826'},
-  {key:'t4', ratio:0.196, value:32, fill:'#F6C9DC', accent:'#D98BAE'},
-  {key:'t5', ratio:0.245, value:64, fill:'#FFE3B0', accent:'#E2A64F'},
-  {key:'t6', ratio:0.305, value:128,fill:'#F9D8A8', accent:'#C98B45'},
-  {key:'t7', ratio:0.380, value:256,fill:'#FF8FA3', accent:'#B23A54'},
+  {key:'t0', ratio:0.072, value:2,  fill:'#FFFFFF', accent:'#4FC3A1'},
+  {key:'t1', ratio:0.093, value:4,  fill:'#FF7D95', accent:'#D94368'},
+  {key:'t2', ratio:0.120, value:8,  fill:'#F5A93F', accent:'#C97F2A'},
+  {key:'t3', ratio:0.153, value:16, fill:'#7A4A2E', accent:'#4E2E1B'},
+  {key:'t4', ratio:0.196, value:32, fill:'#F0C083', accent:'#F26D9E'},
+  {key:'t5', ratio:0.245, value:64, fill:'#FFF4E8', accent:'#E8A0BE'},
+  {key:'t6', ratio:0.305, value:128,fill:'#F7D9A0', accent:'#F27FA5'},
+  {key:'t7', ratio:0.380, value:256,fill:'#FFD9E4', accent:'#E8637C'},
 ];
 const MAX_TIER = TIERS.length-1;
+
+// ---------- Цветовые хелперы для объёмной отрисовки ----------
+function hexRgb(h){ h=h.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  const n=parseInt(h,16); return [n>>16&255, n>>8&255, n&255]; }
+function shade(hex, amt){ // amt>0 — к белому, amt<0 — к чёрному
+  const [r,g,b]=hexRgb(hex);
+  const f=v=>Math.max(0,Math.min(255,Math.round(amt>=0 ? v+(255-v)*amt : v*(1+amt))));
+  return 'rgb('+f(r)+','+f(g)+','+f(b)+')';
+}
+function rgba(hex, a){ const [r,g,b]=hexRgb(hex); return 'rgba('+r+','+g+','+b+','+a+')'; }
 
 // ---------- Состояние ----------
 function fresh(){
   return { v:1, coins:0, bestTier:0, bestScore:0, fillCoins:0, discovered:[0],
     up:{pool:0, luck:0, cap:0}, lastGift:0, lastShake:0, lastDaily:0,
-    balls:[], time:Date.now() };
+    lang:null, balls:[], time:Date.now() };
 }
 let S = fresh();
 
@@ -217,17 +235,43 @@ function restore(raw){
 
 // ---------- Реклама ----------
 let lastAd=0;
+function adOpened(){ pauseAudio(); gameplayStop(); }   // §4.7: звук на паузу во время ролика
+function adClosed(){ resumeAudio(); gameplayStart(); }
 function maybeInterstitial(){
   if(!ysdk) return;
   if(Date.now()-lastAd < 180000) return;
   lastAd=Date.now();
-  try{ ysdk.adv.showFullscreenAdv({}); }catch(e){}
+  try{ ysdk.adv.showFullscreenAdv({callbacks:{ onOpen:adOpened, onClose:adClosed, onError:adClosed }}); }catch(e){}
 }
 function showRewarded(onReward){
   if(!ysdk){ onReward(); return; }
-  try{ ysdk.adv.showRewardedVideo({callbacks:{ onRewarded:onReward, onError:onReward, onClose:()=>{} }}); }
+  try{ ysdk.adv.showRewardedVideo({callbacks:{
+    onOpen:adOpened,
+    onRewarded:onReward,
+    onError:()=>{ adClosed(); onReward(); },
+    onClose:adClosed }}); }
   catch(e){ onReward(); }
 }
+
+// ---------- Жизненный цикл платформы (§1.19.2, §1.3) ----------
+let readySent=false;
+function gameplayStart(){ if(!readySent) return; try{ ysdk&&ysdk.features&&ysdk.features.GameplayAPI&&ysdk.features.GameplayAPI.start(); }catch(e){} }
+function gameplayStop(){ if(!readySent) return; try{ ysdk&&ysdk.features&&ysdk.features.GameplayAPI&&ysdk.features.GameplayAPI.stop(); }catch(e){} }
+// LoadingAPI.ready() — только когда игра реально загрузилась и готова к игре (после boot)
+function notifyGameReady(){
+  if(readySent || !ysdk || !booted) return;
+  readySent=true;
+  try{ ysdk.features && ysdk.features.LoadingAPI && ysdk.features.LoadingAPI.ready(); }catch(e){}
+  try{ ysdk.features && ysdk.features.GameplayAPI && ysdk.features.GameplayAPI.start(); }catch(e){}
+}
+// смена вкладки / сворачивание: пауза звука и геймплея, при возврате — обратно
+function onFocusChange(hidden){
+  if(hidden){ pauseAudio(); gameplayStop(); }
+  else { resumeAudio(); gameplayStart(); }
+}
+document.addEventListener('visibilitychange', ()=>onFocusChange(document.hidden));
+addEventListener('pagehide', ()=>onFocusChange(true));
+addEventListener('pageshow', ()=>onFocusChange(false));
 
 // ---------- Лидерборд ----------
 function submitScore(v){
@@ -255,6 +299,7 @@ function refreshHud(){
   $("specialBtn").disabled = S.coins < specialCost();
   $("shopTitle").textContent = T("shopTitle");
   $("collTitle").textContent = T("collTitle");
+  $("langBtn").textContent = lang().toUpperCase();
   renderShop(); renderCollection();
 }
 let toastT;
@@ -349,6 +394,7 @@ function resize(){
   overflowY = jarTop + (jarBottom-jarTop)*(0.08 + S.up.cap*0.03);
   unit = jarWidth;
   for(const b of balls) b.r = TIERS[b.t].ratio*unit;
+  SPRITES={}; // размер юнита изменился — спрайты перерисуются
 }
 addEventListener("resize",resize);
 const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -407,14 +453,36 @@ function drawBackground(){
   drawCurtain(winX-6, winY-8, winH+16, -1, cph);
   drawCurtain(winX+winW+6, winY-8, winH+16, 1, cph);
 
-  // деревянная полка/подоконник
+  // тёплый свет из окна на стену (мягкие лучи)
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  const rayA=0.05+0.02*Math.sin(performance.now()/2400);
+  ctx.fillStyle='rgba(255,232,170,'+rayA.toFixed(3)+')';
+  ctx.beginPath(); ctx.moveTo(winX+winW*0.2,winY+winH);
+  ctx.lineTo(winX+winW*0.55,winY+winH);
+  ctx.lineTo(winX-winW*0.15,H*0.9); ctx.lineTo(winX-winW*0.62,H*0.9); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(winX+winW*0.62,winY+winH);
+  ctx.lineTo(winX+winW*0.92,winY+winH);
+  ctx.lineTo(winX+winW*0.55,H*0.9); ctx.lineTo(winX+winW*0.1,H*0.9); ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  // деревянная полка/подоконник с фактурой досок
   const shelfY=jarBottom+unit*0.06;
   const woodG=ctx.createLinearGradient(0,shelfY,0,H);
-  woodG.addColorStop(0,cssVar('--wood')); woodG.addColorStop(1,cssVar('--wood-deep'));
+  woodG.addColorStop(0,shade(cssVar('--wood')||'#C89464',0.12));
+  woodG.addColorStop(0.35,cssVar('--wood')||'#C89464');
+  woodG.addColorStop(1,cssVar('--wood-deep')||'#A8763F');
   ctx.fillStyle=woodG; ctx.fillRect(0,shelfY,W,H-shelfY);
-  ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=2;
-  for(let x=0;x<W;x+=unit*0.5){ ctx.beginPath(); ctx.moveTo(x,shelfY+6); ctx.lineTo(x+10,H); ctx.stroke(); }
-  ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.fillRect(0,shelfY,W,4);
+  // светлая кромка + тень под кромкой
+  ctx.fillStyle='rgba(255,235,200,0.5)'; ctx.fillRect(0,shelfY,W,3);
+  ctx.fillStyle='rgba(0,0,0,0.16)'; ctx.fillRect(0,shelfY+3,W,3);
+  // швы досок и волокно
+  ctx.strokeStyle='rgba(90,50,20,0.22)'; ctx.lineWidth=2;
+  for(let x=0;x<W+unit;x+=unit*0.5){ ctx.beginPath(); ctx.moveTo(x,shelfY+6); ctx.lineTo(x+12,H); ctx.stroke(); }
+  ctx.strokeStyle='rgba(255,225,180,0.18)'; ctx.lineWidth=1.5;
+  for(let i=0;i<4;i++){ const yy=shelfY+10+i*(H-shelfY)*0.22;
+    ctx.beginPath(); ctx.moveTo(0,yy);
+    for(let x=0;x<=W;x+=unit*0.4) ctx.quadraticCurveTo(x+unit*0.2,yy+Math.sin(x*0.02+i)*3,x+unit*0.4,yy);
+    ctx.stroke(); }
 
   // decor: чашка с блюдцем слева на полке (пар — живой мир)
   const cupX=Math.max(30,centerX-unit*0.9), cupY=shelfY+unit*0.16;
@@ -424,6 +492,11 @@ function drawBackground(){
   // decor: банка с печеньем справа
   const jar2X=Math.min(W-30,centerX+unit*0.95), jar2Y=shelfY+unit*0.02;
   drawCookieJar(jar2X,jar2Y,unit*0.24);
+
+  // мягкая виньетка — собирает взгляд к центру
+  const vg=ctx.createRadialGradient(centerX,H*0.52,Math.min(W,H)*0.42,centerX,H*0.52,Math.max(W,H)*0.78);
+  vg.addColorStop(0,'rgba(90,50,30,0)'); vg.addColorStop(1,'rgba(90,50,30,0.18)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
 }
 function roundRectPath(x,y,w,h,r){
   ctx.beginPath();
@@ -495,39 +568,71 @@ function drawCookieJar(x,y,r){
 }
 
 // ---------- Мир: банка + конфеты ----------
-function drawJar(){
-  ctx.save();
+function jarPath(){
   ctx.beginPath();
   ctx.moveTo(jarLeft, jarTop);
   ctx.lineTo(jarLeft, jarBottom-14); ctx.arcTo(jarLeft,jarBottom,jarLeft+14,jarBottom,14);
   ctx.lineTo(jarRight-14, jarBottom); ctx.arcTo(jarRight,jarBottom,jarRight,jarBottom-14,14);
   ctx.lineTo(jarRight, jarTop);
+}
+function drawJar(){
+  // мягкая тень банки на полке
+  const jw=jarRight-jarLeft;
+  const shG=ctx.createRadialGradient(centerX,jarBottom+8,jw*0.05,centerX,jarBottom+8,jw*0.62);
+  shG.addColorStop(0,'rgba(70,40,20,0.28)'); shG.addColorStop(1,'rgba(70,40,20,0)');
+  ctx.fillStyle=shG;
+  ctx.beginPath(); ctx.ellipse(centerX,jarBottom+8,jw*0.62,unit*0.055,0,0,Math.PI*2); ctx.fill();
+
+  // задняя стенка стекла
+  ctx.save();
+  jarPath();
   const glassG=ctx.createLinearGradient(jarLeft,0,jarRight,0);
-  glassG.addColorStop(0,'rgba(234,246,251,0.55)'); glassG.addColorStop(0.5,'rgba(255,255,255,0.25)'); glassG.addColorStop(1,'rgba(234,246,251,0.55)');
+  glassG.addColorStop(0,'rgba(210,238,248,0.6)'); glassG.addColorStop(0.24,'rgba(255,255,255,0.22)');
+  glassG.addColorStop(0.5,'rgba(234,246,251,0.14)'); glassG.addColorStop(0.78,'rgba(255,255,255,0.2)');
+  glassG.addColorStop(1,'rgba(198,230,244,0.62)');
   ctx.fillStyle=glassG; ctx.fill();
+  // холодный отсвет у дна
+  const bt=ctx.createLinearGradient(0,jarBottom-unit*0.14,0,jarBottom);
+  bt.addColorStop(0,'rgba(160,210,230,0)'); bt.addColorStop(1,'rgba(160,210,230,0.4)');
+  ctx.fillStyle=bt; ctx.fillRect(jarLeft,jarBottom-unit*0.14,jw,unit*0.14);
   ctx.restore();
 
-  // конфеты внутри (клип по банке)
+  // конфеты внутри (клип по банке): кэшированные спрайты, «круглые» тиры катятся
   ctx.save();
   ctx.beginPath();
   ctx.rect(jarLeft-2, jarTop-200, jarRight-jarLeft+4, jarBottom-jarTop+200);
   ctx.clip();
-  for(const b of balls) drawCandy(ctx,b.x,b.y,b.r,b.t,1);
+  for(const b of balls){
+    const s=candySprite(b.t);
+    ctx.save(); ctx.translate(b.x,b.y);
+    if(ROLLS[b.t]) ctx.rotate(b.rot||0);
+    ctx.drawImage(s.cv,-s.pad,-s.pad,s.pad*2,s.pad*2);
+    ctx.restore();
+  }
   ctx.restore();
 
-  // передняя стеклянная стенка + контур + блик
-  ctx.beginPath();
-  ctx.moveTo(jarLeft, jarTop);
-  ctx.lineTo(jarLeft, jarBottom-14); ctx.arcTo(jarLeft,jarBottom,jarLeft+14,jarBottom,14);
-  ctx.lineTo(jarRight-14, jarBottom); ctx.arcTo(jarRight,jarBottom,jarRight,jarBottom-14,14);
-  ctx.lineTo(jarRight, jarTop);
+  // передняя стеклянная стенка + контур + блики
+  jarPath();
   ctx.strokeStyle=cssVar('--line'); ctx.lineWidth=4.5; ctx.stroke();
-  // горлышко/ободок
-  ctx.beginPath(); ctx.moveTo(jarLeft-6,jarTop); ctx.lineTo(jarRight+6,jarTop);
-  ctx.lineWidth=6; ctx.strokeStyle=cssVar('--line'); ctx.stroke();
-  // блик
-  ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=6; ctx.lineCap='round';
-  ctx.beginPath(); ctx.moveTo(jarLeft+ (jarRight-jarLeft)*0.16, jarTop+10); ctx.lineTo(jarLeft+(jarRight-jarLeft)*0.16, jarBottom-20); ctx.stroke();
+  // внутренняя светлая грань стекла
+  ctx.save(); jarPath(); ctx.clip();
+  ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(jarLeft+5,jarTop+4); ctx.lineTo(jarLeft+5,jarBottom-16);
+  ctx.moveTo(jarRight-5,jarTop+4); ctx.lineTo(jarRight-5,jarBottom-16);
+  ctx.stroke(); ctx.restore();
+  // горлышко: стеклянный ободок с бликом
+  const rimH=Math.max(7,unit*0.028);
+  const rimG=ctx.createLinearGradient(0,jarTop-rimH,0,jarTop+rimH);
+  rimG.addColorStop(0,'rgba(255,255,255,0.85)'); rimG.addColorStop(0.5,'rgba(214,240,250,0.9)'); rimG.addColorStop(1,'rgba(170,205,222,0.9)');
+  ctx.fillStyle=rimG; ctx.strokeStyle=cssVar('--line'); ctx.lineWidth=3.5;
+  roundRectPath(jarLeft-9,jarTop-rimH,jarRight-jarLeft+18,rimH*2,rimH*0.9);
+  ctx.fill(); ctx.stroke();
+  // длинный вертикальный блик + короткий дублёр
+  ctx.strokeStyle='rgba(255,255,255,0.65)'; ctx.lineWidth=Math.max(5,unit*0.02); ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(jarLeft+jw*0.14, jarTop+16); ctx.lineTo(jarLeft+jw*0.14, jarBottom-26); ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,0.45)'; ctx.lineWidth=Math.max(3,unit*0.011);
+  ctx.beginPath(); ctx.moveTo(jarLeft+jw*0.22, jarTop+24); ctx.lineTo(jarLeft+jw*0.22, jarTop+(jarBottom-jarTop)*0.42); ctx.stroke();
 
   // линия переполнения (тонкая, полупрозрачная, только индикатор)
   if(overflowTimer>0){
@@ -536,81 +641,347 @@ function drawJar(){
     ctx.setLineDash([]);
   }
 }
+// ── Хелперы объёмной отрисовки ──
+const INK='#5B4636';
+function sphereFill(c,r,color,ox,oy){ // «шар»: блик сверху-слева, тень к краю
+  const g=c.createRadialGradient((ox||0)-r*0.35,(oy||0)-r*0.42,r*0.08,ox||0,oy||0,r*1.12);
+  g.addColorStop(0,shade(color,0.5)); g.addColorStop(0.42,color); g.addColorStop(1,shade(color,-0.26));
+  return g;
+}
+function vertFill(c,y0,y1,color){ // вертикальный градиент «свет сверху»
+  const g=c.createLinearGradient(0,y0,0,y1);
+  g.addColorStop(0,shade(color,0.38)); g.addColorStop(0.5,color); g.addColorStop(1,shade(color,-0.22));
+  return g;
+}
+function glossSpot(c,x,y,rx,ry,rot,alpha){ // мягкий световой блик
+  c.save(); c.translate(x,y); c.rotate(rot);
+  const g=c.createRadialGradient(0,0,0,0,0,rx);
+  g.addColorStop(0,'rgba(255,255,255,'+alpha+')'); g.addColorStop(1,'rgba(255,255,255,0)');
+  c.fillStyle=g; c.beginPath(); c.ellipse(0,0,rx,ry,0,0,Math.PI*2); c.fill(); c.restore();
+}
+function rimShade(c,r,alpha){ // тень по нижнему краю круглой формы (вызывать внутри clip)
+  const g=c.createRadialGradient(0,-r*0.25,r*0.35,0,0,r*1.05);
+  g.addColorStop(0,'rgba(60,30,20,0)'); g.addColorStop(0.72,'rgba(60,30,20,0)');
+  g.addColorStop(1,'rgba(60,30,20,'+alpha+')');
+  c.fillStyle=g; c.fillRect(-r*1.3,-r*1.3,r*2.6,r*2.6);
+}
+const SPRINKLE_COLORS=['#FF6F91','#5AC8FA','#FFD34E','#7ED957','#B98CE8','#FF9E5A'];
+
 function drawCandy(c,x,y,r,tier,alpha){
   const T2=TIERS[tier];
+  const OW=Math.max(1.6, r*0.085);
   c.save(); c.globalAlpha=alpha; c.translate(x,y);
-  c.lineWidth=Math.max(1.6, r*0.09);
-  c.strokeStyle=cssVar? cssVar('--line')||'#5B4636' : '#5B4636';
-  c.fillStyle=T2.fill;
-  if(tier===0){ // мятная конфетка: круг со спиральной полосой
-    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.22; c.beginPath();
-    for(let a=-Math.PI;a<=Math.PI;a+=0.25){ const rr=r*0.7; c.lineTo(Math.cos(a)*rr*0.9, Math.sin(a)*rr*0.5+a*r*0.12); }
+  c.lineJoin='round'; c.lineCap='round';
+  c.lineWidth=OW; c.strokeStyle=INK; c.fillStyle=T2.fill;
+
+  if(tier===0){ // ── Мятная конфетка: леденец-вертушка ──
+    c.fillStyle=sphereFill(c,r,'#FDFFFE');
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.clip();
+    c.fillStyle=T2.accent;
+    for(let i=0;i<5;i++){ // пять спиральных лепестков
+      c.save(); c.rotate(i*Math.PI*2/5);
+      c.beginPath(); c.moveTo(0,0);
+      c.quadraticCurveTo(r*0.5,-r*0.28, r*1.05,-r*0.18);
+      c.lineTo(r*1.05,r*0.42);
+      c.quadraticCurveTo(r*0.42,r*0.3, 0,0);
+      c.closePath(); c.fill();
+      c.restore();
+    }
+    c.fillStyle='rgba(255,255,255,0.35)';
+    c.beginPath(); c.arc(0,0,r*0.22,0,Math.PI*2); c.fill();
+    rimShade(c,r,0.22);
+    c.restore();
+    glossSpot(c,-r*0.38,-r*0.42,r*0.42,r*0.28,-0.6,0.75);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke();
+  } else if(tier===1){ // ── Мармеладка: полупрозрачное желе в сахаре ──
+    const ry=r*0.82;
+    c.save(); c.beginPath(); c.ellipse(0,0,r,ry,0,0,Math.PI*2); c.clip();
+    c.fillStyle=vertFill(c,-ry,ry,T2.fill);
+    c.fillRect(-r,-ry,r*2,ry*2);
+    // «желейное» внутреннее свечение снизу
+    const jg=c.createRadialGradient(0,ry*0.45,r*0.1,0,ry*0.3,r*0.95);
+    jg.addColorStop(0,rgba('#FFC7D4',0.55)); jg.addColorStop(1,'rgba(255,199,212,0)');
+    c.fillStyle=jg; c.fillRect(-r,-ry,r*2,ry*2);
+    rimShade(c,r,0.26);
+    // сахарные кристаллики
+    for(const p of [[-.55,.15],[-.2,.5],[.25,.55],[.55,.25],[.45,-.3],[.05,-.55],[-.4,-.35],[-.05,.1]]){
+      c.fillStyle='rgba(255,255,255,'+(0.55+0.3*((p[0]+p[1]+2)%1))+')';
+      c.save(); c.translate(p[0]*r,p[1]*ry); c.rotate(p[0]*3);
+      c.fillRect(-r*0.045,-r*0.045,r*0.09,r*0.09); c.restore();
+    }
+    c.restore();
+    glossSpot(c,-r*0.34,-ry*0.42,r*0.4,r*0.22,-0.5,0.8);
+    c.beginPath(); c.ellipse(0,0,r,ry,0,0,Math.PI*2); c.stroke();
+  } else if(tier===2){ // ── Карамелька в обёртке с хвостиками ──
+    // хвостики обёртки (с фактурой складок)
+    for(const s of [-1,1]){
+      c.save(); c.scale(s,s);
+      const wg=c.createLinearGradient(-r*1.5,0,-r*0.9,0);
+      wg.addColorStop(0,shade(T2.accent,-0.25)); wg.addColorStop(1,shade(T2.accent,0.25));
+      c.fillStyle=wg;
+      c.beginPath(); c.moveTo(-r*0.92,-r*0.26);
+      c.quadraticCurveTo(-r*1.28,-r*0.52,-r*1.5,-r*0.5);
+      c.quadraticCurveTo(-r*1.42,-r*0.2,-r*1.5,r*0.1);
+      c.quadraticCurveTo(-r*1.24,r*0.05,-r*0.92,r*0.22);
+      c.closePath(); c.fill(); c.stroke();
+      c.strokeStyle=rgba('#5B4636',0.45); c.lineWidth=OW*0.5;
+      c.beginPath(); c.moveTo(-r*1.0,-r*0.1); c.lineTo(-r*1.34,-r*0.28); c.stroke();
+      c.beginPath(); c.moveTo(-r*1.0,r*0.05); c.lineTo(-r*1.36,-r*0.02); c.stroke();
+      c.restore(); c.strokeStyle=INK; c.lineWidth=OW;
+    }
+    // тело карамельки
+    c.fillStyle=sphereFill(c,r,T2.fill);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.clip();
+    c.save(); c.rotate(-0.65); c.fillStyle=rgba(T2.accent,0.85);
+    for(let i=-2;i<=2;i++){ c.fillRect(i*r*0.52-r*0.11,-r*1.2,r*0.22,r*2.4); }
+    c.restore();
+    rimShade(c,r,0.26);
+    c.restore();
+    glossSpot(c,-r*0.36,-r*0.4,r*0.4,r*0.26,-0.6,0.7);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke();
+  } else if(tier===3){ // ── Трюфель в золотой розетке ──
+    // шар шоколада
+    c.fillStyle=sphereFill(c,r*0.92,T2.fill,0,-r*0.02);
+    c.beginPath(); c.arc(0,-r*0.02,r*0.92,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,-r*0.02,r*0.92,0,Math.PI*2); c.clip();
+    // какао-пудра
+    c.fillStyle='rgba(46,26,16,0.35)';
+    for(const p of [[-.5,-.1],[-.15,-.5],[.3,-.35],[.55,.1],[.15,.3],[-.35,.35],[.0,-.05],[.45,-.6]])
+      { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.045,0,Math.PI*2); c.fill(); }
+    // молочная глазурь-зигзаг
+    c.strokeStyle=shade(T2.fill,0.55); c.lineWidth=r*0.11;
+    c.beginPath(); c.moveTo(-r*0.85,-r*0.25);
+    for(let i=0;i<5;i++) c.quadraticCurveTo(-r*0.65+i*r*0.36,-r*0.55+(i%2)*r*0.5,-r*0.5+i*r*0.36,-r*0.18);
     c.stroke();
-  } else if(tier===1){ // мармеладка: приплюснутый овал с зерном сахара
-    c.beginPath(); c.ellipse(0,0,r,r*0.82,0,0,Math.PI*2); c.fill(); c.stroke();
-    c.fillStyle='rgba(255,255,255,0.5)';
-    c.beginPath(); c.ellipse(-r*0.3,-r*0.3,r*0.28,r*0.16,0.6,0,Math.PI*2); c.fill();
-    c.fillStyle=T2.accent;
-    for(const p of [[-.4,.3],[.3,.45],[.5,-.2],[-.1,.55]]) { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.06,0,Math.PI*2); c.fill(); }
-  } else if(tier===2){ // карамелька с двумя «хвостиками» обёртки
-    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.moveTo(-r*0.95,-r*0.3); c.lineTo(-r*1.5,-r*0.55); c.lineTo(-r*1.5,r*0.05); c.closePath(); c.fill(); c.stroke();
-    c.beginPath(); c.moveTo(r*0.95,r*0.3); c.lineTo(r*1.5,r*0.55); c.lineTo(r*1.5,-r*0.05); c.closePath(); c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.1;
-    c.beginPath(); c.moveTo(-r*0.5,-r*0.5); c.lineTo(r*0.5,r*0.5); c.moveTo(-r*0.1,-r*0.65); c.lineTo(r*0.65,r*0.05); c.stroke();
-  } else if(tier===3){ // трюфель: шар с завитком и фольгой у основания
-    c.beginPath(); c.arc(0,r*0.05,r*0.92,0,Math.PI*2); c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.moveTo(-r*0.5,-r*0.3);
-    c.bezierCurveTo(-r*0.2,-r*0.9,r*0.2,-r*0.9,r*0.5,-r*0.3);
-    c.bezierCurveTo(r*0.2,-r*0.45,-r*0.2,-r*0.45,-r*0.5,-r*0.3);
-    c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.16;
-    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.15,r*0.85); c.lineTo(i*r*0.15,r*1.05); c.stroke(); }
-  } else if(tier===4){ // пончик: кольцо с глазурью и полосками
-    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill(); c.stroke();
-    c.beginPath(); c.arc(0,0,r*0.4,0,Math.PI*2); c.fillStyle=cssVar('--bg')||'#FCE8D8'; c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.arc(0,-r*0.12,r*0.92,Math.PI*1.02,Math.PI*1.98); c.arc(0,0,r*0.42,Math.PI*1.98,Math.PI*1.02,true); c.closePath(); c.fill();
-    c.strokeStyle='#fff'; c.lineWidth=r*0.09; c.lineCap='round';
-    for(const a of [-1.3,-0.9,-0.5,-0.1]) { c.beginPath(); c.moveTo(Math.cos(a)*r*0.55,Math.sin(a)*r*0.55-r*0.05); c.lineTo(Math.cos(a)*r*0.85,Math.sin(a)*r*0.85-r*0.05); c.stroke(); }
-  } else if(tier===5){ // капкейк: гофрированная чашка + завиток крема
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.moveTo(-r*0.68,r*0.15); c.lineTo(-r*0.5,r*0.95); c.lineTo(r*0.5,r*0.95); c.lineTo(r*0.68,r*0.15); c.closePath(); c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.06;
-    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.22,r*0.2); c.lineTo(i*r*0.18,r*0.9); c.stroke(); }
-    c.fillStyle=T2.fill; c.strokeStyle=cssVar('--line');
+    rimShade(c,r*0.92,0.3);
+    c.restore();
+    glossSpot(c,-r*0.32,-r*0.42,r*0.34,r*0.22,-0.6,0.5);
+    c.strokeStyle=INK; c.lineWidth=OW;
+    c.beginPath(); c.arc(0,-r*0.02,r*0.92,0,Math.PI*2); c.stroke();
+    // золотая гофрированная розетка
+    const cupG=c.createLinearGradient(0,r*0.3,0,r*0.98);
+    cupG.addColorStop(0,'#E8C878'); cupG.addColorStop(1,'#B98F3E');
+    c.fillStyle=cupG;
+    c.beginPath(); c.moveTo(-r*0.78,r*0.34); c.lineTo(-r*0.58,r*0.96); c.lineTo(r*0.58,r*0.96); c.lineTo(r*0.78,r*0.34);
+    c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle='rgba(91,70,54,0.5)'; c.lineWidth=OW*0.55;
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.3,r*0.36); c.lineTo(i*r*0.23,r*0.94); c.stroke(); }
+  } else if(tier===4){ // ── Пончик с глазурью и посыпкой ──
+    // тесто-тор
+    c.fillStyle=sphereFill(c,r,T2.fill);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.clip(); rimShade(c,r,0.3); c.restore();
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke();
+    // розовая глазурь с волнистыми подтёками
+    const gz=c.createLinearGradient(0,-r,0,r*0.45);
+    gz.addColorStop(0,shade(T2.accent,0.3)); gz.addColorStop(1,shade(T2.accent,-0.12));
+    c.fillStyle=gz;
     c.beginPath();
-    c.arc(-r*0.35,-r*0.05,r*0.4,0,Math.PI*2);
-    c.arc(0,-r*0.35,r*0.42,0,Math.PI*2);
-    c.arc(r*0.35,-r*0.05,r*0.4,0,Math.PI*2);
-    c.fill(); c.stroke();
-    c.fillStyle=T2.accent; c.beginPath(); c.arc(0,-r*0.6,r*0.12,0,Math.PI*2); c.fill(); c.stroke();
-  } else if(tier===6){ // кусок торта: клин с кремовыми слоями
+    c.arc(0,0,r*0.99,Math.PI*1.0,Math.PI*2.0);
+    // волнистый нижний край: подтёки
+    const drips=[[0.82,0.28],[0.5,0.55],[0.12,0.3],[-0.28,0.6],[-0.62,0.32],[-0.9,0.12]];
+    let first=true;
+    for(const d of drips){
+      const dx=d[0]*r, dy=d[1]*r*0.9;
+      c.quadraticCurveTo(dx+r*0.14, dy+r*0.16, dx, dy);
+      c.quadraticCurveTo(dx-r*0.14, dy-r*0.16, dx-r*0.24, dy-r*0.2);
+      first=false;
+    }
+    c.closePath(); c.fill(); c.stroke();
+    // дырка
+    c.fillStyle='#E8B583';
+    c.beginPath(); c.arc(0,0,r*0.34,0,Math.PI*2); c.fill();
+    const hg=c.createRadialGradient(0,0,r*0.05,0,0,r*0.34);
+    hg.addColorStop(0,'rgba(90,50,25,0.55)'); hg.addColorStop(1,'rgba(90,50,25,0)');
+    c.fillStyle=hg; c.beginPath(); c.arc(0,0,r*0.34,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(0,0,r*0.34,0,Math.PI*2); c.stroke();
+    // посыпка
+    c.lineWidth=Math.max(1.4,r*0.075); c.lineCap='round';
+    const spr=[[-0.62,-0.5,0.5],[-0.3,-0.72,-0.4],[0.05,-0.6,0.9],[0.42,-0.66,0.2],[0.68,-0.4,-0.7],[0.62,-0.05,0.4],[-0.75,-0.15,-0.2],[-0.45,-0.2,1.2],[0.25,-0.3,-1.0]];
+    spr.forEach((p,i)=>{ c.strokeStyle=SPRINKLE_COLORS[i%SPRINKLE_COLORS.length];
+      c.save(); c.translate(p[0]*r,p[1]*r); c.rotate(p[2]);
+      c.beginPath(); c.moveTo(-r*0.09,0); c.lineTo(r*0.09,0); c.stroke(); c.restore(); });
+    glossSpot(c,-r*0.4,-r*0.48,r*0.34,r*0.2,-0.55,0.55);
+    c.strokeStyle=INK; c.lineWidth=OW;
+  } else if(tier===5){ // ── Капкейк с кремом и вишенкой ──
+    // гофрированная чашечка
+    const wr=c.createLinearGradient(0,r*0.1,0,r*0.95);
+    wr.addColorStop(0,shade(T2.accent,0.3)); wr.addColorStop(1,shade(T2.accent,-0.2));
+    c.fillStyle=wr;
+    c.beginPath(); c.moveTo(-r*0.7,r*0.12); c.lineTo(-r*0.52,r*0.95); c.lineTo(r*0.52,r*0.95); c.lineTo(r*0.7,r*0.12);
+    c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle=rgba('#5B4636',0.4); c.lineWidth=OW*0.55;
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.26,r*0.15); c.lineTo(i*r*0.2,r*0.92); c.stroke(); }
+    c.strokeStyle=INK; c.lineWidth=OW;
+    // крем: три яруса взбитых волн
+    const cr=T2.fill;
+    const tiers=[[0,r*0.02,r*0.66],[0,-r*0.3,r*0.5],[0,-r*0.56,r*0.32]];
+    tiers.forEach((tt,i)=>{
+      c.fillStyle=vertFill(c,tt[1]-tt[2]*0.6,tt[1]+tt[2]*0.6,cr);
+      c.beginPath();
+      c.moveTo(tt[0]-tt[2],tt[1]+tt[2]*0.3);
+      c.quadraticCurveTo(tt[0]-tt[2]*1.05,tt[1]-tt[2]*0.45,tt[0],tt[1]-tt[2]*0.5);
+      c.quadraticCurveTo(tt[0]+tt[2]*1.05,tt[1]-tt[2]*0.45,tt[0]+tt[2],tt[1]+tt[2]*0.3);
+      c.quadraticCurveTo(tt[0],tt[1]+tt[2]*0.62,tt[0]-tt[2],tt[1]+tt[2]*0.3);
+      c.closePath(); c.fill(); c.stroke();
+    });
+    // посыпка на креме
+    c.lineWidth=Math.max(1.3,r*0.06); c.lineCap='round';
+    [[-0.35,-0.15,0.6],[0.3,-0.2,-0.5],[-0.1,-0.42,1.1],[0.15,0.02,0.2]].forEach((p,i)=>{
+      c.strokeStyle=SPRINKLE_COLORS[(i+2)%SPRINKLE_COLORS.length];
+      c.save(); c.translate(p[0]*r,p[1]*r); c.rotate(p[2]);
+      c.beginPath(); c.moveTo(-r*0.07,0); c.lineTo(r*0.07,0); c.stroke(); c.restore(); });
+    c.strokeStyle=INK; c.lineWidth=OW;
+    // вишенка
+    c.strokeStyle='#5B7A3A'; c.lineWidth=Math.max(1.5,r*0.05);
+    c.beginPath(); c.moveTo(0,-r*0.78); c.quadraticCurveTo(r*0.08,-r*0.95,r*0.16,-r*1.0); c.stroke();
+    c.fillStyle=sphereFill(c,r*0.15,'#E0393E',0,-r*0.72);
+    c.strokeStyle=INK; c.lineWidth=OW*0.8;
+    c.beginPath(); c.arc(0,-r*0.72,r*0.15,0,Math.PI*2); c.fill(); c.stroke();
+    glossSpot(c,-r*0.05,-r*0.77,r*0.06,r*0.045,-0.5,0.9);
+  } else if(tier===6){ // ── Кусок торта: бисквит, крем, клубника ──
+    // клин
+    c.save();
     c.beginPath(); c.moveTo(0,-r); c.lineTo(r*0.95,r*0.75); c.lineTo(-r*0.95,r*0.75); c.closePath();
-    c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.rect(-r*0.63,r*0.05,r*1.26,r*0.22); c.fill();
-    c.beginPath(); c.moveTo(-r*0.3,-r*0.4); c.quadraticCurveTo(0,-r*0.65,r*0.3,-r*0.4); c.quadraticCurveTo(0,-r*0.15,-r*0.3,-r*0.4); c.fillStyle='#fff'; c.fill(); c.stroke();
-  } else { // праздничный торт: двухъярусный + свечка
-    c.fillStyle=T2.fill;
-    c.beginPath(); roundRectLocal(c,-r*0.85,r*0.1,r*1.7,r*0.55,r*0.12); c.fill(); c.stroke();
-    c.beginPath(); roundRectLocal(c,-r*0.55,-r*0.45,r*1.1,r*0.55,r*0.1); c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.rect(-r*0.85,r*0.32,r*1.7,r*0.1); c.fill();
-    c.beginPath(); c.rect(-r*0.55,-r*0.22,r*1.1,r*0.08); c.fill();
-    c.strokeStyle=T2.accent; c.fillStyle='#FFF6DE';
-    c.beginPath(); c.rect(-r*0.05,-r*0.85,r*0.1,r*0.4); c.fill(); c.stroke();
-    c.fillStyle='#F2C14E';
-    c.beginPath(); c.moveTo(0,-r*0.85); c.quadraticCurveTo(r*0.14,-r*1.02,0,-r*1.12); c.quadraticCurveTo(-r*0.14,-r*1.02,0,-r*0.85); c.fill();
+    c.clip();
+    // бисквитные слои
+    const spg=c.createLinearGradient(0,-r,0,r*0.75);
+    spg.addColorStop(0,shade(T2.fill,0.25)); spg.addColorStop(1,shade(T2.fill,-0.12));
+    c.fillStyle=spg; c.fillRect(-r,-r,r*2,r*2);
+    c.fillStyle=rgba(T2.accent,0.95); c.fillRect(-r,-r*0.08,r*2,r*0.13);  // джем
+    c.fillStyle='#FFFDF6'; c.fillRect(-r,r*0.36,r*2,r*0.13);              // крем
+    // золотистая корочка по скошенным граням
+    c.strokeStyle='rgba(196,138,60,0.55)'; c.lineWidth=r*0.09;
+    c.beginPath(); c.moveTo(-r*0.04,-r*0.92); c.lineTo(r*0.88,r*0.72); c.stroke();
+    c.beginPath(); c.moveTo(r*0.04,-r*0.92); c.lineTo(-r*0.88,r*0.72); c.stroke();
+    // текстура бисквита — пузырьки
+    c.fillStyle='rgba(150,100,55,0.18)';
+    for(const p of [[-.3,.14],[.25,.2],[-.15,.5],[.4,.48],[-.5,.62],[.1,-.3],[-.25,-.42]])
+      { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.05,0,Math.PI*2); c.fill(); }
+    c.restore();
+    c.beginPath(); c.moveTo(0,-r); c.lineTo(r*0.95,r*0.75); c.lineTo(-r*0.95,r*0.75); c.closePath(); c.stroke();
+    // шапка крема на вершине
+    c.fillStyle=vertFill(c,-r*1.05,-r*0.45,'#FFFDF6');
+    c.beginPath();
+    c.moveTo(-r*0.34,-r*0.42);
+    c.quadraticCurveTo(-r*0.2,-r*0.75,0,-r*0.78);
+    c.quadraticCurveTo(r*0.2,-r*0.75,r*0.34,-r*0.42);
+    c.quadraticCurveTo(r*0.18,-r*0.28,0,-r*0.3);
+    c.quadraticCurveTo(-r*0.18,-r*0.28,-r*0.34,-r*0.42);
+    c.closePath(); c.fill(); c.stroke();
+    // клубничка
+    c.fillStyle=sphereFill(c,r*0.17,'#E0393E',0,-r*0.66);
+    c.beginPath(); c.moveTo(-r*0.15,-r*0.72); c.quadraticCurveTo(0,-r*0.9,r*0.15,-r*0.72);
+    c.quadraticCurveTo(r*0.1,-r*0.5,0,-r*0.46); c.quadraticCurveTo(-r*0.1,-r*0.5,-r*0.15,-r*0.72);
+    c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='rgba(255,240,200,0.8)';
+    for(const p of [[-0.06,-0.7],[0.05,-0.63],[-0.02,-0.55]]) { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.02,0,Math.PI*2); c.fill(); }
+    glossSpot(c,-r*0.3,r*0.1,r*0.25,r*0.5,0.35,0.28);
+  } else { // ── Праздничный торт: два яруса, свечка, конфетти ──
+    // нижний ярус
+    const g1=c.createLinearGradient(0,r*0.1,0,r*0.68);
+    g1.addColorStop(0,shade(T2.fill,0.3)); g1.addColorStop(1,shade(T2.fill,-0.14));
+    c.fillStyle=g1;
+    c.beginPath(); roundRectLocal(c,-r*0.88,r*0.1,r*1.76,r*0.58,r*0.12); c.fill(); c.stroke();
+    // верхний ярус
+    const g2=c.createLinearGradient(0,-r*0.48,0,r*0.12);
+    g2.addColorStop(0,shade(T2.fill,0.36)); g2.addColorStop(1,shade(T2.fill,-0.1));
+    c.fillStyle=g2;
+    c.beginPath(); roundRectLocal(c,-r*0.56,-r*0.48,r*1.12,r*0.6,r*0.1); c.fill(); c.stroke();
+    // глазурь с фестонами на обоих ярусах
+    c.fillStyle=shade(T2.accent,0.12);
+    for(const tt of [[-r*0.88,r*0.1,r*1.76,7],[-r*0.56,-r*0.48,r*1.12,5]]){
+      const [tx,ty,tw,n]=tt; const seg=tw/n;
+      c.beginPath(); c.moveTo(tx,ty);
+      c.lineTo(tx+tw,ty); c.lineTo(tx+tw,ty+r*0.06);
+      for(let i=n;i>0;i--) c.arc(tx+seg*(i-0.5),ty+r*0.06,seg*0.5,0,Math.PI);
+      c.closePath(); c.fill(); c.stroke();
+    }
+    // точки-жемчужины по низу ярусов
+    c.fillStyle='#FFF6DE';
+    for(let i=-3;i<=3;i++){ c.beginPath(); c.arc(i*r*0.24,r*0.58,r*0.045,0,Math.PI*2); c.fill(); }
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.arc(i*r*0.22,r*0.02,r*0.04,0,Math.PI*2); c.fill(); }
+    // конфетти на ярусах
+    [[-0.6,0.34],[-0.2,0.42],[0.3,0.3],[0.65,0.4],[-0.35,-0.2],[0.1,-0.3],[0.4,-0.14]].forEach((p,i)=>{
+      c.fillStyle=SPRINKLE_COLORS[i%SPRINKLE_COLORS.length];
+      c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.045,0,Math.PI*2); c.fill(); });
+    // свечка с сиянием
+    const cg=c.createLinearGradient(0,-r*0.9,0,-r*0.48);
+    cg.addColorStop(0,'#FFF6DE'); cg.addColorStop(1,'#F2C9D8');
+    c.fillStyle=cg;
+    c.beginPath(); roundRectLocal(c,-r*0.06,-r*0.9,r*0.12,r*0.42,r*0.03); c.fill(); c.stroke();
+    c.strokeStyle=rgba('#E8637C',0.75); c.lineWidth=OW*0.5;
+    c.beginPath(); c.moveTo(-r*0.05,-r*0.82); c.lineTo(r*0.05,-r*0.76); c.moveTo(-r*0.05,-r*0.68); c.lineTo(r*0.05,-r*0.62); c.stroke();
+    const halo=c.createRadialGradient(0,-r*1.0,0,0,-r*1.0,r*0.3);
+    halo.addColorStop(0,'rgba(255,220,120,0.65)'); halo.addColorStop(1,'rgba(255,220,120,0)');
+    c.fillStyle=halo; c.beginPath(); c.arc(0,-r*1.0,r*0.3,0,Math.PI*2); c.fill();
+    const fg=c.createLinearGradient(0,-r*1.14,0,-r*0.9);
+    fg.addColorStop(0,'#FFDF7E'); fg.addColorStop(1,'#F2913D');
+    c.fillStyle=fg;
+    c.beginPath(); c.moveTo(0,-r*0.9); c.quadraticCurveTo(r*0.13,-r*1.02,0,-r*1.14);
+    c.quadraticCurveTo(-r*0.13,-r*1.02,0,-r*0.9); c.fill();
+    c.strokeStyle=INK; c.lineWidth=OW;
   }
   c.restore();
 }
 function roundRectLocal(c,x,y,w,h,r){
   c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
   c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+}
+
+// ---------- Кэш спрайтов конфет (детальная модель рисуется один раз на тир) ----------
+let SPRITES={};
+const ROLLS=[1,1,1,1,1,0,0,0]; // какие тиры «катятся» (вращаются) в банке
+function candySprite(t){
+  const r=TIERS[t].ratio*unit;
+  const key=t+':'+Math.round(r*4);
+  let s=SPRITES[key];
+  if(!s){
+    const pad=Math.ceil(r*2.3);
+    const oc=document.createElement('canvas');
+    oc.width=pad*2*DPR; oc.height=pad*2*DPR;
+    const g=oc.getContext('2d'); g.setTransform(DPR,0,0,DPR,0,0);
+    drawCandy(g,pad,pad,r,t,1);
+    s=SPRITES[key]={cv:oc,pad};
+  }
+  return s;
+}
+
+// ---------- Эффекты слияния: искры + всплывающие очки ----------
+let fx=[];
+function burstFx(x,y,tier){
+  const col=TIERS[tier].accent;
+  for(let i=0;i<10;i++){
+    const a=Math.random()*Math.PI*2, sp=60+Math.random()*160;
+    fx.push({type:'p', x,y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp-60, life:1,
+      col: i%3===0 ? '#FFE9A6' : col, r:2.5+Math.random()*2.5});
+  }
+  fx.push({type:'t', x, y:y-10, vy:-46, life:1, txt:'+'+TIERS[tier].value});
+}
+function stepFx(dt){
+  for(let i=fx.length-1;i>=0;i--){
+    const p=fx[i];
+    if(p.type==='p'){ p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=500*dt; p.life-=dt*2.2; }
+    else { p.y+=p.vy*dt; p.life-=dt*1.4; }
+    if(p.life<=0) fx.splice(i,1);
+  }
+}
+function drawFx(){
+  for(const p of fx){
+    ctx.globalAlpha=Math.max(0,p.life);
+    if(p.type==='p'){
+      ctx.fillStyle=p.col;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*(0.5+p.life*0.5),0,Math.PI*2); ctx.fill();
+    } else {
+      ctx.font='900 '+Math.max(14,unit*0.055)+'px Nunito, sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.lineWidth=4; ctx.strokeStyle='rgba(255,248,230,0.9)'; ctx.strokeText(p.txt,p.x,p.y);
+      ctx.fillStyle='#B23A54'; ctx.fillText(p.txt,p.x,p.y);
+    }
+  }
+  ctx.globalAlpha=1;
 }
 
 // сахарная искра, парящая рядом с банкой
@@ -654,7 +1025,7 @@ let balls=[]; // {x,y,vx,vy,r,t}
 const GRAVITY=1400;
 function spawnBall(x,t,yOverride){
   const r=TIERS[t].ratio*unit;
-  balls.push({x:Math.max(jarLeft+r,Math.min(jarRight-r,x)), y:yOverride!=null?yOverride:jarTop-40, vx:0, vy:0, r, t});
+  balls.push({x:Math.max(jarLeft+r,Math.min(jarRight-r,x)), y:yOverride!=null?yOverride:jarTop-40, vx:0, vy:0, r, t, rot:0});
   if(balls.length>90) balls.shift();
 }
 function doDrop(x){
@@ -678,6 +1049,7 @@ function physicsSub(dt){
   for(const b of balls){
     b.vy += GRAVITY*dt;
     b.x += b.vx*dt; b.y += b.vy*dt;
+    b.rot = (b.rot||0) + (b.vx/Math.max(b.r,1))*dt; // качение
     if(b.x-b.r<jarLeft){ b.x=jarLeft+b.r; b.vx*=-0.28; }
     if(b.x+b.r>jarRight){ b.x=jarRight-b.r; b.vx*=-0.28; }
     if(b.y+b.r>jarBottom){ b.y=jarBottom-b.r; b.vy*=-0.22; b.vx*=0.9; }
@@ -697,7 +1069,8 @@ function physicsSub(dt){
           const nx=(a.x+b.x)/2, ny=(a.y+b.y)/2;
           balls.splice(j,1); balls.splice(i,1);
           const nr=TIERS[nt].ratio*unit;
-          balls.push({x:nx,y:Math.min(ny, jarBottom-nr), vx:(a.vx+b.vx)*0.2, vy:Math.min((a.vy+b.vy)*0.2,-60), r:nr, t:nt});
+          balls.push({x:nx,y:Math.min(ny, jarBottom-nr), vx:(a.vx+b.vx)*0.2, vy:Math.min((a.vy+b.vy)*0.2,-60), r:nr, t:nt, rot:0});
+          burstFx(nx, Math.min(ny, jarBottom-nr), nt);
           S.coins += TIERS[nt].value; S.fillCoins += TIERS[nt].value;
           if(nt>S.bestTier) S.bestTier=nt;
           if(!S.discovered.includes(nt)) S.discovered.push(nt);
@@ -761,9 +1134,11 @@ let lastT=performance.now();
 function frame(now){
   let dt=Math.max(0,Math.min(50, now-lastT)); lastT=now;
   stepPhysics(dt);
+  stepFx(dt/1000);
   ctx.clearRect(0,0,W,H);
   drawBackground();
   drawWorld();
+  drawFx();
   refreshCoinsOnly();
   requestAnimationFrame(frame);
 }
@@ -813,16 +1188,19 @@ function closeColl(){ collOpen=false; $("collectionModal").classList.remove('on'
 function boot(raw){
   if(booted) return; booted=true;
   restore(raw);
+  document.documentElement.setAttribute("lang", lang());
   resize();
   nextTier=pickNextTier();
-  for(const b of (S.balls||[])) balls.push({x:b.x,y:b.y,r:TIERS[b.t].ratio*unit,t:b.t,vx:0,vy:0});
+  for(const b of (S.balls||[])) balls.push({x:b.x,y:b.y,r:TIERS[b.t].ratio*unit,t:b.t,vx:0,vy:0,rot:0});
   dailyBonus();
   refreshHud();
   $("shopBtn").onclick=openShop; $("closeShop").onclick=closeShop;
+  $("langBtn").onclick=toggleLang;
   $("collectionBtn").onclick=openColl; $("closeColl").onclick=closeColl;
   $("specialBtn").onclick=doSpecial; $("giftBtn").onclick=doGift; $("shakeBtn").onclick=doShake;
   startMusic();
   requestAnimationFrame(frame);
+  notifyGameReady(); // §1.19.2: готовность — после реальной загрузки игры
 }
 (function initSDK(){
   let localRaw=null; try{ localRaw=localStorage.getItem(SAVE_KEY); }catch(e){}
@@ -830,7 +1208,7 @@ function boot(raw){
     if(window.YaGames && !window.__noSDK){
       YaGames.init().then(sdk=>{
         ysdk=sdk;
-        try{ sdk.features.LoadingAPI && sdk.features.LoadingAPI.ready(); }catch(e){}
+        notifyGameReady(); // если boot уже прошёл по таймауту-страховке — сигналим готовность сейчас
         const pReady = sdk.getPlayer({scopes:false}).then(p=>{player=p;return p.getData(["save"]);})
           .then(d=>boot(d&&d.save?d.save:localRaw)).catch(()=>boot(localRaw));
         try{ lb = sdk.leaderboards; }catch(e){}
