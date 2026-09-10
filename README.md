@@ -5,12 +5,12 @@
 ## Что уже готово в шаблоне
 
 - **Один файл `index.html`** — canvas + HUD + вся логика, без бандлера и зависимостей (как в «Мур-Луг»).
-- **Yandex SDK-обвязка**: `YaGames.init()` с таймаутом-страховкой, `LoadingAPI.ready()`, игрок и облачный сейв через `player.getData/setData`, лидерборд, авто-язык (`environment.i18n.lang`).
+- **Yandex SDK-обвязка**: `YaGames.init()` с таймаутом-страховкой, `LoadingAPI.ready()` ровно один раз в конце `boot()`, игрок и облачный сейв через `player.getData/setData` (+ дожим с `flush:true` при уходе со страницы), лидерборд (оба поколения API, только для авторизованных), авто-язык (`environment.i18n.lang`, читается до первой отрисовки), ярлык на главный экран и запрос оценки.
 - **Фолбэк вне платформы**: SDK-скрипт с `onerror`, сейв в `localStorage`.
-- **Реклама**: `maybeInterstitial()` (не чаще 1/3 мин) и `showRewarded()` (награда выдаётся даже без SDK).
-- **Сейв-система**: throttle 10 c + `force`, защитный `restore()`.
+- **Реклама**: `showInterstitial()` с паузой от факта показа (`wasShown`), прогревом сессии и повтором после несостоявшегося показа; `showRewarded()` с защёлкой от двойной награды (награда выдаётся ровно один раз и даже без SDK). Звук глушится на время рекламы и при уходе вкладки в фон (`audioSuspend`/`audioResume` в `sfx.js`).
+- **Сейв-система**: throttle 10 c + `force`, дожим по `visibilitychange`/`pagehide` не чаще раза в 3 с, валидирующий `restore()` (битый или чужой сейв не роняет запуск).
 - **i18n RU/EN** через таблицу `STR` + `T()`.
-- **Тест-хуки**: `window.render_game_to_text()` и `window.advanceTime(ms)` — для Playwright.
+- **Тест-хуки**: `window.render_game_to_text()`, `window.advanceTime(ms)` и набор `window.test*` — для Playwright; сам SDK в тестах подменяется моком через `page.addInitScript`.
 - **Стиль-токены** в `:root` (палитра «Мур-Луг» по умолчанию).
 
 ## Плейсхолдеры, которые заполняет конвейер
@@ -25,7 +25,7 @@
 
 ```
 npx playwright install chromium   # один раз
-node test/smoke.mjs
+node test/smoke.mjs               # или npm test
 ```
 
 ## Сборка билда
