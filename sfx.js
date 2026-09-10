@@ -102,3 +102,31 @@ function startMusic(){
   }catch(e){}
 }
 function stopMusic(){ if(musicSrc){ try{ musicSrc.stop(); }catch(e){} musicSrc=null; } }
+
+// ---------- Глушение звука (реклама, уход вкладки в фон) ----------
+// Требование модерации: во время рекламы и при потере фокуса звука быть не должно.
+// Глушим masterGain, а не останавливаем контекст — контекст остаётся живым,
+// иначе после возврата первый звук приходит с задержкой (а в WebView может и не прийти).
+let audioMuted = 0, audioLevel = .6;
+function audioSuspend(){
+  audioMuted++;
+  if(audioMuted>1) return;
+  try{
+    if(!masterGain) return;
+    audioLevel = masterGain.gain.value || audioLevel;
+    if(masterGain.gain.setTargetAtTime && audioCtx) masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, .02);
+    else masterGain.gain.value = 0;
+  }catch(e){}
+}
+function audioResume(){
+  audioMuted = Math.max(0, audioMuted-1);
+  if(audioMuted>0) return;
+  try{
+    if(!masterGain) return;
+    if(audioCtx && audioCtx.state!=="running") audioCtx.resume().catch(()=>{});
+    if(masterGain.gain.setTargetAtTime && audioCtx) masterGain.gain.setTargetAtTime(audioLevel, audioCtx.currentTime, .02);
+    else masterGain.gain.value = audioLevel;
+  }catch(e){}
+}
+// тест-хук: заглушён ли звук прямо сейчас
+window.__audioMuted = () => audioMuted>0;
