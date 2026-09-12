@@ -43,6 +43,25 @@
   .chip .v{font-weight:900;font-size:17px;line-height:1}
   .chip .l{font-size:10px;font-weight:800;color:var(--ink-soft);letter-spacing:.3px}
   .spacer{flex:1}
+  /* ── полоса цели (задание кондитера) ── */
+  #goalBar{margin-top:8px;align-self:flex-start;width:min(100%,330px);pointer-events:auto;cursor:default;
+           background:var(--paper);border:2.5px solid var(--line);border-radius:14px;
+           padding:6px 10px 7px;box-shadow:0 3px 0 rgba(91,70,54,.25)}
+  #goalBar.done{background:var(--gold);border-color:#C9982E;cursor:pointer;
+                animation:goalPulse 1.1s ease-in-out infinite}
+  @keyframes goalPulse{0%,100%{box-shadow:0 3px 0 rgba(91,70,54,.25)}
+                       50%{box-shadow:0 3px 0 rgba(91,70,54,.25),0 0 0 4px rgba(242,193,78,.45)}}
+  #goalBar .gtop{display:flex;align-items:baseline;gap:8px}
+  #goalBar .gn{flex:1;min-width:0;font-size:12.5px;font-weight:900;line-height:1.15;
+               overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #goalBar .gr{font-size:11.5px;font-weight:900;color:#B2762A;white-space:nowrap}
+  #goalBar.done .gr{color:var(--ink)}
+  #goalBar .gtrack{height:7px;margin-top:5px;border-radius:99px;background:rgba(91,70,54,.16);overflow:hidden}
+  #goalBar .gfill{height:100%;width:0;border-radius:99px;background:var(--mint);transition:width .3s}
+  .collnote{font-size:12.5px;font-weight:800;color:var(--ink-soft);margin:-2px 0 8px}
+  /* альбом: полоса цели не должна накрывать предпросмотр следующей конфеты */
+  @media (max-height:430px){ #goalBar{width:min(100%,210px);margin-top:6px} }
+  #goalBar.done .gfill{background:var(--ink)}
   .side{display:flex;flex-direction:column;gap:8px;margin-left:8px;pointer-events:auto}
   .rbtn{width:44px;height:44px;border-radius:50%;background:var(--paper);border:2.5px solid var(--line);
         box-shadow:0 3px 0 rgba(91,70,54,.28);display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -148,6 +167,10 @@
       </div>
     </div>
   </div>
+  <div id="goalBar">
+    <div class="gtop"><span class="gn" id="goalT"></span><span class="gr" id="goalR"></span></div>
+    <div class="gtrack"><div class="gfill" id="goalFill"></div></div>
+  </div>
   <div class="spacer"></div>
   <div class="bottom">
     <button class="abtn special" id="specialBtn"><span class="lab" id="specialLab">Особая конфета</span><span class="sub" id="specialSub">0</span></button>
@@ -202,6 +225,7 @@
 <div class="modal" id="collectionModal">
   <div class="card">
     <h2><span id="collTitle">Коллекция</span><span class="x" id="closeColl">✕</span></h2>
+    <div class="collnote" id="collNote"></div>
     <div class="cgrid" id="collGrid"></div>
   </div>
 </div>
@@ -270,6 +294,20 @@ const STR = {
   scD:{ru:"Добавим «Сладкую Банку» на главный экран? Ярлык открывает игру сразу, а мы подарим {n} монет.",en:"Add Sweet Jar to your home screen? The shortcut opens the game instantly, and we will gift you {n} coins."},
   scYes:{ru:"Добавить",en:"Add"}, scNo:{ru:"Не сейчас",en:"Not now"},
   scGot:{ru:"Ярлык добавлен: +{n} монет",en:"Shortcut added: +{n} coins"},
+  // задания кондитера
+  goalTake:{ru:"Забрать награду",en:"Claim reward"},
+  goalDone:{ru:"Задание выполнено! +{n}",en:"Goal complete! +{n}"},
+  goalSpecial:{ru:"и особая конфета",en:"and a special candy"},
+  gMake:{ru:"Получить: {n}",en:"Make: {n}"},
+  gUp:{ru:"Купить любой апгрейд",en:"Buy any upgrade"},
+  gMult:{ru:"Сахарная глазурь до ур. {n}",en:"Sugar glaze to Lv. {n}"},
+  gCap:{ru:"Вежливая банка до ур. {n}",en:"Polite jar to Lv. {n}"},
+  gScore:{ru:"Забег на {n} монет",en:"A run worth {n} coins"},
+  gEarn:{ru:"Заработать {n} всего",en:"Earn {n} in total"},
+  collLeft:{ru:"Осталось открыть: {n}",en:"Left to discover: {n}"},
+  collAll:{ru:"Вся коллекция собрана!",en:"The whole collection is complete!"},
+  tipGoal:{ru:"Задание выполнено — нажми и забери награду",
+           en:"Goal complete — tap the bar to claim it"},
   // подсказки
   tipGift:{ru:"Подарок за короткий ролик — монеты растут вместе с твоим рекордом",en:"A gift for a short ad — coins scale with your best tier"},
   tipShake:{ru:"Банка вот-вот переполнится: убери мелкие конфеты за ролик",en:"The jar is about to overflow: clear the small candies for an ad"},
@@ -300,7 +338,7 @@ const MAX_TIER = TIERS.length-1;
 function fresh(){
   return { v:2, coins:0, bestTier:0, bestScore:0, fillCoins:0, lifetimeEarned:0, discovered:[0],
     up:{pool:0, luck:0, cap:0, mult:0}, lastGift:0, lastShake:0, lastSpecialAd:0,
-    lastClaimDay:"", streak:0, tips:{}, shortcutDone:false, reviewDone:false,
+    lastClaimDay:"", streak:0, tips:{}, shortcutDone:false, reviewDone:false, goal:0,
     balls:[], time:Date.now() };
 }
 let S = fresh();
@@ -331,6 +369,59 @@ const specialAdReady = () => Date.now()-S.lastSpecialAd >= SPECIAL_AD_CD;
 // Заработок (слияния) двигает метрики прогресса, подарки — только кошелёк.
 function earn(n){ n=Math.max(0,Math.floor(n)); S.coins+=n; S.lifetimeEarned+=n; return n; }
 function grant(n){ n=Math.max(0,Math.floor(n)); S.coins+=n; return n; }
+
+// ---------- Задания кондитера ----------
+// В merge-игре без цели игрок не знает, зачем кидать следующую конфету: забег
+// кончается, банка чистится, видимого движения нет. Цепочка заданий держит
+// ближайшую цель на экране и сшивает забеги в один длинный прогресс.
+// Награда — grant: задание не должно разгонять собственные же цели по заработку.
+const tierName = t => T(TIERS[Math.min(MAX_TIER,Math.max(0,t))].key);
+const goalCoins = k => Math.max(100, Math.floor(TIERS[Math.min(MAX_TIER,S.bestTier)].value*k + S.bestScore*0.05));
+const GOALS = [
+  { id:'t1',   text:()=>T('gMake',{n:tierName(1)}),  need:()=>1, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(8)}) },
+  { id:'t2',   text:()=>T('gMake',{n:tierName(2)}),  need:()=>2, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(10)}) },
+  { id:'up1',  text:()=>T('gUp'),                    need:()=>1,
+    cur:()=>S.up.pool+S.up.luck+S.up.cap+S.up.mult,                 rew:()=>({coins:goalCoins(12)}) },
+  { id:'t3',   text:()=>T('gMake',{n:tierName(3)}),  need:()=>3, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(14)}) },
+  { id:'mult3',text:()=>T('gMult',{n:3}),            need:()=>3, cur:()=>S.up.mult,  rew:()=>({coins:goalCoins(16)}) },
+  { id:'t4',   text:()=>T('gMake',{n:tierName(4)}),  need:()=>4, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(18), special:true}) },
+  { id:'cap3', text:()=>T('gCap',{n:3}),             need:()=>3, cur:()=>S.up.cap,   rew:()=>({coins:goalCoins(20)}) },
+  { id:'t5',   text:()=>T('gMake',{n:tierName(5)}),  need:()=>5, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(24)}) },
+  { id:'sc3k', text:()=>T('gScore',{n:fmt(3000)}),   need:()=>3000, cur:()=>S.bestScore, rew:()=>({coins:goalCoins(28)}) },
+  { id:'t6',   text:()=>T('gMake',{n:tierName(6)}),  need:()=>6, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(32), special:true}) },
+  { id:'mult8',text:()=>T('gMult',{n:8}),            need:()=>8, cur:()=>S.up.mult,  rew:()=>({coins:goalCoins(36)}) },
+  { id:'t7',   text:()=>T('gMake',{n:tierName(7)}),  need:()=>7, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(48), special:true}) },
+];
+const GOAL_EARN_BASE = 60000;               // первая бесконечная цель — после первого торта
+function goalDef(){
+  const i=S.goal;
+  if(i < GOALS.length) return GOALS[i];
+  // Кламп: на больших номерах степень уходит в Infinity, и цель перестаёт быть целью.
+  const n = Math.round(Math.min(Number.MAX_SAFE_INTEGER, GOAL_EARN_BASE * Math.pow(4, i-GOALS.length)));
+  return { id:'earn'+(i-GOALS.length), endless:true,
+           text:()=>T('gEarn',{n:fmt(n)}), need:()=>n, cur:()=>S.lifetimeEarned,
+           rew:()=>({coins:goalCoins(40), special:true}) };
+}
+const goalReady = () => { const g=goalDef(); return g.cur() >= g.need(); };
+function claimGoal(){
+  const g=goalDef(); if(g.cur() < g.need()) return false;
+  const r=g.rew();
+  const c=grant(r.coins);                   // награда — подарок, а не заработок
+  if(r.special) nextTier = Math.min(MAX_TIER, poolMax()+2);
+  S.goal++;
+  refreshHud(); persist(true); sfx('coin');
+  toast(T('goalDone',{n:fmt(c)}) + (r.special ? " " + T('goalSpecial') : ""));
+  return true;
+}
+function skipDoneGoals(){ let guard=0; while(goalReady() && guard++ < 64) S.goal++; }
+function refreshGoal(){
+  const g=goalDef(), need=g.need(), cur=Math.min(need, g.cur()), done=cur>=need, r=g.rew();
+  const bar=$("goalBar"); if(!bar) return;
+  bar.classList.toggle("done", done);
+  $("goalT").textContent = done ? T('goalTake') : g.text();
+  $("goalR").textContent = "+"+fmt(r.coins)+(r.special?" ✦":"");
+  $("goalFill").style.width = Math.max(0, Math.min(100, 100*cur/need))+"%";
+}
 
 // ---------- Сейвы ----------
 function snapshot(){
@@ -404,6 +495,7 @@ function restore(raw){
   if(s.lastClaimDay && !s.streak) s.streak=1;
   s.tips = (d.tips && typeof d.tips==="object" && !Array.isArray(d.tips)) ? Object.assign({}, d.tips) : {};
   s.shortcutDone = !!d.shortcutDone; s.reviewDone = !!d.reviewDone;
+  s.goal = intIn(d.goal,0,999);
   // неизвестный тир — выбросить элемент, а НЕ подрезать к MAX_TIER:
   // подрезка подарила бы игроку самую дорогую конфету бесплатно
   s.balls = Array.isArray(d.balls)
@@ -414,6 +506,9 @@ function restore(raw){
     : [];
   s.time = Math.floor(num(d.time, now, 0));
   S = s;
+  // Старый сейв без заданий: выполненное проматываем без наград, иначе
+  // действующий игрок при первом запуске соберёт десяток наград подряд.
+  if(!Number.isFinite(Number(d.goal))) skipDoneGoals();
   return true;
 }
 
@@ -497,6 +592,7 @@ function refreshHud(){
   $("giftLab").textContent = T("gift");
   $("shakeLab").textContent = T("shake");
   refreshActions();
+  refreshGoal();
   $("shopTitle").textContent = T("shopTitle");
   $("collTitle").textContent = T("collTitle");
   renderShop(); renderCollection();
@@ -551,6 +647,8 @@ function buyMult(){ const c=multCost(); if(!Number.isFinite(c)||S.coins<c) retur
 
 // ---------- Коллекция (модалка) ----------
 function renderCollection(){
+  const left=TIERS.length-S.discovered.length;
+  $("collNote").textContent = left>0 ? T("collLeft",{n:left}) : T("collAll");
   const grid=$("collGrid"); grid.innerHTML='';
   for(let t=0;t<TIERS.length;t++){
     const known = S.discovered.indexOf(t)>=0;
@@ -1214,6 +1312,7 @@ function maybeReview(){
 const TIPS = [
   { id:'gift',  target:'giftBtn',  text:()=>T('tipGift'),  when:()=>S.bestTier>=2 && giftReady() },
   { id:'shake', target:'shakeBtn', text:()=>T('tipShake'), when:()=>shakeReady() && overflowTimer>0.6 },
+  { id:'goal',  target:'goalBar', text:()=>T('tipGoal'), when:()=>goalReady() && S.goal===0 },
   { id:'shop',  target:'shopBtn',  text:()=>T('tipShop'),  when:()=>S.up.mult===0 && S.coins>=multCost() },
 ];
 let tipActive=null, tipHideT=0, tipTickT=0;
@@ -1260,6 +1359,7 @@ window.render_game_to_text = () => JSON.stringify({
   overflowing: overflowTimer>0, specialCost:specialCost(),
   overflowY:Math.round(overflowY), gameOver:gameOver, paused:paused,
   tips:Object.assign({}, S.tips), shortcutDone:S.shortcutDone, reviewDone:S.reviewDone,
+  goal:S.goal, goalReady:goalReady(),
 });
 window.advanceTime = ms => { stepPhysics(ms); refreshHud(); };
 window.testDrop = (xFrac, tier) => {
@@ -1282,6 +1382,9 @@ window.testMaybeInterstitial = () => maybeInterstitial();
 window.testAdInfo = () => ({nextAdAt:nextAdAt, adBusy:adBusy, gap:AD_GAP_S, retry:AD_RETRY_S, warmup:AD_WARMUP_S});
 window.testTips = () => { tipTickT=0; tipsTick(); };
 window.testFlush = () => flushSave();
+window.testGoal = () => { const g=goalDef();
+  return {id:g.id, i:S.goal, cur:g.cur(), need:g.need(), ready:goalReady(), rew:g.rew()}; };
+window.testClaimGoal = () => claimGoal();
 
 // ---------- Boot ----------
 function sendReady(){
@@ -1308,6 +1411,7 @@ function boot(raw){
   $("collectionBtn").onclick=openColl; $("closeColl").onclick=closeColl;
   $("specialBtn").onclick=doSpecial; $("specialAdBtn").onclick=doSpecialAd;
   $("giftBtn").onclick=doGift; $("shakeBtn").onclick=doShake;
+  $("goalBar").onclick=claimGoal;
   $("dailyClaim").onclick=()=>claimDaily(false);
   $("dailyClaimX2").onclick=()=>claimDaily(true);
   $("closeDaily").onclick=closeDaily;

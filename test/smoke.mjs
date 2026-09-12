@@ -125,13 +125,18 @@ assert(s1.ballCount === 1, 'dropping a candy adds one ball to the jar');
 
 // два тира-0 в одной точке падают и сливаются в тир-1, приносят монеты
 await page.evaluate(() => { window.testClearJar(); });
+// Монеты снимаем ДО броска: на медленной машине кадр успевает пройти между
+// вызовами, конфеты сливаются раньше замера, и сравнение «после против до
+// слияния» ловит не баг, а собственную гонку теста.
+let beforeDrop = await state(page);
 await page.evaluate(() => { window.testDrop(0.5, 0); window.testDrop(0.5, 0); });
 let beforeMerge = await state(page);
-assert(beforeMerge.ballCount === 2, 'testDrop places two candies for a forced merge test');
+assert(beforeMerge.ballCount >= 1 && beforeMerge.ballCount <= 2,
+  'testDrop places candies for a forced merge test');
 await page.evaluate(() => window.advanceTime(600));
 let afterMerge = await state(page);
 assert(afterMerge.ballCount <= 1, 'two same-tier candies merge into one');
-assert(afterMerge.coins > beforeMerge.coins, 'merging awards coins');
+assert(afterMerge.coins > beforeDrop.coins, 'merging awards coins');
 assert(afterMerge.discovered.includes(1), 'tier 1 gets discovered after first merge');
 assert(afterMerge.bestTier >= 1, 'bestTier tracks the highest merged tier');
 
@@ -574,6 +579,60 @@ for (const vp of [{ width: 320, height: 568 }, { width: 360, height: 640 }]) {
   await page.click('#closeShop');
   await page.evaluate(() => window.testDailyCheck());
   await shut(page);
+}
+
+// ============================================================
+// 13. Задания кондитера (цепочка целей)
+// ============================================================
+{
+const page = await openGame({ save: JSON.stringify({ v: 2, coins: 0, bestTier: 0, discovered: [0],
+  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, goal: 1 } }) });
+
+let g = await page.evaluate(() => window.testGoal());
+assert(g.i === 0 && g.ready === false, 'a new player starts on the first goal, not completed');
+assert(g.rew.coins > 0, 'the current goal always shows a reward');
+assert((await page.textContent('#goalT')).length > 0, 'the goal is written out on the HUD');
+
+// слияние двух одинаковых конфет даёт тир 1 и закрывает первое задание
+await page.evaluate(() => { window.testDrop(0.5, 0); window.testDrop(0.5, 0); });
+await page.evaluate(() => window.advanceTime(2000));
+g = await page.evaluate(() => window.testGoal());
+assert(g.ready === true, 'the goal turns claimable once its condition holds');
+assert(await page.evaluate(() => document.getElementById('goalBar').classList.contains('done')),
+  'a claimable goal is marked on the bar itself');
+
+const before = await state(page);
+await page.click('#goalBar');
+const after = await state(page);
+assert(after.coins > before.coins, 'claiming the goal pays the reward');
+assert(after.lifetimeEarned === before.lifetimeEarned,
+  'goal rewards do NOT move the progress metric (grant, not earn)');
+assert(after.goal === 1, 'claiming advances the chain to the next goal');
+
+const g2 = await page.evaluate(() => window.testGoal());
+assert(g2.i === 1 && g2.id !== g.id, 'the next goal is a different one');
+const c2 = (await state(page)).coins;
+await page.click('#goalBar');
+assert((await state(page)).coins === c2, 'an unfinished goal pays nothing');
+
+// за списком цепочка продолжается сама
+await page.evaluate(() => window.testSetState({ goal: 500 }));
+const ge = await page.evaluate(() => window.testGoal());
+assert(Number.isFinite(ge.need) && ge.need > 0, 'past the hand-written list the goal chain keeps going');
+assert(ge.ready === false, 'the endless goal is not handed out for free');
+await shut(page);
+}
+{
+// старый сейв без поля goal: выполненное проматывается без наград
+const page = await openGame({ save: JSON.stringify({ v: 2, coins: 5000, bestTier: 4, bestScore: 900,
+  discovered: [0, 1, 2, 3, 4], up: { pool: 1, luck: 0, cap: 0, mult: 1 },
+  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, goal: 1 } }) });
+const s = await state(page);
+assert(s.goal > 0, 'an old save skips the goals it has already satisfied');
+assert(s.coins === 5000, 'skipped goals pay nothing');
+assert((await page.evaluate(() => window.testGoal())).ready === false,
+  'after the skip the player is on a goal that still has to be earned');
+await shut(page);
 }
 
 assert(errors.length === 0, 'no console/page errors' + (errors.length ? ' -> ' + errors.join(' | ') : ''));
