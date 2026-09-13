@@ -1187,9 +1187,11 @@ function refreshCoinsOnly(){
 
 // ---------- Ввод ----------
 function pointerX(e){ const rect=cv.getBoundingClientRect(); const cx=(e.touches?e.touches[0].clientX:e.clientX); return cx-rect.left; }
-cv.addEventListener('pointerdown', e=>{ if(anyModalOpen()||gameOver) return; aiming=true; aimX=pointerX(e); });
-cv.addEventListener('pointermove', e=>{ if(anyModalOpen()||gameOver) return; if(aiming) aimX=pointerX(e); });
-cv.addEventListener('pointerup', e=>{ if(anyModalOpen()||gameOver) return; if(aiming){ doDrop(aimX); } aiming=false; });
+// Второй и третий палец не должны ни уводить прицел, ни ронять конфету сами по себе.
+const primary = e => e.isPrimary !== false;
+cv.addEventListener('pointerdown', e=>{ if(anyModalOpen()||gameOver||!primary(e)) return; aiming=true; aimX=pointerX(e); });
+cv.addEventListener('pointermove', e=>{ if(anyModalOpen()||gameOver||!primary(e)) return; if(aiming) aimX=pointerX(e); });
+cv.addEventListener('pointerup', e=>{ if(anyModalOpen()||gameOver||!primary(e)) return; if(aiming){ doDrop(aimX); } aiming=false; });
 cv.addEventListener('pointercancel', ()=>{ aiming=false; });
 
 // ---------- Модалки ----------

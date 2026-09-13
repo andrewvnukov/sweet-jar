@@ -17,7 +17,10 @@ const errors = [];
 const NOISE = /Failed to load resource|net::ERR_|ERR_CONNECTION|favicon/i;
 const browser = await chromium.launch({ args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 
-const assert = (cond, msg) => { if (!cond) { console.error('FAIL:', msg); process.exitCode = 1; } else console.log('ok  ', msg); };
+let passed = 0, failed = 0;
+const assert = (cond, msg) => {
+  if (!cond) { console.error('FAIL:', msg); failed++; } else { console.log('ok  ', msg); passed++; }
+};
 const near = (a, b, eps) => Math.abs(a - b) <= eps;
 const state = async page => JSON.parse(await page.evaluate(() => window.render_game_to_text()));
 const shut = async page => { const c = page.context(); await page.close(); await c.close(); };
@@ -382,8 +385,9 @@ assert(after.overflowY > before, 'buying cap moves the overflow line right away,
 await page.evaluate(() => { const b = document.querySelector('#upList button[data-key="mult"]'); b.click(); });
 const m1 = await state(page);
 assert(m1.up.mult === 1, 'the coin multiplier upgrade can be bought');
-await page.evaluate(() => { window.testClearJar(); window.testDrop(0.5, 0); window.testDrop(0.5, 0); });
-const beforeM = await state(page);
+await page.evaluate(() => window.testClearJar());
+const beforeM = await state(page);                 // до броска: иначе ловим свой тайминг
+await page.evaluate(() => { window.testDrop(0.5, 0); window.testDrop(0.5, 0); });
 await page.evaluate(() => window.advanceTime(600));
 const afterM = await state(page);
 assert(afterM.coins - beforeM.coins >= 4, 'merges pay the multiplier-boosted value');
@@ -638,4 +642,6 @@ await shut(page);
 assert(errors.length === 0, 'no console/page errors' + (errors.length ? ' -> ' + errors.join(' | ') : ''));
 
 await browser.close();
-console.log(process.exitCode ? '\nSMOKE FAILED' : '\nSMOKE PASSED');
+console.log('\n' + passed + ' passed, ' + failed + ' failed');
+process.exitCode = failed ? 1 : 0;
+console.log(failed ? 'SMOKE FAILED' : 'SMOKE PASSED');
