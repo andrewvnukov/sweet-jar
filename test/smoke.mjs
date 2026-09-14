@@ -163,10 +163,10 @@ assert(sUp.coins < 5000, 'buying an upgrade spends coins');
 await page.click('#closeShop');
 assert(await page.evaluate(() => document.getElementById('shopModal').classList.contains('on')) === false, 'shop modal closes');
 
-// коллекция открывается и показывает все 8 тиров
+// коллекция открывается и показывает все десерты, включая два королевских
 await page.click('#collectionBtn');
 assert(await page.evaluate(() => document.getElementById('collectionModal').classList.contains('on')) === true, 'collection modal opens');
-assert(await page.evaluate(() => document.querySelectorAll('#collGrid .ccell').length) === 8, 'collection shows all 8 tiers');
+assert(await page.evaluate(() => document.querySelectorAll('#collGrid .ccell').length) === 10, 'collection shows all 10 tiers');
 await page.click('#closeColl');
 
 // особая конфета: покупка за монеты повышает следующий тир
@@ -343,17 +343,17 @@ await shut(page);
 for (const [name, raw] of [
   ['garbage instead of JSON', '{not a json at all'],
   ['nulls in required fields', JSON.stringify({ coins: null, bestTier: null, up: null, discovered: null, balls: null, tips: null, lifetimeEarned: null })],
-  ['tier index out of range', JSON.stringify({ coins: 10, bestTier: 99, discovered: [0, 9, 'x', -1], up: { pool: 99, luck: 'a', cap: null, mult: 7 },
-    balls: [{ x: 100, y: 100, t: 9 }, { x: 120, y: 100, t: undefined }, { x: 140, y: 120, t: 0 }] })],
+  ['tier index out of range', JSON.stringify({ coins: 10, bestTier: 99, discovered: [0, 11, 'x', -1], up: { pool: 99, luck: 'a', cap: null, mult: 7 },
+    balls: [{ x: 100, y: 100, t: 11 }, { x: 120, y: 100, t: undefined }, { x: 140, y: 120, t: 0 }] })],
 ]) {
   const page = await openGame({ save: raw, noSdk: true });
   const s = await state(page);
   const tiers = await page.evaluate(() => window.testBallTiers());
   assert(Number.isFinite(s.coins), 'broken save (' + name + '): game boots with finite coins');
-  assert(s.bestTier >= 0 && s.bestTier <= 7, 'broken save (' + name + '): bestTier stays inside the tier table');
-  assert(s.discovered.every(t => t >= 0 && t <= 7), 'broken save (' + name + '): discovered holds only real tiers');
-  assert(tiers.every(t => t >= 0 && t <= 7), 'broken save (' + name + '): no candy with an unknown tier survives');
-  assert(!tiers.includes(7), 'broken save (' + name + '): an out-of-range tier is dropped, not clamped to a free top candy');
+  assert(s.bestTier >= 0 && s.bestTier <= 9, 'broken save (' + name + '): bestTier stays inside the tier table');
+  assert(s.discovered.every(t => t >= 0 && t <= 9), 'broken save (' + name + '): discovered holds only real tiers');
+  assert(tiers.every(t => t >= 0 && t <= 9), 'broken save (' + name + '): no candy with an unknown tier survives');
+  assert(!tiers.includes(9), 'broken save (' + name + '): an out-of-range tier is dropped, not clamped to a free top candy');
   assert(s.up.pool <= 2 && s.up.luck <= 10 && s.up.cap <= 10, 'broken save (' + name + '): upgrade levels are clamped');
   await shut(page);
 }
@@ -539,9 +539,9 @@ assert(await page.evaluate(() => document.getElementById('scModal').classList.co
   'the shortcut card does not come back after the answer');
 await shut(page);
 }
-{ // оценка запрашивается после первого праздничного торта (тир 7)
-const page = await openGame({ save: JSON.stringify({ v: 2, coins: 0, bestTier: 6, discovered: [0, 1, 2, 3, 4, 5, 6],
-  lastClaimDay: TODAY, streak: 1 }) });
+{ // оценка запрашивается после первого праздничного торта — верхнего десерта до последней остановки
+const page = await openGame({ save: JSON.stringify({ v: 3, coins: 0, bestTier: 6, discovered: [0, 1, 2, 3, 4, 5, 6],
+  stop: 0, loop: 0, lastClaimDay: TODAY, streak: 1 }) });
 let c = await calls(page);
 assert(c.canReview === 0, 'no review is requested at the start of a session');
 await page.evaluate(() => { window.testClearJar(); window.testDrop(0.5, 6); window.testDrop(0.5, 6); window.advanceTime(600); });
@@ -553,8 +553,8 @@ assert((await state(page)).reviewDone === true, 'the review is asked at most onc
 await shut(page);
 }
 { // запасной сценарий: оценка недоступна
-const page = await openGame({ canReview: false, save: JSON.stringify({ v: 2, coins: 0, bestTier: 6,
-  discovered: [0, 1, 2, 3, 4, 5, 6], lastClaimDay: TODAY, streak: 1 }) });
+const page = await openGame({ canReview: false, save: JSON.stringify({ v: 3, coins: 0, bestTier: 6,
+  discovered: [0, 1, 2, 3, 4, 5, 6], stop: 0, loop: 0, lastClaimDay: TODAY, streak: 1 }) });
 await page.evaluate(() => { window.testClearJar(); window.testDrop(0.5, 6); window.testDrop(0.5, 6); window.advanceTime(600); });
 await page.waitForTimeout(200);
 const c = await calls(page);
@@ -567,12 +567,14 @@ await shut(page);
 // 12. Вёрстка на узких экранах
 // ============================================================
 for (const vp of [{ width: 320, height: 568 }, { width: 360, height: 640 }]) {
-  const page = await openGame({ save: JSON.stringify({ v: 2, coins: 5000, bestTier: 3, discovered: [0, 1, 2, 3],
-    tips: { gift: 1, shake: 1, shop: 1 }, lastClaimDay: TODAY, streak: 1 }) }, { viewport: vp });
+  // stop: 2 — витрина открыта, значит в нижнем ряду пять кнопок, а не четыре
+  const page = await openGame({ save: JSON.stringify({ v: 3, coins: 5000, bestTier: 3, discovered: [0, 1, 2, 3],
+    stop: 2, loop: 0, acts: {},
+    tips: { gift: 1, shake: 1, shop: 1, route: 1, move: 1 }, lastClaimDay: TODAY, streak: 1 }) }, { viewport: vp });
   const tag = vp.width + 'x' + vp.height;
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     tag + ': the page never scrolls horizontally');
-  for (const id of ['specialBtn', 'specialAdBtn', 'giftBtn', 'shakeBtn', 'shopBtn', 'collectionBtn']) {
+  for (const id of ['specialBtn', 'specialAdBtn', 'giftBtn', 'shakeBtn', 'sellBtn', 'shopBtn', 'collectionBtn', 'routeBar']) {
     const b = await page.locator('#' + id).boundingBox();
     assert(b && b.x >= -0.5 && b.x + b.width <= vp.width + 0.5 && b.y + b.height <= vp.height + 0.5 && b.height >= 36,
       tag + ': #' + id + ' fits on screen and stays tappable');
@@ -581,61 +583,152 @@ for (const vp of [{ width: 320, height: 568 }, { width: 360, height: 640 }]) {
   const card = await page.locator('#shopModal .card').boundingBox();
   assert(card && card.width <= vp.width && card.height <= vp.height, tag + ': the shop modal fits the screen');
   await page.click('#closeShop');
+  await page.click('#routeBar');
+  const mcard = await page.locator('#mapModal .card').boundingBox();
+  assert(mcard && mcard.width <= vp.width && mcard.height <= vp.height, tag + ': the route map fits the screen');
+  await page.click('#closeMap');
   await page.evaluate(() => window.testDailyCheck());
   await shut(page);
 }
 
 // ============================================================
-// 13. Задания кондитера (цепочка целей)
+// 13. Маршрут: видимая цель на длинной дистанции
 // ============================================================
 {
-const page = await openGame({ save: JSON.stringify({ v: 2, coins: 0, bestTier: 0, discovered: [0],
-  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, goal: 1 } }) });
+const page = await openGame({ save: JSON.stringify({ v: 3, coins: 0, bestTier: 0, discovered: [0],
+  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, route: 1, move: 1 } }) });
 
-let g = await page.evaluate(() => window.testGoal());
-assert(g.i === 0 && g.ready === false, 'a new player starts on the first goal, not completed');
-assert(g.rew.coins > 0, 'the current goal always shows a reward');
-assert((await page.textContent('#goalT')).length > 0, 'the goal is written out on the HUD');
+const r0 = await page.evaluate(() => window.testRoute());
+assert(r0.stop === 0 && r0.loop === 0, 'a new player starts at the first stop of the route');
+assert(r0.tasks.length === 3, 'a stop is opened by a three-item checklist');
+assert(new Set(r0.tasks.map(t => t.id)).size === 3, 'the three items are of three different kinds');
+assert(r0.tasks.every(t => !t.done), 'no checklist item closes itself for a new player');
+assert(r0.ready === false, 'the move is not available before the checklist is closed');
+assert((await page.textContent('#routeT')).includes('/'), 'the HUD says which stop of how many');
+assert((await page.evaluate(() => document.querySelectorAll('#routePills .pill').length)) === 3,
+  'all three items are visible on the HUD without opening anything');
 
-// слияние двух одинаковых конфет даёт тир 1 и закрывает первое задание
+// дальний горизонт — в одно нажатие, с туманом над дальними местами
+await page.click('#routeBar');
+const stops = await page.evaluate(() => document.querySelectorAll('#mapList .mstop').length);
+assert(stops === 6, 'the map shows every stop, so the player sees the road is long');
+const fog = await page.evaluate(() => document.querySelectorAll('#mapList .mstop.fog').length);
+assert(fog > 0 && fog < stops, 'far stops stay in the fog, near ones are named');
+await page.click('#closeMap');
+
+// слияния двигают пункт «сделать» текущей остановки
 await page.evaluate(() => { window.testDrop(0.5, 0); window.testDrop(0.5, 0); });
 await page.evaluate(() => window.advanceTime(2000));
-g = await page.evaluate(() => window.testGoal());
-assert(g.ready === true, 'the goal turns claimable once its condition holds');
-assert(await page.evaluate(() => document.getElementById('goalBar').classList.contains('done')),
-  'a claimable goal is marked on the bar itself');
-
-const before = await state(page);
-await page.click('#goalBar');
-const after = await state(page);
-assert(after.coins > before.coins, 'claiming the goal pays the reward');
-assert(after.lifetimeEarned === before.lifetimeEarned,
-  'goal rewards do NOT move the progress metric (grant, not earn)');
-assert(after.goal === 1, 'claiming advances the chain to the next goal');
-
-const g2 = await page.evaluate(() => window.testGoal());
-assert(g2.i === 1 && g2.id !== g.id, 'the next goal is a different one');
-const c2 = (await state(page)).coins;
-await page.click('#goalBar');
-assert((await state(page)).coins === c2, 'an unfinished goal pays nothing');
-
-// за списком цепочка продолжается сама
-await page.evaluate(() => window.testSetState({ goal: 500 }));
-const ge = await page.evaluate(() => window.testGoal());
-assert(Number.isFinite(ge.need) && ge.need > 0, 'past the hand-written list the goal chain keeps going');
-assert(ge.ready === false, 'the endless goal is not handed out for free');
+assert((await state(page)).acts.merge >= 1, 'merges count towards the stop checklist');
 await shut(page);
 }
 {
-// старый сейв без поля goal: выполненное проматывается без наград
+// переезд: три пункта закрыты → новое место, и ничего не отобрано
+const page = await openGame({ save: JSON.stringify({ v: 3, coins: 100, bestTier: 2, bestScore: 900,
+  discovered: [0, 1, 2], up: { pool: 1, luck: 0, cap: 0, mult: 1 }, stop: 0, loop: 0, acts: { merge: 20 },
+  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, route: 1, move: 1 } }) });
+const r1 = await page.evaluate(() => window.testRoute());
+assert(r1.ready === true, 'closing all three items opens the move');
+assert(await page.evaluate(() => document.getElementById('routeBar').classList.contains('done')),
+  'a ready move is marked on the bar itself');
+
+const before = await state(page);
+await page.click('#routeBar');
+const after = await state(page);
+assert(after.stop === 1, 'the move takes the player to the next stop');
+assert(after.bestTier === before.bestTier && after.discovered.length === before.discovered.length,
+  'the move takes nothing away: the collection comes along');
+assert(after.coins > before.coins, 'the move pays a reward');
+assert(after.lifetimeEarned === before.lifetimeEarned,
+  'the move reward does NOT move the progress metric (grant, not earn)');
+assert(after.stopMult > before.stopMult, 'each stop passed is a permanent merge bonus');
+assert(after.seenStop >= 2, 'the fog lifts one stop ahead');
+assert(!after.acts.merge, 'per-stop counters start from zero at the new stop');
+assert((await page.evaluate(() => window.testRoute())).ready === false,
+  'the new stop starts with an unfinished checklist');
+await shut(page);
+}
+{
+// твисты мест: заказы, витрина, гости
+const page = await openGame({ save: JSON.stringify({ v: 3, coins: 0, bestTier: 5, bestScore: 9000,
+  discovered: [0, 1, 2, 3, 4, 5], up: { pool: 1, luck: 0, cap: 0, mult: 0 }, stop: 3, loop: 0, acts: {},
+  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, route: 1, move: 1 } }) });
+
+// заказ: названный десерт платит вдвое
+await page.evaluate(() => { window.testClearJar(); window.testSetOrder(1);
+  window.testDrop(0.5, 0); window.testDrop(0.5, 0); });
+await page.evaluate(() => window.advanceTime(2000));
+const ord = await state(page);
+assert(ord.acts.order >= 1, 'filling the named order counts on the checklist');
+
+// витрина: готовый десерт можно продать и освободить банку
+await page.evaluate(() => { window.testClearJar(); window.testDrop(0.5, 4); });
+const b1 = await state(page);
+assert(!(await page.evaluate(() => document.getElementById('sellBtn').classList.contains('hidden'))),
+  'the sell button appears only where the display twist is open');
+await page.click('#sellBtn');
+const a1 = await state(page);
+assert(a1.ballCount < b1.ballCount, 'selling really frees up the jar');
+assert(a1.coins > b1.coins, 'selling pays for the dessert');
+assert(a1.lifetimeEarned === b1.lifetimeEarned, 'the sale is a gift, not a merge');
+assert(a1.acts.sell === 1, 'selling counts on the checklist');
+
+// гости: приходят сами и забирают крупные десерты
+await page.evaluate(() => { window.testClearJar(); window.testDrop(0.5, 5); });
+const b2 = await state(page);
+await page.evaluate(() => window.testGuest());
+const a2 = await state(page);
+assert(a2.ballCount < b2.ballCount && a2.coins > b2.coins, 'a guest takes a big dessert and pays for it');
+assert(a2.acts.guest >= 1, 'served guests count on the checklist');
+await shut(page);
+}
+{
+// псевдофинал: игра не кончается, но закрытие есть
+const page = await openGame({ save: JSON.stringify({ v: 3, coins: 0, bestTier: 7, bestScore: 200000,
+  discovered: [0, 1, 2, 3, 4, 5, 6, 7], up: { pool: 2, luck: 0, cap: 0, mult: 5 }, stop: 5, loop: 0, acts: {},
+  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, route: 1, move: 1 } }) });
+const t0 = await state(page);
+assert(t0.topTier === 9, 'the last stop opens the two royal desserts');
+
+// королевский торт собирается из двух предыдущих
+await page.evaluate(() => { window.testClearJar(); window.testDrop(0.5, 7); window.testDrop(0.5, 7); });
+await page.evaluate(() => window.advanceTime(2000));
+await page.evaluate(() => { window.testDrop(0.5, 8); });
+await page.evaluate(() => window.advanceTime(2000));
+const king = await state(page);
+assert(king.bestTier === 9, 'the royal cake can actually be built on the last stop');
+
+const r = await page.evaluate(() => window.testRoute());
+assert(r.stop === 5, 'the route has exactly six stops');
+assert(r.ready === true, 'the last stop is closed the same way as the others');
+const before = await state(page);
+await page.evaluate(() => window.testMove());
+const after = await state(page);
+assert(await page.evaluate(() => document.getElementById('finModal').classList.contains('on')),
+  'finishing the route shows a real finale screen');
+assert(after.loop === 1 && after.stop === 0, 'after the finale the route starts a second loop');
+assert(after.discovered.length === before.discovered.length, 'the second loop takes nothing away either');
+assert(after.stopMult > before.stopMult, 'the finished loop is a permanent bonus');
+assert(after.topTier === 9, 'nothing is re-locked on the second loop');
+const r2 = await page.evaluate(() => window.testRoute());
+assert(r2.tasks.every(t => Number.isFinite(t.need) && t.need > 0),
+  'the second loop has finite, real requirements');
+assert(r2.tasks.find(t => t.id === 'earn'), 'on the second loop the collect item asks for something new');
+assert(r2.ready === false, 'the second loop is not handed out for free');
+await page.click('#finGo');
+await shut(page);
+}
+{
+// старый сейв без маршрута: правдоподобное место и никаких наград за прошлое
 const page = await openGame({ save: JSON.stringify({ v: 2, coins: 5000, bestTier: 4, bestScore: 900,
   discovered: [0, 1, 2, 3, 4], up: { pool: 1, luck: 0, cap: 0, mult: 1 },
-  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1, goal: 1 } }) });
+  lastClaimDay: TODAY, streak: 1, tips: { gift: 1, shake: 1, shop: 1 } }) });
 const s = await state(page);
-assert(s.goal > 0, 'an old save skips the goals it has already satisfied');
-assert(s.coins === 5000, 'skipped goals pay nothing');
-assert((await page.evaluate(() => window.testGoal())).ready === false,
-  'after the skip the player is on a goal that still has to be earned');
+assert(s.stop > 0, 'an old save lands on a stop that matches what it has already achieved');
+assert(s.coins === 5000, 'the migration pays nothing for the past');
+assert(!s.acts.merge, 'the migration does not pre-close the checklist');
+assert((await page.evaluate(() => window.testRoute())).ready === false,
+  'after the migration the player still has work to do on this stop');
 await shut(page);
 }
 

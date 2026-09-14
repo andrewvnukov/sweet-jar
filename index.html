@@ -43,25 +43,47 @@
   .chip .v{font-weight:900;font-size:17px;line-height:1}
   .chip .l{font-size:10px;font-weight:800;color:var(--ink-soft);letter-spacing:.3px}
   .spacer{flex:1}
-  /* ── полоса цели (задание кондитера) ── */
-  #goalBar{margin-top:8px;align-self:flex-start;width:min(100%,330px);pointer-events:auto;cursor:default;
-           background:var(--paper);border:2.5px solid var(--line);border-radius:14px;
-           padding:6px 10px 7px;box-shadow:0 3px 0 rgba(91,70,54,.25)}
-  #goalBar.done{background:var(--gold);border-color:#C9982E;cursor:pointer;
-                animation:goalPulse 1.1s ease-in-out infinite}
+  /* ── полоса маршрута: где я сейчас и что осталось до переезда ── */
+  #routeBar{margin-top:8px;align-self:flex-start;width:min(100%,330px);pointer-events:auto;cursor:pointer;
+            background:var(--paper);border:2.5px solid var(--line);border-radius:14px;
+            padding:6px 10px 7px;box-shadow:0 3px 0 rgba(91,70,54,.25)}
+  #routeBar.done{background:var(--gold);border-color:#C9982E;
+                 animation:goalPulse 1.1s ease-in-out infinite}
   @keyframes goalPulse{0%,100%{box-shadow:0 3px 0 rgba(91,70,54,.25)}
                        50%{box-shadow:0 3px 0 rgba(91,70,54,.25),0 0 0 4px rgba(242,193,78,.45)}}
-  #goalBar .gtop{display:flex;align-items:baseline;gap:8px}
-  #goalBar .gn{flex:1;min-width:0;font-size:12.5px;font-weight:900;line-height:1.15;
-               overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #goalBar .gr{font-size:11.5px;font-weight:900;color:#B2762A;white-space:nowrap}
-  #goalBar.done .gr{color:var(--ink)}
-  #goalBar .gtrack{height:7px;margin-top:5px;border-radius:99px;background:rgba(91,70,54,.16);overflow:hidden}
-  #goalBar .gfill{height:100%;width:0;border-radius:99px;background:var(--mint);transition:width .3s}
+  #routeBar .gtop{display:flex;align-items:baseline;gap:8px}
+  #routeBar .gn{flex:1;min-width:0;font-size:12.5px;font-weight:900;line-height:1.15;
+                overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #routeBar .gr{font-size:11.5px;font-weight:900;color:#B2762A;white-space:nowrap}
+  #routeBar.done .gr{color:var(--ink)}
+  .pills{display:flex;gap:5px;margin-top:5px}
+  .pill{flex:1;min-width:0;font-size:10.5px;font-weight:900;text-align:center;
+        padding:3px 2px;border-radius:99px;background:rgba(91,70,54,.14);color:var(--ink);
+        overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pill.ok{background:var(--mint)}
   .collnote{font-size:12.5px;font-weight:800;color:var(--ink-soft);margin:-2px 0 8px}
-  /* альбом: полоса цели не должна накрывать предпросмотр следующей конфеты */
-  @media (max-height:430px){ #goalBar{width:min(100%,210px);margin-top:6px} }
-  #goalBar.done .gfill{background:var(--ink)}
+  /* альбом: полоса маршрута не должна накрывать предпросмотр следующей конфеты */
+  @media (max-height:430px){ #routeBar{width:min(100%,210px);margin-top:6px} }
+  /* ── карта маршрута ── */
+  .mstop{display:flex;gap:9px;align-items:flex-start;background:#FFF8E6;border:2.5px solid var(--line);
+         border-radius:14px;padding:8px 10px;margin-bottom:8px}
+  .mstop.past{opacity:.62}
+  .mstop.now{background:var(--gold);border-color:#C9982E}
+  .mstop.fog{opacity:.5;border-style:dashed}
+  .mstop .num{width:24px;height:24px;flex:none;border-radius:50%;background:var(--line);color:#fff;
+              font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .mstop.past .num{background:var(--mint);color:var(--ink)}
+  .mstop .mi{flex:1;min-width:0}
+  .mstop .mn{font-weight:900;font-size:14px;line-height:1.15}
+  .mstop .md{font-size:11px;font-weight:800;color:var(--ink-soft);margin-top:2px;line-height:1.3}
+  .tasks{margin-top:5px}
+  .task{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;margin-top:4px}
+  .task .bx{width:15px;height:15px;flex:none;border:2.5px solid var(--line);border-radius:5px;
+            background:#fff;font-size:10px;line-height:11px;text-align:center;font-weight:900}
+  .task.ok .bx{background:var(--mint)}
+  .task .tv{margin-left:auto;font-weight:900;color:var(--ink-soft);white-space:nowrap}
+  .mapscroll{max-height:52vh;overflow-y:auto}
+  .mkeep{font-size:11.5px;font-weight:800;color:var(--ink-soft);margin:2px 0 10px;line-height:1.35}
   .side{display:flex;flex-direction:column;gap:8px;margin-left:8px;pointer-events:auto}
   .rbtn{width:44px;height:44px;border-radius:50%;background:var(--paper);border:2.5px solid var(--line);
         box-shadow:0 3px 0 rgba(91,70,54,.28);display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -72,12 +94,17 @@
         transition:transform .08s,box-shadow .08s;color:var(--ink);display:flex;flex-direction:column;gap:3px;
         align-items:center;justify-content:center;text-align:center;line-height:1.1}
   .abtn .lab{font-size:11.5px;white-space:normal}
+  /* пять кнопок в ряду (открыта витрина) на узком экране: подпись ужимаем,
+     высоту держим — кнопка обязана оставаться попадаемой пальцем */
+  @media (max-width:380px){ .abtn{padding:8px 2px} .abtn .lab{font-size:10px} .abtn .sub{font-size:9px} }
   .abtn .sub{font-size:10px;font-weight:800;opacity:.85;white-space:nowrap}
   .abtn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(91,70,54,.28)}
   .abtn:disabled{opacity:.55;cursor:default}
   .abtn.special{background:var(--wood);color:#fff;border-color:var(--wood-deep)}
   .abtn.gift{background:var(--mint);color:#274b3f;border-color:#5fae91}
   .abtn.shake{background:var(--lav);color:#3d2c56;border-color:#9a7ac9}
+  .abtn.sell{background:var(--gold);color:#4a3a12;border-color:#C9982E}
+  .abtn.hidden{display:none}
   #toast{position:absolute;left:50%;bottom:118px;transform:translateX(-50%) translateY(20px);
          background:var(--ink);color:#fff;font-weight:800;font-size:14px;padding:9px 16px;border-radius:99px;
          opacity:0;transition:.25s;pointer-events:none;max-width:86%;text-align:center;z-index:5}
@@ -167,9 +194,9 @@
       </div>
     </div>
   </div>
-  <div id="goalBar">
-    <div class="gtop"><span class="gn" id="goalT"></span><span class="gr" id="goalR"></span></div>
-    <div class="gtrack"><div class="gfill" id="goalFill"></div></div>
+  <div id="routeBar">
+    <div class="gtop"><span class="gn" id="routeT"></span><span class="gr" id="routeR"></span></div>
+    <div class="pills" id="routePills"></div>
   </div>
   <div class="spacer"></div>
   <div class="bottom">
@@ -177,6 +204,7 @@
     <button class="abtn specialad" id="specialAdBtn"><span class="lab" id="specialAdLab">Особая за ролик</span><span class="sub" id="specialAdSub">смотреть</span></button>
     <button class="abtn gift" id="giftBtn"><span class="lab" id="giftLab">Подарок</span><span class="sub" id="giftSub">смотреть</span></button>
     <button class="abtn shake" id="shakeBtn"><span class="lab" id="shakeLab">Убрать конфеты</span><span class="sub" id="shakeSub">смотреть</span></button>
+    <button class="abtn sell hidden" id="sellBtn"><span class="lab" id="sellLab">Продать</span><span class="sub" id="sellSub"></span></button>
   </div>
 </div>
 <div id="toast"></div>
@@ -214,6 +242,21 @@
       <button class="mbtn" id="scYes">Добавить</button>
       <button class="mbtn alt" id="scNo">Не сейчас</button>
     </div>
+  </div>
+</div>
+<div class="modal" id="mapModal">
+  <div class="card">
+    <h2><span id="mapTitle">Путь</span><span class="x" id="closeMap">✕</span></h2>
+    <div class="mapscroll" id="mapList"></div>
+    <div class="mkeep" id="mapKeep"></div>
+    <div class="mrow" id="mapAct"></div>
+  </div>
+</div>
+<div class="modal" id="finModal">
+  <div class="card">
+    <h2><span id="finT">Королевский приём</span></h2>
+    <div class="scd" id="finD"></div>
+    <div class="mrow"><button class="mbtn" id="finGo">Второй круг</button></div>
   </div>
 </div>
 <div class="modal" id="shopModal">
@@ -299,15 +342,48 @@ const STR = {
   goalDone:{ru:"Задание выполнено! +{n}",en:"Goal complete! +{n}"},
   goalSpecial:{ru:"и особая конфета",en:"and a special candy"},
   gMake:{ru:"Получить: {n}",en:"Make: {n}"},
-  gUp:{ru:"Купить любой апгрейд",en:"Buy any upgrade"},
-  gMult:{ru:"Сахарная глазурь до ур. {n}",en:"Sugar glaze to Lv. {n}"},
-  gCap:{ru:"Вежливая банка до ур. {n}",en:"Polite jar to Lv. {n}"},
   gScore:{ru:"Забег на {n} монет",en:"A run worth {n} coins"},
   gEarn:{ru:"Заработать {n} всего",en:"Earn {n} in total"},
+  // ── маршрут ──
+  mapTitle:{ru:"Путь до королевского приёма",en:"The road to the royal reception"},
+  mapLoop:{ru:"Круг {n}",en:"Loop {n}"},
+  mapFog:{ru:"Неизвестное место",en:"Unknown place"},
+  mapFogD:{ru:"Сюда ещё рано заглядывать",en:"Too early to look this far"},
+  moveDo:{ru:"Переехать дальше",en:"Move on"},
+  moveSoon:{ru:"Закрой три пункта — и можно ехать дальше",
+            en:"Close all three and you can move on"},
+  moveKeep:{ru:"Переезд ничего не отнимает: монеты, апгрейды и коллекция едут с тобой.",
+            en:"Moving takes nothing away: coins, upgrades and the collection come along."},
+  moved:{ru:"Новое место: {n}",en:"New place: {n}"},
+  moveBonus:{ru:"Монеты за слияния навсегда: ×{n}",en:"Merge coins, permanently: ×{n}"},
+  finT:{ru:"Королевский приём",en:"Royal reception"},
+  finD:{ru:"Ты довёл банку с кухонного подоконника до королевского стола. Монеты, апгрейды и коллекция остаются с тобой — впереди тот же путь, но на новом уровне.",
+        en:"You took a jar from the kitchen windowsill to the royal table. Coins, upgrades and the collection stay with you — the same road lies ahead, one level up."},
+  finGo:{ru:"Второй круг",en:"Second loop"},
+  tTier:{ru:"Получить: {n}",en:"Make: {n}"},
+  tEarn:{ru:"Заработать {n} всего",en:"Earn {n} in total"},
+  tScore:{ru:"Забег на {n} монет",en:"A run worth {n} coins"},
+  tColl:{ru:"Открыть {n} десертов",en:"Discover {n} desserts"},
+  tMerge:{ru:"Сделать {n} слияний",en:"Make {n} merges"},
+  tOrder:{ru:"Выполнить {n} заказов",en:"Fill {n} orders"},
+  tSell:{ru:"Продать {n} десертов",en:"Sell {n} desserts"},
+  tGuest:{ru:"Обслужить {n} гостей",en:"Serve {n} guests"},
+  tBelt:{ru:"Поймать {n} конфет с конвейера",en:"Catch {n} candies off the belt"},
+  tKing:{ru:"Собрать королевский торт",en:"Build the royal cake"},
+  pTier:{ru:"тир",en:"tier"}, pEarn:{ru:"всего",en:"total"}, pScore:{ru:"забег",en:"run"},
+  pColl:{ru:"набор",en:"set"}, pAct:{ru:"дело",en:"task"},
+  orderNow:{ru:"Заказ: {n} ×2",en:"Order: {n} ×2"},
+  orderDone:{ru:"Заказ выполнен! +{n}",en:"Order filled! +{n}"},
+  sell:{ru:"Продать",en:"Sell"},
+  sellNo:{ru:"Нечего продавать",en:"Nothing to sell"},
+  sellGot:{ru:"Продано: +{n}",en:"Sold: +{n}"},
+  guestGot:{ru:"Гость забрал десерт: +{n}",en:"A guest took a dessert: +{n}"},
   collLeft:{ru:"Осталось открыть: {n}",en:"Left to discover: {n}"},
   collAll:{ru:"Вся коллекция собрана!",en:"The whole collection is complete!"},
-  tipGoal:{ru:"Задание выполнено — нажми и забери награду",
-           en:"Goal complete — tap the bar to claim it"},
+  tipRoute:{ru:"Здесь видно, куда ты идёшь и сколько осталось до следующего места",
+            en:"This shows where you are headed and how far the next place is"},
+  tipMove:{ru:"Все три пункта закрыты — можно переезжать",
+           en:"All three are done — time to move on"},
   // подсказки
   tipGift:{ru:"Подарок за короткий ролик — монеты растут вместе с твоим рекордом",en:"A gift for a short ad — coins scale with your best tier"},
   tipShake:{ru:"Банка вот-вот переполнится: убери мелкие конфеты за ролик",en:"The jar is about to overflow: clear the small candies for an ad"},
@@ -316,6 +392,7 @@ const STR = {
   t2:{ru:"Карамелька",en:"Caramel"}, t3:{ru:"Трюфель",en:"Truffle"},
   t4:{ru:"Пончик",en:"Donut"}, t5:{ru:"Капкейк",en:"Cupcake"},
   t6:{ru:"Кусок торта",en:"Cake slice"}, t7:{ru:"Праздничный торт",en:"Party cake"},
+  t8:{ru:"Свадебный торт",en:"Wedding cake"}, t9:{ru:"Королевский торт",en:"Royal cake"},
 };
 const T = (k,vars) => { let s=(STR[k]||{})[lang()] || (STR[k]||{}).ru || k;
   if(vars) for(const key in vars) s=s.replace("{"+key+"}", vars[key]); return s; };
@@ -330,15 +407,19 @@ const TIERS = [
   {key:'t5', ratio:0.245, value:64, fill:'#FFE3B0', accent:'#E2A64F'},
   {key:'t6', ratio:0.305, value:128,fill:'#F9D8A8', accent:'#C98B45'},
   {key:'t7', ratio:0.380, value:256,fill:'#FF8FA3', accent:'#B23A54'},
+  // Два верхних десерта открывает последняя остановка маршрута — это её твист.
+  {key:'t8', ratio:0.440, value:512, fill:'#FFF0D6', accent:'#D9A94E'},
+  {key:'t9', ratio:0.500, value:1024,fill:'#F7D9E6', accent:'#B0518A'},
 ];
 const MAX_TIER = TIERS.length-1;
 
 // ---------- Состояние ----------
 // v:2 — добавлены lifetimeEarned, up.mult, lastClaimDay/streak, tips, флаги ярлыка/оценки.
 function fresh(){
-  return { v:2, coins:0, bestTier:0, bestScore:0, fillCoins:0, lifetimeEarned:0, discovered:[0],
+  return { v:3, coins:0, bestTier:0, bestScore:0, fillCoins:0, lifetimeEarned:0, discovered:[0],
     up:{pool:0, luck:0, cap:0, mult:0}, lastGift:0, lastShake:0, lastSpecialAd:0,
-    lastClaimDay:"", streak:0, tips:{}, shortcutDone:false, reviewDone:false, goal:0,
+    lastClaimDay:"", streak:0, tips:{}, shortcutDone:false, reviewDone:false,
+    stop:0, loop:0, seenStop:1, acts:{},        // маршрут: место, круг, туман, счётчики «сделать»
     balls:[], time:Date.now() };
 }
 let S = fresh();
@@ -370,57 +451,175 @@ const specialAdReady = () => Date.now()-S.lastSpecialAd >= SPECIAL_AD_CD;
 function earn(n){ n=Math.max(0,Math.floor(n)); S.coins+=n; S.lifetimeEarned+=n; return n; }
 function grant(n){ n=Math.max(0,Math.floor(n)); S.coins+=n; return n; }
 
-// ---------- Задания кондитера ----------
-// В merge-игре без цели игрок не знает, зачем кидать следующую конфету: забег
-// кончается, банка чистится, видимого движения нет. Цепочка заданий держит
-// ближайшую цель на экране и сшивает забеги в один длинный прогресс.
-// Награда — grant: задание не должно разгонять собственные же цели по заработку.
+// ---------- Маршрут: от подоконника до королевского приёма ----------
+// В merge-игре без дальней цели игрок не знает, зачем кидать следующую конфету:
+// забег кончается, банка чистится, видимого движения нет. Маршрут из шести мест
+// сшивает забеги в один длинный путь с видимым концом. Каждое место — своя сцена,
+// свои правила и своя причина ехать дальше. Переезд ничего не отнимает.
 const tierName = t => T(TIERS[Math.min(MAX_TIER,Math.max(0,t))].key);
-const goalCoins = k => Math.max(100, Math.floor(TIERS[Math.min(MAX_TIER,S.bestTier)].value*k + S.bestScore*0.05));
-const GOALS = [
-  { id:'t1',   text:()=>T('gMake',{n:tierName(1)}),  need:()=>1, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(8)}) },
-  { id:'t2',   text:()=>T('gMake',{n:tierName(2)}),  need:()=>2, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(10)}) },
-  { id:'up1',  text:()=>T('gUp'),                    need:()=>1,
-    cur:()=>S.up.pool+S.up.luck+S.up.cap+S.up.mult,                 rew:()=>({coins:goalCoins(12)}) },
-  { id:'t3',   text:()=>T('gMake',{n:tierName(3)}),  need:()=>3, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(14)}) },
-  { id:'mult3',text:()=>T('gMult',{n:3}),            need:()=>3, cur:()=>S.up.mult,  rew:()=>({coins:goalCoins(16)}) },
-  { id:'t4',   text:()=>T('gMake',{n:tierName(4)}),  need:()=>4, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(18), special:true}) },
-  { id:'cap3', text:()=>T('gCap',{n:3}),             need:()=>3, cur:()=>S.up.cap,   rew:()=>({coins:goalCoins(20)}) },
-  { id:'t5',   text:()=>T('gMake',{n:tierName(5)}),  need:()=>5, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(24)}) },
-  { id:'sc3k', text:()=>T('gScore',{n:fmt(3000)}),   need:()=>3000, cur:()=>S.bestScore, rew:()=>({coins:goalCoins(28)}) },
-  { id:'t6',   text:()=>T('gMake',{n:tierName(6)}),  need:()=>6, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(32), special:true}) },
-  { id:'mult8',text:()=>T('gMult',{n:8}),            need:()=>8, cur:()=>S.up.mult,  rew:()=>({coins:goalCoins(36)}) },
-  { id:'t7',   text:()=>T('gMake',{n:tierName(7)}),  need:()=>7, cur:()=>S.bestTier, rew:()=>({coins:goalCoins(48), special:true}) },
+const STOPS = [
+  { id:'sill',  ru:'Кухонный подоконник', en:'Kitchen windowsill',
+    twRu:'Начало пути: бросай конфеты и соединяй одинаковые',
+    twEn:'The start: drop candies and merge the matching ones',
+    wall:['#FBEFE0','#F3DFC4'],
+    tier:2, score:800,    act:'merge', actN:15 },
+  { id:'fair',  ru:'Лоток на ярмарке', en:'Fair stall',
+    twRu:'Заказы: за названный десерт платят вдвое',
+    twEn:'Orders: the named dessert pays double',
+    wall:['#FFEFD6','#F6D3A8'],
+    tier:3, score:2500,   act:'order', actN:5 },
+  { id:'shop',  ru:'Своя лавка', en:'Your own shop',
+    twRu:'Витрина: готовый десерт можно продать и освободить банку',
+    twEn:'Display: a finished dessert can be sold to free up the jar',
+    wall:['#F3E7FB','#DCC6F0'],
+    tier:4, score:7000,   act:'sell',  actN:5 },
+  { id:'cafe',  ru:'Кафе', en:'Cafe',
+    twRu:'Гости приходят сами и разбирают крупные десерты',
+    twEn:'Guests come on their own and take the big desserts',
+    wall:['#E6F3EC','#C3E2D2'],
+    tier:5, score:20000,  act:'guest', actN:8 },
+  { id:'plant', ru:'Кондитерская фабрика', en:'Candy factory',
+    twRu:'Конвейер: конфеты падают сами, игрок только целится',
+    twEn:'Conveyor: candies drop by themselves, you only aim',
+    wall:['#E9EEF6','#C6D2E6'],
+    tier:6, score:60000,  act:'belt',  actN:30 },
+  { id:'royal', ru:'Королевский приём', en:'Royal reception',
+    twRu:'Торт-гигант: сверху открываются ещё два десерта',
+    twEn:'A giant cake: two more desserts open up on top',
+    wall:['#FBE8EF','#E8C2D6'],
+    tier:8, score:150000, act:'king',  actN:1 },
 ];
-const GOAL_EARN_BASE = 60000;               // первая бесконечная цель — после первого торта
-function goalDef(){
-  const i=S.goal;
-  if(i < GOALS.length) return GOALS[i];
-  // Кламп: на больших номерах степень уходит в Infinity, и цель перестаёт быть целью.
-  const n = Math.round(Math.min(Number.MAX_SAFE_INTEGER, GOAL_EARN_BASE * Math.pow(4, i-GOALS.length)));
-  return { id:'earn'+(i-GOALS.length), endless:true,
-           text:()=>T('gEarn',{n:fmt(n)}), need:()=>n, cur:()=>S.lifetimeEarned,
-           rew:()=>({coins:goalCoins(40), special:true}) };
+const LAST_STOP = STOPS.length-1;
+const stopNm = d => lang()==="ru" ? d.ru : d.en;
+const stopTw = d => lang()==="ru" ? d.twRu : d.twEn;
+// Пройденное не запирается обратно: на втором круге все места уже открыты.
+const routeAt  = () => S.loop>0 ? LAST_STOP : Math.min(LAST_STOP, S.stop);
+const hasTwist = i => routeAt() >= i;
+// Прибавка за путь: множитель монет за слияния. Не трогает цены — дорожает
+// только то, что игрок сам покупает.
+const stopMult = () => 1 + 0.15*(S.stop + STOPS.length*S.loop);
+// Два верхних десерта живут за последней остановкой: до неё банка кончается на торте.
+const topTier  = () => hasTwist(5) ? MAX_TIER : MAX_TIER-2;
+function act(key,n){ S.acts[key] = (S.acts[key]||0) + (n||1); }
+
+// ── твист 1: заказы ──
+// Заказ всегда на десерт, который игроку по силам прямо сейчас: иначе это не
+// заказ, а насмешка.
+let orderTier = 2;
+function rollOrder(){
+  const hi = Math.min(topTier(), Math.max(2, S.bestTier));
+  orderTier = Math.max(2, hi - Math.floor(Math.random()*2));
 }
-const goalReady = () => { const g=goalDef(); return g.cur() >= g.need(); };
-function claimGoal(){
-  const g=goalDef(); if(g.cur() < g.need()) return false;
-  const r=g.rew();
-  const c=grant(r.coins);                   // награда — подарок, а не заработок
-  if(r.special) nextTier = Math.min(MAX_TIER, poolMax()+2);
-  S.goal++;
-  refreshHud(); persist(true); sfx('coin');
-  toast(T('goalDone',{n:fmt(c)}) + (r.special ? " " + T('goalSpecial') : ""));
+// ── твист 3: гости ──
+const GUEST_EVERY_MS = 25000;
+let lastGuest = 0;
+function guestTick(){
+  if(!hasTwist(3) || gameOver || paused) return;
+  const now = Date.now();
+  if(!lastGuest){ lastGuest = now; return; }
+  if(now - lastGuest < GUEST_EVERY_MS) return;
+  lastGuest = now;
+  const big = balls.filter(b=>b.t>=4).sort((a,b)=>b.t-a.t)[0];
+  if(!big) return;
+  balls.splice(balls.indexOf(big),1);
+  const n = grant(Math.round(TIERS[big.t].value*multValue()*5));  // гость платит — но это подарок
+  act('guest'); sfx('coin'); toast(T('guestGot',{n:fmt(n)}));
+  refreshHud(); persist(true);
+}
+// ── твист 4: конвейер ──
+const BELT_EVERY_MS = 3500;
+let lastBelt = 0;
+function beltTick(){
+  if(!hasTwist(4) || gameOver || paused || anyModalOpen()) return;
+  const now = Date.now();
+  if(!lastBelt){ lastBelt = now; return; }
+  if(now - lastBelt < BELT_EVERY_MS) return;
+  lastBelt = now;
+  spawnBall(aimX || centerX, pickNextTier());
+  act('belt');
+}
+// ── твист 2: витрина ──
+const sellable = () => balls.filter(b=>b.t>=3).sort((a,b)=>b.t-a.t)[0] || null;
+function doSell(){
+  if(!hasTwist(2)) return false;
+  const b = sellable();
+  if(!b){ toast(T('sellNo')); sfx('error'); return false; }
+  balls.splice(balls.indexOf(b),1);
+  const n = grant(Math.round(TIERS[b.t].value*multValue()*3));   // витрина — подарок, не слияние
+  act('sell'); sfx('coin'); toast(T('sellGot',{n:fmt(n)}));
+  refreshHud(); persist(true);
   return true;
 }
-function skipDoneGoals(){ let guard=0; while(goalReady() && guard++ < 64) S.goal++; }
-function refreshGoal(){
-  const g=goalDef(), need=g.need(), cur=Math.min(need, g.cur()), done=cur>=need, r=g.rew();
-  const bar=$("goalBar"); if(!bar) return;
-  bar.classList.toggle("done", done);
-  $("goalT").textContent = done ? T('goalTake') : g.text();
-  $("goalR").textContent = "+"+fmt(r.coins)+(r.special?" ✦":"");
-  $("goalFill").style.width = Math.max(0, Math.min(100, 100*cur/need))+"%";
+
+// ── чек-лист остановки: собрать / достичь / сделать ──
+// Три пункта РАЗНОГО типа: одна большая цель — стена, в которую игрок упирается
+// и закрывает игру; три разнотипных гарантируют, что хотя бы один сдвинется
+// за текущий заход.
+function tasks(){
+  const d = STOPS[Math.min(LAST_STOP, S.stop)], sc = Math.pow(5, S.loop);
+  const first = S.loop===0
+    ? { id:'tier', lab:T('pTier'), text:T('tTier',{n:tierName(d.tier)}),
+        cur:S.bestTier, need:d.tier }
+    : { id:'earn', lab:T('pEarn'), text:T('tEarn',{n:fmt(d.score*20*sc)}),
+        cur:S.lifetimeEarned, need:d.score*20*sc };
+  const score = Math.round(d.score*sc);
+  return [
+    first,
+    { id:'score', lab:T('pScore'), text:T('tScore',{n:fmt(score)}), cur:S.bestScore, need:score },
+    { id:d.act, lab:T('pAct'),
+      text:T({merge:'tMerge',order:'tOrder',sell:'tSell',guest:'tGuest',belt:'tBelt',king:'tKing'}[d.act],
+             {n:d.actN}),
+      cur: d.act==='king' ? (S.bestTier>=MAX_TIER?1:0) : (S.acts[d.act]||0), need:d.actN },
+  ];
+}
+const routeReady = () => tasks().every(t => t.cur >= t.need);
+function doMove(){
+  if(!routeReady()) return false;
+  const last = S.stop >= LAST_STOP;
+  const got = grant(Math.max(200, Math.round(TIERS[Math.min(MAX_TIER,S.bestTier)].value*multValue()*40)));
+  S.acts = {};                                  // счётчики «сделать» — свои у каждой остановки
+  if(last){ S.loop++; S.stop = 0; S.seenStop = STOPS.length; }
+  else { S.stop++; S.seenStop = Math.max(S.seenStop, S.stop+1); }
+  nextTier = Math.min(topTier(), poolMax()+2);  // подарок в дорогу: особая конфета
+  rollOrder();
+  refreshHud(); persist(true); sfx('buy');
+  if(last) openFin();
+  else { toast(T('moved',{n:stopNm(STOPS[S.stop])})+" +"+fmt(got)); maybeInterstitial(); }
+  return true;
+}
+// Старый сейв без маршрута: место выводим из достигнутого тира и НИЧЕГО не
+// платим — иначе действующий игрок при первом запуске соберёт полмаршрута наград.
+function estimateStop(bestTier){
+  let i=0;
+  while(i < LAST_STOP && bestTier >= STOPS[i].tier) i++;
+  return i;
+}
+// Средний горизонт на экране: где я и что осталось до переезда.
+// Дальний (вся карта) — в одно нажатие по этой же полосе.
+function refreshRoute(){
+  const bar=$("routeBar"); if(!bar) return;
+  const d = STOPS[Math.min(LAST_STOP, S.stop)], ts = tasks(), ready = routeReady();
+  bar.classList.toggle("done", ready);
+  $("routeT").textContent = (S.stop+1)+"/"+STOPS.length+" · "+stopNm(d)
+                            + (S.loop>0 ? " · "+T('mapLoop',{n:S.loop+1}) : "");
+  $("routeR").textContent = ready ? T('moveDo') : "▸";
+  const pills=$("routePills"); pills.innerHTML='';
+  ts.forEach(t=>{
+    const el=document.createElement('div');
+    const done = t.cur >= t.need;
+    el.className = "pill"+(done?" ok":"");
+    el.textContent = done ? "✓ "+t.lab : t.lab+" "+fmt(Math.min(t.cur,t.need))+"/"+fmt(t.need);
+    pills.appendChild(el);
+  });
+  // Витрина — кнопка только там, где твист уже открыт.
+  const sb=$("sellBtn");
+  sb.classList.toggle("hidden", !hasTwist(2));
+  if(hasTwist(2)){
+    const b=sellable();
+    $("sellLab").textContent = T('sell');
+    $("sellSub").textContent = b ? "+"+fmt(Math.round(TIERS[b.t].value*multValue()*3)) : "—";
+    sb.disabled = !b;
+  }
 }
 
 // ---------- Сейвы ----------
@@ -495,7 +694,14 @@ function restore(raw){
   if(s.lastClaimDay && !s.streak) s.streak=1;
   s.tips = (d.tips && typeof d.tips==="object" && !Array.isArray(d.tips)) ? Object.assign({}, d.tips) : {};
   s.shortcutDone = !!d.shortcutDone; s.reviewDone = !!d.reviewDone;
-  s.goal = intIn(d.goal,0,999);
+  s.stop     = intIn(d.stop,0,STOPS.length-1);
+  s.loop     = intIn(d.loop,0,999);
+  s.seenStop = Math.max(1, intIn(d.seenStop,1,STOPS.length));
+  // Счётчики «сделать»: только известные ключи и только конечные числа —
+  // сейв мог прийти из будущей версии или с чужого устройства.
+  s.acts = {};
+  if(d.acts && typeof d.acts==="object" && !Array.isArray(d.acts))
+    STOPS.forEach(st=>{ s.acts[st.act] = intIn(d.acts[st.act],0,1e9); });
   // неизвестный тир — выбросить элемент, а НЕ подрезать к MAX_TIER:
   // подрезка подарила бы игроку самую дорогую конфету бесплатно
   s.balls = Array.isArray(d.balls)
@@ -506,9 +712,9 @@ function restore(raw){
     : [];
   s.time = Math.floor(num(d.time, now, 0));
   S = s;
-  // Старый сейв без заданий: выполненное проматываем без наград, иначе
-  // действующий игрок при первом запуске соберёт десяток наград подряд.
-  if(!Number.isFinite(Number(d.goal))) skipDoneGoals();
+  // Старый сейв без маршрута: место выводим из достигнутого, наград не выдаём.
+  if(!Number.isFinite(Number(d.stop))){ S.stop = estimateStop(S.bestTier); S.acts = {}; }
+  S.seenStop = Math.max(S.seenStop, Math.min(STOPS.length, S.stop+1));
   return true;
 }
 
@@ -592,7 +798,7 @@ function refreshHud(){
   $("giftLab").textContent = T("gift");
   $("shakeLab").textContent = T("shake");
   refreshActions();
-  refreshGoal();
+  refreshRoute();
   $("shopTitle").textContent = T("shopTitle");
   $("collTitle").textContent = T("collTitle");
   renderShop(); renderCollection();
@@ -668,14 +874,14 @@ function doSpecial(){
   const c=specialCost();
   if(S.coins<c){ toast(T("need")); sfx("error"); return; }
   S.coins-=c; refreshHud(); persist(true); sfx("buy");
-  nextTier = Math.min(MAX_TIER, poolMax()+2);
+  nextTier = Math.min(topTier(), poolMax()+2);
   toast(T("specialGot"));
 }
 function doSpecialAd(){
   if(!specialAdReady()) return;
   showRewarded(()=>{
     S.lastSpecialAd=Date.now();
-    nextTier = Math.min(MAX_TIER, poolMax()+2);
+    nextTier = Math.min(topTier(), poolMax()+2);
     refreshHud(); persist(true); sfx("buy");
     toast(T("specialGot"));
   });
@@ -772,8 +978,11 @@ let steamPhase=0, curtainPhase=0;
 
 // ---------- Фон: кухонное окно, банка на подоконнике ----------
 function drawBackground(){
+  // Палитра — своя у каждой остановки: прогресс должен быть виден глазом,
+  // а не только в цифрах.
+  const pal = STOPS[Math.min(LAST_STOP, S.stop)].wall;
   const wallG=ctx.createLinearGradient(0,0,0,H);
-  wallG.addColorStop(0,'#FBEFE0'); wallG.addColorStop(1,cssVar('--bg'));
+  wallG.addColorStop(0,pal[0]); wallG.addColorStop(1,pal[1]);
   ctx.fillStyle=wallG; ctx.fillRect(0,0,W,H);
 
   // обои: мелкий точечный узор
@@ -1006,8 +1215,9 @@ function drawCandy(c,x,y,r,tier,alpha){
     c.fillStyle=T2.accent;
     c.beginPath(); c.rect(-r*0.63,r*0.05,r*1.26,r*0.22); c.fill();
     c.beginPath(); c.moveTo(-r*0.3,-r*0.4); c.quadraticCurveTo(0,-r*0.65,r*0.3,-r*0.4); c.quadraticCurveTo(0,-r*0.15,-r*0.3,-r*0.4); c.fillStyle='#fff'; c.fill(); c.stroke();
-  } else { // праздничный торт: двухъярусный + свечка
+  } else { // праздничные торты: двухъярусный + свечка, у королевских — ярусы и корона
     c.fillStyle=T2.fill;
+    if(tier>=8){ c.beginPath(); roundRectLocal(c,-r*1.0,r*0.5,r*2.0,r*0.4,r*0.12); c.fill(); c.stroke(); }
     c.beginPath(); roundRectLocal(c,-r*0.85,r*0.1,r*1.7,r*0.55,r*0.12); c.fill(); c.stroke();
     c.beginPath(); roundRectLocal(c,-r*0.55,-r*0.45,r*1.1,r*0.55,r*0.1); c.fill(); c.stroke();
     c.fillStyle=T2.accent;
@@ -1017,6 +1227,13 @@ function drawCandy(c,x,y,r,tier,alpha){
     c.beginPath(); c.rect(-r*0.05,-r*0.85,r*0.1,r*0.4); c.fill(); c.stroke();
     c.fillStyle='#F2C14E';
     c.beginPath(); c.moveTo(0,-r*0.85); c.quadraticCurveTo(r*0.14,-r*1.02,0,-r*1.12); c.quadraticCurveTo(-r*0.14,-r*1.02,0,-r*0.85); c.fill();
+    if(tier>=9){  // корона: последний десерт маршрута видно с одного взгляда
+      c.fillStyle='#F2C14E'; c.strokeStyle=cssVar('--line');
+      c.beginPath();
+      c.moveTo(-r*0.42,-r*0.5); c.lineTo(-r*0.3,-r*0.82); c.lineTo(-r*0.14,-r*0.56);
+      c.lineTo(0,-r*0.9); c.lineTo(r*0.14,-r*0.56); c.lineTo(r*0.3,-r*0.82);
+      c.lineTo(r*0.42,-r*0.5); c.closePath(); c.fill(); c.stroke();
+    }
   }
   c.restore();
 }
@@ -1102,7 +1319,7 @@ function physicsSub(dt){
     for(let i=0;i<balls.length;i++){
       for(let j=i+1;j<balls.length;j++){
         const a=balls[i], b=balls[j];
-        if(a.t!==b.t || a.t>=MAX_TIER) continue;
+        if(a.t!==b.t || a.t>=topTier()) continue;
         const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy);
         if(d < (a.r+b.r)*0.92){
           const nt=a.t+1;
@@ -1110,12 +1327,16 @@ function physicsSub(dt){
           balls.splice(j,1); balls.splice(i,1);
           const nr=TIERS[nt].ratio*unit;
           balls.push({x:nx,y:Math.min(ny, jarBottom-nr), vx:(a.vx+b.vx)*0.2, vy:Math.min((a.vy+b.vy)*0.2,-60), r:nr, t:nt});
-          const gain = earn(Math.max(1, Math.round(TIERS[nt].value*multValue())));
+          // Заказ ярмарки платит вдвое: это и есть весь твист, одной строкой.
+          const order = hasTwist(1) && nt===orderTier;
+          const gain = earn(Math.max(1, Math.round(TIERS[nt].value*multValue()*stopMult()*(order?2:1))));
           S.fillCoins += gain;
+          act('merge');
+          if(order){ act('order'); toast(T('orderDone',{n:fmt(gain)})); rollOrder(); }
           if(nt>S.bestTier) S.bestTier=nt;
           if(nt>runBestTier) runBestTier=nt;
           if(S.discovered.indexOf(nt)<0) S.discovered.push(nt);
-          if(nt===MAX_TIER) maybeReview();   // яркое событие — момент для запроса оценки
+          if(nt===topTier()) maybeReview();   // яркое событие — момент для запроса оценки
           sfx('coin');
           merged=true;
           break outer;
@@ -1167,6 +1388,7 @@ function frame(now){
   window.__firstFrame = true;                 // тест-хук: первый кадр отрисован
   let dt=Math.max(0,Math.min(50, now-lastT)); lastT=now;
   if(!paused) stepPhysics(dt);
+  guestTick(); beltTick();
   ctx.clearRect(0,0,W,H);
   drawBackground();
   drawWorld();
@@ -1177,7 +1399,7 @@ function frame(now){
 let hudThrottle=0, actThrottle=0;
 function refreshCoinsOnly(){
   const now=performance.now();
-  if(now-actThrottle>1000){ actThrottle=now; refreshActions(); }
+  if(now-actThrottle>1000){ actThrottle=now; refreshActions(); refreshRoute(); }
   if(now-hudThrottle<200) return; hudThrottle=now;
   $("coinsV").textContent=fmt(S.coins);
   $("bestV").textContent=fmt(S.bestScore);
@@ -1195,8 +1417,57 @@ cv.addEventListener('pointerup', e=>{ if(anyModalOpen()||gameOver||!primary(e)) 
 cv.addEventListener('pointercancel', ()=>{ aiming=false; });
 
 // ---------- Модалки ----------
-let shopOpen=false, collOpen=false, dailyOpen=false, overOpen=false, scOpen=false;
-const anyModalOpen = () => shopOpen||collOpen||dailyOpen||overOpen||scOpen;
+let shopOpen=false, collOpen=false, dailyOpen=false, overOpen=false, scOpen=false,
+    mapOpen=false, finOpen=false;
+const anyModalOpen = () => shopOpen||collOpen||dailyOpen||overOpen||scOpen||mapOpen||finOpen;
+// Карта с туманом: ближние места названы, дальние — силуэты. Игрок видит,
+// что путь длинный и что у него есть конец, но не видит спойлеров.
+function renderMap(){
+  $("mapTitle").textContent = T('mapTitle')+(S.loop>0?" · "+T('mapLoop',{n:S.loop+1}):"");
+  $("mapKeep").textContent  = T('moveKeep');
+  const list=$("mapList"); list.innerHTML='';
+  const ts=tasks();
+  STOPS.forEach((d,i)=>{
+    const past=i<S.stop, now=i===S.stop, fog=i>Math.max(S.seenStop, S.stop+1);
+    const el=document.createElement('div');
+    el.className="mstop"+(past?" past":"")+(now?" now":"")+(fog?" fog":"");
+    const num=document.createElement('div'); num.className="num";
+    num.textContent = past ? "✓" : String(i+1); el.appendChild(num);
+    const mi=document.createElement('div'); mi.className="mi";
+    mi.innerHTML='<div class="mn">'+(fog?T('mapFog'):stopNm(d))+'</div>'
+                +'<div class="md">'+(fog?T('mapFogD'):stopTw(d))+'</div>';
+    if(now){
+      const tw=document.createElement('div'); tw.className="tasks";
+      ts.forEach(t=>{
+        const done=t.cur>=t.need;
+        const r=document.createElement('div'); r.className="task"+(done?" ok":"");
+        r.innerHTML='<span class="bx">'+(done?"✓":"")+'</span><span>'+t.text+'</span>'
+                   +'<span class="tv">'+fmt(Math.min(t.cur,t.need))+"/"+fmt(t.need)+'</span>';
+        tw.appendChild(r);
+      });
+      mi.appendChild(tw);
+    }
+    el.appendChild(mi); list.appendChild(el);
+  });
+  const act=$("mapAct"); act.innerHTML='';
+  if(routeReady()){
+    const b=document.createElement('button'); b.className="mbtn"; b.textContent=T('moveDo');
+    b.onclick=()=>{ closeMap(); doMove(); }; act.appendChild(b);
+  } else {
+    const h=document.createElement('div'); h.className="mkeep"; h.textContent=T('moveSoon');
+    act.appendChild(h);
+  }
+}
+function openMap(){ hideTip(); mapOpen=true; renderMap(); $("mapModal").classList.add('on'); }
+function closeMap(){ mapOpen=false; $("mapModal").classList.remove('on'); }
+function openFin(){
+  hideTip(); finOpen=true;
+  $("finT").textContent = T('finT');
+  $("finD").textContent = T('finD')+" "+T('moveBonus',{n:stopMult().toFixed(2)});
+  $("finGo").textContent = T('finGo');
+  $("finModal").classList.add('on');
+}
+function closeFin(){ finOpen=false; $("finModal").classList.remove('on'); maybeInterstitial(); }
 function openShop(){ hideTip(); shopOpen=true; renderShop(); $("shopModal").classList.add('on'); }
 function closeShop(){ shopOpen=false; $("shopModal").classList.remove('on'); }
 function openColl(){ hideTip(); collOpen=true; renderCollection(); $("collectionModal").classList.add('on'); }
@@ -1314,7 +1585,8 @@ function maybeReview(){
 const TIPS = [
   { id:'gift',  target:'giftBtn',  text:()=>T('tipGift'),  when:()=>S.bestTier>=2 && giftReady() },
   { id:'shake', target:'shakeBtn', text:()=>T('tipShake'), when:()=>shakeReady() && overflowTimer>0.6 },
-  { id:'goal',  target:'goalBar', text:()=>T('tipGoal'), when:()=>goalReady() && S.goal===0 },
+  { id:'route', target:'routeBar', text:()=>T('tipRoute'), when:()=>S.lifetimeEarned>0 && S.stop===0 && S.loop===0 },
+  { id:'move',  target:'routeBar', text:()=>T('tipMove'),  when:()=>routeReady() },
   { id:'shop',  target:'shopBtn',  text:()=>T('tipShop'),  when:()=>S.up.mult===0 && S.coins>=multCost() },
 ];
 let tipActive=null, tipHideT=0, tipTickT=0;
@@ -1361,7 +1633,8 @@ window.render_game_to_text = () => JSON.stringify({
   overflowing: overflowTimer>0, specialCost:specialCost(),
   overflowY:Math.round(overflowY), gameOver:gameOver, paused:paused,
   tips:Object.assign({}, S.tips), shortcutDone:S.shortcutDone, reviewDone:S.reviewDone,
-  goal:S.goal, goalReady:goalReady(),
+  stop:S.stop, loop:S.loop, seenStop:S.seenStop, routeReady:routeReady(),
+  stopMult:stopMult(), topTier:topTier(), acts:Object.assign({},S.acts), orderTier:orderTier,
 });
 window.advanceTime = ms => { stepPhysics(ms); refreshHud(); };
 window.testDrop = (xFrac, tier) => {
@@ -1384,9 +1657,15 @@ window.testMaybeInterstitial = () => maybeInterstitial();
 window.testAdInfo = () => ({nextAdAt:nextAdAt, adBusy:adBusy, gap:AD_GAP_S, retry:AD_RETRY_S, warmup:AD_WARMUP_S});
 window.testTips = () => { tipTickT=0; tipsTick(); };
 window.testFlush = () => flushSave();
-window.testGoal = () => { const g=goalDef();
-  return {id:g.id, i:S.goal, cur:g.cur(), need:g.need(), ready:goalReady(), rew:g.rew()}; };
-window.testClaimGoal = () => claimGoal();
+window.testRoute = () => ({
+  stop:S.stop, loop:S.loop, seen:S.seenStop, ready:routeReady(),
+  name:stopNm(STOPS[Math.min(LAST_STOP,S.stop)]),
+  tasks: tasks().map(t=>({id:t.id, cur:t.cur, need:t.need, done:t.cur>=t.need})) });
+window.testMove = () => doMove();
+window.testAct = (k,n) => { act(k, n==null?1:n); refreshHud(); };
+window.testSell = () => doSell();
+window.testGuest = () => { lastGuest = Date.now() - GUEST_EVERY_MS - 1; guestTick(); };
+window.testSetOrder = t => { orderTier = t; };
 
 // ---------- Boot ----------
 function sendReady(){
@@ -1413,7 +1692,12 @@ function boot(raw){
   $("collectionBtn").onclick=openColl; $("closeColl").onclick=closeColl;
   $("specialBtn").onclick=doSpecial; $("specialAdBtn").onclick=doSpecialAd;
   $("giftBtn").onclick=doGift; $("shakeBtn").onclick=doShake;
-  $("goalBar").onclick=claimGoal;
+  // Готов переезд — одно нажатие едет; не готов — открывается карта целиком.
+  $("routeBar").onclick=()=>{ if(routeReady()) doMove(); else openMap(); };
+  $("closeMap").onclick=closeMap;
+  $("mapModal").addEventListener('pointerdown', e=>{ if(e.target.id==='mapModal') closeMap(); });
+  $("sellBtn").onclick=doSell;
+  $("finGo").onclick=closeFin;
   $("dailyClaim").onclick=()=>claimDaily(false);
   $("dailyClaimX2").onclick=()=>claimDaily(true);
   $("closeDaily").onclick=closeDaily;
