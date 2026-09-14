@@ -1,0 +1,68 @@
+{
+  "title": {
+    "ru": "Сладкая Банка",
+    "en": "Sweet Jar"
+  },
+  "category": "Казуальные",
+  "age": "0+",
+  "orientation": "portrait",
+  "zip": "sweet-jar-yandex.zip",
+  "shortDescription": {
+    "ru": "Роняй конфеты в банку, сливай одинаковые в десерты покрупнее — уютная казуальная физика-мерж!",
+    "en": "Drop candies into a jar, merge matching ones into bigger treats — a cozy physics merge game!"
+  },
+  "fullDescription": {
+    "ru": "Сладкая Банка — уютная физика-мерж на кухонном подоконнике. Тапните или свайпните, чтобы бросить конфету в стеклянную банку: она упадёт под гравитацией и столкнётся со стенками и другими конфетами.\n\nДве одинаковые конфеты при касании слипаются в один более крупный десерт — от мятной конфетки и мармеладки до пончика, капкейка и целого праздничного торта. Каждое слияние приносит монеты.\n\nЕсли десерты долго лежат выше горлышка банки — она мягко «наполняется»: вы получаете бонус монет по итогам раунда, банка очищается, и можно начинать заново, стремясь к новому рекорду.\n\nНа монеты открывайте апгрейды в магазине — более крупные стартовые конфеты, шанс на редкую находку, терпимость банки к переполнению — и собирайте коллекцию из всех восьми десертов. Заходите каждый день за бонусом, смотрите короткие видео за дополнительные монеты или спасительную чистку банки.\n\nПростой цикл «прицелься → бросок → слияние → рекорд» затягивает на пару минут и всегда даёт видимый прогресс.",
+    "en": "Sweet Jar is a cozy physics-merge game set on a kitchen windowsill. Tap or swipe to drop a candy into a glass jar — it falls under gravity and collides with the walls and other candies.\n\nTwo matching candies stick together into one bigger treat on contact — from a mint candy and a gummy all the way up to a donut, a cupcake and a full party cake. Every merge earns coins.\n\nIf treats sit too long above the jar's neck, it gently \"fills up\": you get a coin bonus for the round, the jar clears, and you start again chasing a new high score.\n\nSpend coins in the shop on upgrades — bigger starting candies, a chance at a rare find, a jar that tolerates more before filling up — and collect all eight desserts. Come back daily for a bonus, or watch a short video for extra coins or a jar-saving cleanup.\n\nA simple \"aim → drop → merge → record\" loop that's easy to pick up and always shows visible progress."
+  },
+  "keywords": {
+    "ru": [
+      "мерж",
+      "конфеты",
+      "банка",
+      "физика",
+      "казуальная игра",
+      "головоломка",
+      "слияние",
+      "коллекция",
+      "десерты",
+      "уютная"
+    ],
+    "en": [
+      "merge",
+      "candy",
+      "jar",
+      "physics",
+      "casual game",
+      "puzzle",
+      "collection",
+      "desserts",
+      "cozy",
+      "high score"
+    ]
+  },
+  "assets": {
+    "icon": "store-assets/icon.png",
+    "cover": {
+      "ru": "store-assets/cover.png",
+      "en": "store-assets/cover-en.png"
+    },
+    "screenshots": {
+      "ru": [
+        "store-assets/d1-start.png",
+        "store-assets/d2-merge.png",
+        "store-assets/d3-shop.png",
+        "store-assets/d4-collection.png",
+        "store-assets/d5-full.png"
+      ],
+      "en": [
+        "store-assets/d1-start-en.png",
+        "store-assets/d2-merge-en.png",
+        "store-assets/d3-shop-en.png",
+        "store-assets/d4-collection-en.png",
+        "store-assets/d5-full-en.png"
+      ]
+    }
+  },
+  "aiUsage": "full"
+}
