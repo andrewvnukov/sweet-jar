@@ -43,68 +43,23 @@
   .chip .v{font-weight:900;font-size:17px;line-height:1}
   .chip .l{font-size:10px;font-weight:800;color:var(--ink-soft);letter-spacing:.3px}
   .spacer{flex:1}
-  /* ── полоса маршрута: где я сейчас и что осталось до переезда ── */
-  #routeBar{margin-top:8px;align-self:flex-start;width:min(100%,330px);pointer-events:auto;cursor:pointer;
-            background:var(--paper);border:2.5px solid var(--line);border-radius:14px;
-            padding:6px 10px 7px;box-shadow:0 3px 0 rgba(91,70,54,.25)}
-  #routeBar.done{background:var(--gold);border-color:#C9982E;
-                 animation:goalPulse 1.1s ease-in-out infinite}
-  @keyframes goalPulse{0%,100%{box-shadow:0 3px 0 rgba(91,70,54,.25)}
-                       50%{box-shadow:0 3px 0 rgba(91,70,54,.25),0 0 0 4px rgba(242,193,78,.45)}}
-  #routeBar .gtop{display:flex;align-items:baseline;gap:8px}
-  #routeBar .gn{flex:1;min-width:0;font-size:12.5px;font-weight:900;line-height:1.15;
-                overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #routeBar .gr{font-size:11.5px;font-weight:900;color:#B2762A;white-space:nowrap}
-  #routeBar.done .gr{color:var(--ink)}
-  .pills{display:flex;gap:5px;margin-top:5px}
-  .pill{flex:1;min-width:0;font-size:10.5px;font-weight:900;text-align:center;
-        padding:3px 2px;border-radius:99px;background:rgba(91,70,54,.14);color:var(--ink);
-        overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pill.ok{background:var(--mint)}
-  .collnote{font-size:12.5px;font-weight:800;color:var(--ink-soft);margin:-2px 0 8px}
-  /* альбом: полоса маршрута не должна накрывать предпросмотр следующей конфеты */
-  @media (max-height:430px){ #routeBar{width:min(100%,210px);margin-top:6px} }
-  /* ── карта маршрута ── */
-  .mstop{display:flex;gap:9px;align-items:flex-start;background:#FFF8E6;border:2.5px solid var(--line);
-         border-radius:14px;padding:8px 10px;margin-bottom:8px}
-  .mstop.past{opacity:.62}
-  .mstop.now{background:var(--gold);border-color:#C9982E}
-  .mstop.fog{opacity:.5;border-style:dashed}
-  .mstop .num{width:24px;height:24px;flex:none;border-radius:50%;background:var(--line);color:#fff;
-              font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center}
-  .mstop.past .num{background:var(--mint);color:var(--ink)}
-  .mstop .mi{flex:1;min-width:0}
-  .mstop .mn{font-weight:900;font-size:14px;line-height:1.15}
-  .mstop .md{font-size:11px;font-weight:800;color:var(--ink-soft);margin-top:2px;line-height:1.3}
-  .tasks{margin-top:5px}
-  .task{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;margin-top:4px}
-  .task .bx{width:15px;height:15px;flex:none;border:2.5px solid var(--line);border-radius:5px;
-            background:#fff;font-size:10px;line-height:11px;text-align:center;font-weight:900}
-  .task.ok .bx{background:var(--mint)}
-  .task .tv{margin-left:auto;font-weight:900;color:var(--ink-soft);white-space:nowrap}
-  .mapscroll{max-height:52vh;overflow-y:auto}
-  .mkeep{font-size:11.5px;font-weight:800;color:var(--ink-soft);margin:2px 0 10px;line-height:1.35}
   .side{display:flex;flex-direction:column;gap:8px;margin-left:8px;pointer-events:auto}
   .rbtn{width:44px;height:44px;border-radius:50%;background:var(--paper);border:2.5px solid var(--line);
         box-shadow:0 3px 0 rgba(91,70,54,.28);display:flex;align-items:center;justify-content:center;cursor:pointer}
   .rbtn svg{width:22px;height:22px}
+  .rbtn.lang{font-weight:900;font-size:13px;letter-spacing:.5px;color:var(--ink)}
   .bottom{display:flex;gap:8px;pointer-events:auto}
   .abtn{flex:1;min-height:58px;background:var(--paper);border:2.5px solid var(--line);border-radius:16px;padding:8px 3px;
         font-weight:900;font-size:12.5px;cursor:pointer;box-shadow:0 3px 0 rgba(91,70,54,.28);
         transition:transform .08s,box-shadow .08s;color:var(--ink);display:flex;flex-direction:column;gap:3px;
         align-items:center;justify-content:center;text-align:center;line-height:1.1}
   .abtn .lab{font-size:11.5px;white-space:normal}
-  /* пять кнопок в ряду (открыта витрина) на узком экране: подпись ужимаем,
-     высоту держим — кнопка обязана оставаться попадаемой пальцем */
-  @media (max-width:380px){ .abtn{padding:8px 2px} .abtn .lab{font-size:10px} .abtn .sub{font-size:9px} }
   .abtn .sub{font-size:10px;font-weight:800;opacity:.85;white-space:nowrap}
   .abtn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(91,70,54,.28)}
   .abtn:disabled{opacity:.55;cursor:default}
   .abtn.special{background:var(--wood);color:#fff;border-color:var(--wood-deep)}
   .abtn.gift{background:var(--mint);color:#274b3f;border-color:#5fae91}
   .abtn.shake{background:var(--lav);color:#3d2c56;border-color:#9a7ac9}
-  .abtn.sell{background:var(--gold);color:#4a3a12;border-color:#C9982E}
-  .abtn.hidden{display:none}
   #toast{position:absolute;left:50%;bottom:118px;transform:translateX(-50%) translateY(20px);
          background:var(--ink);color:#fff;font-weight:800;font-size:14px;padding:9px 16px;border-radius:99px;
          opacity:0;transition:.25s;pointer-events:none;max-width:86%;text-align:center;z-index:5}
@@ -130,46 +85,6 @@
   .ccell canvas{width:100%;height:auto;display:block}
   .ccell .cn{font-size:9.5px;font-weight:800;margin-top:2px;line-height:1.15}
   .ccell.locked{opacity:.35}
-  /* нижний ряд: 4 кнопки. На узких экранах (320-400px) — сетка 2x2, дальше один ряд */
-  .bottom{flex-wrap:wrap;gap:6px}
-  .abtn{flex:1 1 calc(50% - 3px);min-width:0}
-  @media(min-width:430px){ .abtn{flex:1 1 0} }
-  .abtn.specialad{background:var(--gold);color:#4A3712;border-color:#C9982E}
-  /* модалки: ежедневка, конец забега, ярлык */
-  .mrow{display:flex;gap:8px;margin-top:12px}
-  .mbtn{flex:1;background:var(--accent);color:#fff;border:2.5px solid var(--accent-deep);border-radius:14px;
-        padding:11px 6px;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit;line-height:1.15;
-        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-  .mbtn .msub{font-size:10px;font-weight:800;opacity:.9}
-  .mbtn.alt{background:var(--paper);color:var(--ink);border-color:var(--line)}
-  .mbtn.ad{background:var(--mint);color:#274B3F;border-color:#5FAE91}
-  .orun{font-weight:900;font-size:16px}
-  .obonus{font-weight:800;font-size:14px;color:var(--ink-soft);margin-top:2px}
-  .obest{font-weight:900;font-size:14px;color:var(--accent-deep);min-height:18px;margin-top:2px}
-  .scd{font-weight:700;font-size:13.5px;line-height:1.35}
-  .dstreak{font-weight:800;font-size:13px;color:var(--ink-soft);margin-bottom:8px}
-  .dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .dcell{background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 2px;text-align:center;
-         font-weight:800;font-size:11px}
-  .dcell .dv{font-size:11.5px;font-weight:900;margin-top:2px}
-  .dcell.done{background:var(--mint)}
-  .dcell.now{background:var(--gold);box-shadow:0 0 0 3px rgba(242,193,78,.5)}
-  /* контекстная подсказка: явная ширина, иначе у правых кнопок текст схлопнется в колонку */
-  #tip{position:fixed;left:50%;top:0;width:210px;transform:translate(-50%,-100%);
-       background:var(--ink);color:#fff;font-weight:800;font-size:12.5px;line-height:1.28;text-align:center;
-       padding:9px 12px;border-radius:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:8}
-  #tip.on{opacity:1}
-  .tip-target{animation:tipPulse 1.3s ease-in-out infinite}
-  @keyframes tipPulse{
-    0%,100%{box-shadow:0 3px 0 rgba(91,70,54,.28),0 0 0 0 rgba(232,99,124,.85)}
-    50%    {box-shadow:0 3px 0 rgba(91,70,54,.28),0 0 0 8px rgba(232,99,124,0)}
-  }
-  @media(max-height:600px){ #toast{bottom:150px} }
-  @media(max-width:340px){
-    #hud{padding-left:8px;padding-right:8px}
-    .chip{padding:5px 9px 5px 6px;gap:6px} .chip .v{font-size:15px} .cico{width:22px;height:22px}
-    .rbtn{width:40px;height:40px} .abtn .lab{font-size:11px} .abtn{min-height:54px}
-  }
 </style>
 </head>
 <body oncontextmenu="return false">
@@ -192,73 +107,18 @@
       <div class="rbtn" id="shopBtn" title="Магазин">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="#5B4636" stroke-width="1.7"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M5.6 18.4l1.7-1.7M16.7 7.3l1.7-1.7" stroke="#5B4636" stroke-width="1.7" stroke-linecap="round"/></svg>
       </div>
+      <div class="rbtn lang" id="langBtn" title="Язык / Language">RU</div>
     </div>
-  </div>
-  <div id="routeBar">
-    <div class="gtop"><span class="gn" id="routeT"></span><span class="gr" id="routeR"></span></div>
-    <div class="pills" id="routePills"></div>
   </div>
   <div class="spacer"></div>
   <div class="bottom">
     <button class="abtn special" id="specialBtn"><span class="lab" id="specialLab">Особая конфета</span><span class="sub" id="specialSub">0</span></button>
-    <button class="abtn specialad" id="specialAdBtn"><span class="lab" id="specialAdLab">Особая за ролик</span><span class="sub" id="specialAdSub">смотреть</span></button>
     <button class="abtn gift" id="giftBtn"><span class="lab" id="giftLab">Подарок</span><span class="sub" id="giftSub">смотреть</span></button>
     <button class="abtn shake" id="shakeBtn"><span class="lab" id="shakeLab">Убрать конфеты</span><span class="sub" id="shakeSub">смотреть</span></button>
-    <button class="abtn sell hidden" id="sellBtn"><span class="lab" id="sellLab">Продать</span><span class="sub" id="sellSub"></span></button>
   </div>
 </div>
 <div id="toast"></div>
 
-<div id="tip"></div>
-
-<div class="modal" id="overModal">
-  <div class="card">
-    <h2><span id="overT">Банка переполнилась</span></h2>
-    <div class="orun" id="overRun"></div>
-    <div class="obonus" id="overBonus"></div>
-    <div class="obest" id="overBest"></div>
-    <div class="mrow">
-      <button class="mbtn ad" id="overCont"><span id="overContLab">Продолжить</span><span class="msub" id="overContSub">убрать 5 мелких</span></button>
-      <button class="mbtn alt" id="overRestart">Начать заново</button>
-    </div>
-  </div>
-</div>
-<div class="modal" id="dailyModal">
-  <div class="card">
-    <h2><span id="dailyT">Ежедневный бонус</span><span class="x" id="closeDaily">✕</span></h2>
-    <div class="dstreak" id="dailyStreak"></div>
-    <div class="dgrid" id="dailyGrid"></div>
-    <div class="mrow">
-      <button class="mbtn" id="dailyClaim">Забрать</button>
-      <button class="mbtn ad" id="dailyClaimX2">Забрать ×2</button>
-    </div>
-  </div>
-</div>
-<div class="modal" id="scModal">
-  <div class="card">
-    <h2><span id="scT">Играть в один тап</span></h2>
-    <div class="scd" id="scD"></div>
-    <div class="mrow">
-      <button class="mbtn" id="scYes">Добавить</button>
-      <button class="mbtn alt" id="scNo">Не сейчас</button>
-    </div>
-  </div>
-</div>
-<div class="modal" id="mapModal">
-  <div class="card">
-    <h2><span id="mapTitle">Путь</span><span class="x" id="closeMap">✕</span></h2>
-    <div class="mapscroll" id="mapList"></div>
-    <div class="mkeep" id="mapKeep"></div>
-    <div class="mrow" id="mapAct"></div>
-  </div>
-</div>
-<div class="modal" id="finModal">
-  <div class="card">
-    <h2><span id="finT">Королевский приём</span></h2>
-    <div class="scd" id="finD"></div>
-    <div class="mrow"><button class="mbtn" id="finGo">Второй круг</button></div>
-  </div>
-</div>
 <div class="modal" id="shopModal">
   <div class="card">
     <h2><span id="shopTitle">Магазин</span><span class="x" id="closeShop">✕</span></h2>
@@ -268,7 +128,6 @@
 <div class="modal" id="collectionModal">
   <div class="card">
     <h2><span id="collTitle">Коллекция</span><span class="x" id="closeColl">✕</span></h2>
-    <div class="collnote" id="collNote"></div>
     <div class="cgrid" id="collGrid"></div>
   </div>
 </div>
@@ -278,27 +137,21 @@
 // ============================================================
 //  Сладкая Банка / Sweet Jar — merge-physics для Яндекс Игр
 // ============================================================
-const SAVE_KEY = "sweetjar_save_v1";   // не переименовывать: сломает прогресс игроков
+const SAVE_KEY = "sweetjar_save_v1";
 const LB_NAME  = "sweetjar_score";
-let ysdk=null, player=null, lb=null, saveT=0, booted=false, authorized=false;
-let readySent=false;   // GameReady уходит ровно один раз, на любом пути запуска
-let sdkLang="";        // язык площадки, прочитанный из ysdk.environment.i18n.lang
-const sessionStart=Date.now();
+let ysdk=null, player=null, lb=null, saveT=0, booted=false;
 
 // ---------- i18n ----------
-// Панель площадки считает I18N использованным по факту обращения к свойству,
-// поэтому читаем его сразу после init() и всегда до первой отрисовки интерфейса.
-// Автоопределённый язык нигде не сохраняем (ни в localStorage, ни в сейве).
-function readSdkLang(){
-  try{
-    const l = ysdk && ysdk.environment && ysdk.environment.i18n && ysdk.environment.i18n.lang;
-    if(l) sdkLang = String(l).slice(0,2)==="ru" ? "ru" : "en";
-  }catch(e){}
-  return sdkLang;
-}
 function lang(){
-  if(sdkLang) return sdkLang;
+  try{ if(S && (S.lang==="ru"||S.lang==="en")) return S.lang; }catch(e){} // ручной выбор игрока
+  try{ if(ysdk&&ysdk.environment&&ysdk.environment.i18n&&ysdk.environment.i18n.lang)
+    return ysdk.environment.i18n.lang==="ru"?"ru":"en"; }catch(e){}
   return (navigator.language||"ru").slice(0,2)==="ru"?"ru":"en";
+}
+function toggleLang(){
+  S.lang = lang()==="ru" ? "en" : "ru";
+  document.documentElement.setAttribute("lang", S.lang);
+  refreshHud(); persist(true); sfx("tap");
 }
 const STR = {
   coins:{ru:"МОНЕТЫ",en:"COINS"}, best:{ru:"РЕКОРД",en:"BEST"},
@@ -306,487 +159,128 @@ const STR = {
   max:{ru:"МАКС",en:"MAX"},
   shopTitle:{ru:"Магазин",en:"Shop"}, collTitle:{ru:"Коллекция",en:"Collection"},
   special:{ru:"Особая конфета",en:"Special candy"},
-  specialAd:{ru:"Особая за ролик",en:"Special for ad"},
   gift:{ru:"Подарок",en:"Gift"}, watch:{ru:"смотреть",en:"watch"},
   shake:{ru:"Убрать конфеты",en:"Remove candies"},
   wait:{ru:"ждите",en:"wait"},
+  jarFull:{ru:"Банка наполнилась! +{n} монет",en:"Jar is full! +{n} coins"},
   giftGot:{ru:"Подарок: +{n} монет",en:"Gift: +{n} coins"},
   shakeGot:{ru:"Убрано {n} конфет",en:"Removed {n} candies"},
+  dailyGot:{ru:"Ежедневный бонус: +{n} монет",en:"Daily bonus: +{n} coins"},
   specialGot:{ru:"Готовим особую конфету!",en:"Preparing a special candy!"},
   upPool:{ru:"Щедрая рука",en:"Generous hand"}, upPoolD:{ru:"Открывает более крупные конфеты для броска",en:"Unlocks bigger droppable candies"},
   upLuck:{ru:"Кондитерский глазок",en:"Sweet eye"}, upLuckD:{ru:"Повышает шанс редкой крупной конфеты",en:"Raises chance of a rare big candy"},
   upCap:{ru:"Вежливая банка",en:"Polite jar"}, upCapD:{ru:"Банка терпит больше, прежде чем наполнится",en:"Jar tolerates more before it fills up"},
-  upMult:{ru:"Сахарная глазурь",en:"Sugar glaze"}, upMultD:{ru:"+12% монет за каждое слияние, покупается снова и снова",en:"+12% coins per merge, buy it again and again"},
-  // конец забега
-  overT:{ru:"Банка переполнилась",en:"The jar overflowed"},
-  overRun:{ru:"Забег: {n} монет",en:"Run: {n} coins"},
-  overBonus:{ru:"Награда за забег: +{n}",en:"Run reward: +{n}"},
-  overBest:{ru:"Новый рекорд!",en:"New best!"},
-  overCont:{ru:"Продолжить",en:"Continue"},
-  overContSub:{ru:"убрать 5 мелких",en:"clear 5 small ones"},
-  overRestart:{ru:"Начать заново",en:"Start over"},
-  contGot:{ru:"Убрано {n} конфет — играем дальше!",en:"Removed {n} candies — keep going!"},
-  // ежедневка
-  dailyT:{ru:"Ежедневный бонус",en:"Daily bonus"},
-  dailyStreak:{ru:"День {n} подряд",en:"Day {n} in a row"},
-  dailyClaim:{ru:"Забрать +{n}",en:"Claim +{n}"},
-  dailyClaimX2:{ru:"Забрать ×2",en:"Claim ×2"},
-  dailyGot:{ru:"Ежедневный бонус: +{n} монет",en:"Daily bonus: +{n} coins"},
-  // ярлык
-  scT:{ru:"Играть в один тап",en:"Play in one tap"},
-  scD:{ru:"Добавим «Сладкую Банку» на главный экран? Ярлык открывает игру сразу, а мы подарим {n} монет.",en:"Add Sweet Jar to your home screen? The shortcut opens the game instantly, and we will gift you {n} coins."},
-  scYes:{ru:"Добавить",en:"Add"}, scNo:{ru:"Не сейчас",en:"Not now"},
-  scGot:{ru:"Ярлык добавлен: +{n} монет",en:"Shortcut added: +{n} coins"},
-  // задания кондитера
-  goalTake:{ru:"Забрать награду",en:"Claim reward"},
-  goalDone:{ru:"Задание выполнено! +{n}",en:"Goal complete! +{n}"},
-  goalSpecial:{ru:"и особая конфета",en:"and a special candy"},
-  gMake:{ru:"Получить: {n}",en:"Make: {n}"},
-  gScore:{ru:"Забег на {n} монет",en:"A run worth {n} coins"},
-  gEarn:{ru:"Заработать {n} всего",en:"Earn {n} in total"},
-  // ── маршрут ──
-  mapTitle:{ru:"Путь до королевского приёма",en:"The road to the royal reception"},
-  mapLoop:{ru:"Круг {n}",en:"Loop {n}"},
-  mapFog:{ru:"Неизвестное место",en:"Unknown place"},
-  mapFogD:{ru:"Сюда ещё рано заглядывать",en:"Too early to look this far"},
-  moveDo:{ru:"Переехать дальше",en:"Move on"},
-  moveSoon:{ru:"Закрой три пункта — и можно ехать дальше",
-            en:"Close all three and you can move on"},
-  moveKeep:{ru:"Переезд ничего не отнимает: монеты, апгрейды и коллекция едут с тобой.",
-            en:"Moving takes nothing away: coins, upgrades and the collection come along."},
-  moved:{ru:"Новое место: {n}",en:"New place: {n}"},
-  moveBonus:{ru:"Монеты за слияния навсегда: ×{n}",en:"Merge coins, permanently: ×{n}"},
-  finT:{ru:"Королевский приём",en:"Royal reception"},
-  finD:{ru:"Ты довёл банку с кухонного подоконника до королевского стола. Монеты, апгрейды и коллекция остаются с тобой — впереди тот же путь, но на новом уровне.",
-        en:"You took a jar from the kitchen windowsill to the royal table. Coins, upgrades and the collection stay with you — the same road lies ahead, one level up."},
-  finGo:{ru:"Второй круг",en:"Second loop"},
-  tTier:{ru:"Получить: {n}",en:"Make: {n}"},
-  tEarn:{ru:"Заработать {n} всего",en:"Earn {n} in total"},
-  tScore:{ru:"Забег на {n} монет",en:"A run worth {n} coins"},
-  tColl:{ru:"Открыть {n} десертов",en:"Discover {n} desserts"},
-  tMerge:{ru:"Сделать {n} слияний",en:"Make {n} merges"},
-  tOrder:{ru:"Выполнить {n} заказов",en:"Fill {n} orders"},
-  tSell:{ru:"Продать {n} десертов",en:"Sell {n} desserts"},
-  tGuest:{ru:"Обслужить {n} гостей",en:"Serve {n} guests"},
-  tBelt:{ru:"Поймать {n} конфет с конвейера",en:"Catch {n} candies off the belt"},
-  tKing:{ru:"Собрать королевский торт",en:"Build the royal cake"},
-  pTier:{ru:"тир",en:"tier"}, pEarn:{ru:"всего",en:"total"}, pScore:{ru:"забег",en:"run"},
-  pColl:{ru:"набор",en:"set"}, pAct:{ru:"дело",en:"task"},
-  orderNow:{ru:"Заказ: {n} ×2",en:"Order: {n} ×2"},
-  orderDone:{ru:"Заказ выполнен! +{n}",en:"Order filled! +{n}"},
-  sell:{ru:"Продать",en:"Sell"},
-  sellNo:{ru:"Нечего продавать",en:"Nothing to sell"},
-  sellGot:{ru:"Продано: +{n}",en:"Sold: +{n}"},
-  guestGot:{ru:"Гость забрал десерт: +{n}",en:"A guest took a dessert: +{n}"},
-  collLeft:{ru:"Осталось открыть: {n}",en:"Left to discover: {n}"},
-  collAll:{ru:"Вся коллекция собрана!",en:"The whole collection is complete!"},
-  tipRoute:{ru:"Здесь видно, куда ты идёшь и сколько осталось до следующего места",
-            en:"This shows where you are headed and how far the next place is"},
-  tipMove:{ru:"Все три пункта закрыты — можно переезжать",
-           en:"All three are done — time to move on"},
-  // подсказки
-  tipGift:{ru:"Подарок за короткий ролик — монеты растут вместе с твоим рекордом",en:"A gift for a short ad — coins scale with your best tier"},
-  tipShake:{ru:"Банка вот-вот переполнится: убери мелкие конфеты за ролик",en:"The jar is about to overflow: clear the small candies for an ad"},
-  tipShop:{ru:"В магазине копятся апгрейды — глазурь увеличивает монеты за каждое слияние",en:"The shop has upgrades — glaze raises coins from every merge"},
   t0:{ru:"Мятная конфетка",en:"Mint candy"}, t1:{ru:"Мармеладка",en:"Gummy"},
   t2:{ru:"Карамелька",en:"Caramel"}, t3:{ru:"Трюфель",en:"Truffle"},
   t4:{ru:"Пончик",en:"Donut"}, t5:{ru:"Капкейк",en:"Cupcake"},
   t6:{ru:"Кусок торта",en:"Cake slice"}, t7:{ru:"Праздничный торт",en:"Party cake"},
-  t8:{ru:"Свадебный торт",en:"Wedding cake"}, t9:{ru:"Королевский торт",en:"Royal cake"},
 };
 const T = (k,vars) => { let s=(STR[k]||{})[lang()] || (STR[k]||{}).ru || k;
   if(vars) for(const key in vars) s=s.replace("{"+key+"}", vars[key]); return s; };
 
 // ---------- Десерты (тиры) ----------
 const TIERS = [
-  {key:'t0', ratio:0.072, value:2,  fill:'#F3F7FA', accent:'#DCE9EE'},
-  {key:'t1', ratio:0.093, value:4,  fill:'#FF9EAE', accent:'#E8637C'},
-  {key:'t2', ratio:0.120, value:8,  fill:'#F2B45C', accent:'#C97F2A'},
-  {key:'t3', ratio:0.153, value:16, fill:'#8A5A3C', accent:'#5B3826'},
-  {key:'t4', ratio:0.196, value:32, fill:'#F6C9DC', accent:'#D98BAE'},
-  {key:'t5', ratio:0.245, value:64, fill:'#FFE3B0', accent:'#E2A64F'},
-  {key:'t6', ratio:0.305, value:128,fill:'#F9D8A8', accent:'#C98B45'},
-  {key:'t7', ratio:0.380, value:256,fill:'#FF8FA3', accent:'#B23A54'},
-  // Два верхних десерта открывает последняя остановка маршрута — это её твист.
-  {key:'t8', ratio:0.440, value:512, fill:'#FFF0D6', accent:'#D9A94E'},
-  {key:'t9', ratio:0.500, value:1024,fill:'#F7D9E6', accent:'#B0518A'},
+  {key:'t0', ratio:0.072, value:2,  fill:'#FFFFFF', accent:'#4FC3A1'},
+  {key:'t1', ratio:0.093, value:4,  fill:'#FF7D95', accent:'#D94368'},
+  {key:'t2', ratio:0.120, value:8,  fill:'#F5A93F', accent:'#C97F2A'},
+  {key:'t3', ratio:0.153, value:16, fill:'#7A4A2E', accent:'#4E2E1B'},
+  {key:'t4', ratio:0.196, value:32, fill:'#F0C083', accent:'#F26D9E'},
+  {key:'t5', ratio:0.245, value:64, fill:'#FFF4E8', accent:'#E8A0BE'},
+  {key:'t6', ratio:0.305, value:128,fill:'#F7D9A0', accent:'#F27FA5'},
+  {key:'t7', ratio:0.380, value:256,fill:'#FFD9E4', accent:'#E8637C'},
 ];
 const MAX_TIER = TIERS.length-1;
 
+// ---------- Цветовые хелперы для объёмной отрисовки ----------
+function hexRgb(h){ h=h.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  const n=parseInt(h,16); return [n>>16&255, n>>8&255, n&255]; }
+function shade(hex, amt){ // amt>0 — к белому, amt<0 — к чёрному
+  const [r,g,b]=hexRgb(hex);
+  const f=v=>Math.max(0,Math.min(255,Math.round(amt>=0 ? v+(255-v)*amt : v*(1+amt))));
+  return 'rgb('+f(r)+','+f(g)+','+f(b)+')';
+}
+function rgba(hex, a){ const [r,g,b]=hexRgb(hex); return 'rgba('+r+','+g+','+b+','+a+')'; }
+
 // ---------- Состояние ----------
-// v:2 — добавлены lifetimeEarned, up.mult, lastClaimDay/streak, tips, флаги ярлыка/оценки.
 function fresh(){
-  return { v:3, coins:0, bestTier:0, bestScore:0, fillCoins:0, lifetimeEarned:0, discovered:[0],
-    up:{pool:0, luck:0, cap:0, mult:0}, lastGift:0, lastShake:0, lastSpecialAd:0,
-    lastClaimDay:"", streak:0, tips:{}, shortcutDone:false, reviewDone:false,
-    stop:0, loop:0, seenStop:1, acts:{},        // маршрут: место, круг, туман, счётчики «сделать»
-    balls:[], time:Date.now() };
+  return { v:1, coins:0, bestTier:0, bestScore:0, fillCoins:0, discovered:[0],
+    up:{pool:0, luck:0, cap:0}, lastGift:0, lastShake:0, lastDaily:0,
+    lang:null, balls:[], time:Date.now() };
 }
 let S = fresh();
-let runBestTier=0;          // лучший тир текущего забега (в сейв не идёт)
-let paused=false, gameOver=false;
 
 // ---------- Экономика / апгрейды ----------
-// Кривая цены: base * costMul^n. Линейные эффекты живут 5-12 уровней,
-// множительный (glaze) — десятки: costMul/k = 1.35/1.12 ≈ 1.2 за уровень.
-const POOL_MAX=2, LUCK_MAX=10, CAP_MAX=10, MULT_MAX=40;
 const poolMax   = () => Math.min(1+S.up.pool, 3);
-const poolCost  = () => S.up.pool>=POOL_MAX ? Infinity : Math.floor(120*Math.pow(1.9, S.up.pool));
-const luckCost  = () => S.up.luck>=LUCK_MAX ? Infinity : Math.floor(90*Math.pow(1.55, S.up.luck));
-const capCost   = () => S.up.cap >=CAP_MAX  ? Infinity : Math.floor(150*Math.pow(1.6,  S.up.cap));
-const multCost  = () => S.up.mult>=MULT_MAX ? Infinity : Math.floor(400*Math.pow(1.35, S.up.mult));
-const multValue = () => Math.pow(1.12, S.up.mult);
+const poolCost  = () => S.up.pool>=2 ? Infinity : Math.floor(120*Math.pow(1.9, S.up.pool));
+const luckCost  = () => S.up.luck>=5 ? Infinity : Math.floor(90*Math.pow(1.7, S.up.luck));
+const capCost   = () => S.up.cap>=5  ? Infinity : Math.floor(150*Math.pow(1.8, S.up.cap));
 const specialCost = () => 80 + S.bestTier*40;
-const GIFT_CD = 90*1000, SHAKE_CD = 3*60*1000, SPECIAL_AD_CD = 120*1000;
-const SHORTCUT_REWARD = 300;
-// Награда подарка привязана к темпу игрока, а не к фиксированным «+50».
-function giftReward(){
-  return Math.max(50, Math.floor(TIERS[Math.min(MAX_TIER,S.bestTier)].value*6 + S.fillCoins*0.2));
-}
-const giftReady      = () => Date.now()-S.lastGift      >= GIFT_CD;
-const shakeReady     = () => Date.now()-S.lastShake     >= SHAKE_CD;
-const specialAdReady = () => Date.now()-S.lastSpecialAd >= SPECIAL_AD_CD;
-
-// Заработок (слияния) двигает метрики прогресса, подарки — только кошелёк.
-function earn(n){ n=Math.max(0,Math.floor(n)); S.coins+=n; S.lifetimeEarned+=n; return n; }
-function grant(n){ n=Math.max(0,Math.floor(n)); S.coins+=n; return n; }
-
-// ---------- Маршрут: от подоконника до королевского приёма ----------
-// В merge-игре без дальней цели игрок не знает, зачем кидать следующую конфету:
-// забег кончается, банка чистится, видимого движения нет. Маршрут из шести мест
-// сшивает забеги в один длинный путь с видимым концом. Каждое место — своя сцена,
-// свои правила и своя причина ехать дальше. Переезд ничего не отнимает.
-const tierName = t => T(TIERS[Math.min(MAX_TIER,Math.max(0,t))].key);
-const STOPS = [
-  { id:'sill',  ru:'Кухонный подоконник', en:'Kitchen windowsill',
-    twRu:'Начало пути: бросай конфеты и соединяй одинаковые',
-    twEn:'The start: drop candies and merge the matching ones',
-    wall:['#FBEFE0','#F3DFC4'],
-    tier:2, score:800,    act:'merge', actN:15 },
-  { id:'fair',  ru:'Лоток на ярмарке', en:'Fair stall',
-    twRu:'Заказы: за названный десерт платят вдвое',
-    twEn:'Orders: the named dessert pays double',
-    wall:['#FFEFD6','#F6D3A8'],
-    tier:3, score:2500,   act:'order', actN:5 },
-  { id:'shop',  ru:'Своя лавка', en:'Your own shop',
-    twRu:'Витрина: готовый десерт можно продать и освободить банку',
-    twEn:'Display: a finished dessert can be sold to free up the jar',
-    wall:['#F3E7FB','#DCC6F0'],
-    tier:4, score:7000,   act:'sell',  actN:5 },
-  { id:'cafe',  ru:'Кафе', en:'Cafe',
-    twRu:'Гости приходят сами и разбирают крупные десерты',
-    twEn:'Guests come on their own and take the big desserts',
-    wall:['#E6F3EC','#C3E2D2'],
-    tier:5, score:20000,  act:'guest', actN:8 },
-  { id:'plant', ru:'Кондитерская фабрика', en:'Candy factory',
-    twRu:'Конвейер: конфеты падают сами, игрок только целится',
-    twEn:'Conveyor: candies drop by themselves, you only aim',
-    wall:['#E9EEF6','#C6D2E6'],
-    tier:6, score:60000,  act:'belt',  actN:30 },
-  { id:'royal', ru:'Королевский приём', en:'Royal reception',
-    twRu:'Торт-гигант: сверху открываются ещё два десерта',
-    twEn:'A giant cake: two more desserts open up on top',
-    wall:['#FBE8EF','#E8C2D6'],
-    tier:8, score:150000, act:'king',  actN:1 },
-];
-const LAST_STOP = STOPS.length-1;
-const stopNm = d => lang()==="ru" ? d.ru : d.en;
-const stopTw = d => lang()==="ru" ? d.twRu : d.twEn;
-// Пройденное не запирается обратно: на втором круге все места уже открыты.
-const routeAt  = () => S.loop>0 ? LAST_STOP : Math.min(LAST_STOP, S.stop);
-const hasTwist = i => routeAt() >= i;
-// Прибавка за путь: множитель монет за слияния. Не трогает цены — дорожает
-// только то, что игрок сам покупает.
-const stopMult = () => 1 + 0.15*(S.stop + STOPS.length*S.loop);
-// Два верхних десерта живут за последней остановкой: до неё банка кончается на торте.
-const topTier  = () => hasTwist(5) ? MAX_TIER : MAX_TIER-2;
-function act(key,n){ S.acts[key] = (S.acts[key]||0) + (n||1); }
-
-// ── твист 1: заказы ──
-// Заказ всегда на десерт, который игроку по силам прямо сейчас: иначе это не
-// заказ, а насмешка.
-let orderTier = 2;
-function rollOrder(){
-  const hi = Math.min(topTier(), Math.max(2, S.bestTier));
-  orderTier = Math.max(2, hi - Math.floor(Math.random()*2));
-}
-// ── твист 3: гости ──
-const GUEST_EVERY_MS = 25000;
-let lastGuest = 0;
-function guestTick(){
-  if(!hasTwist(3) || gameOver || paused) return;
-  const now = Date.now();
-  if(!lastGuest){ lastGuest = now; return; }
-  if(now - lastGuest < GUEST_EVERY_MS) return;
-  lastGuest = now;
-  const big = balls.filter(b=>b.t>=4).sort((a,b)=>b.t-a.t)[0];
-  if(!big) return;
-  balls.splice(balls.indexOf(big),1);
-  const n = grant(Math.round(TIERS[big.t].value*multValue()*5));  // гость платит — но это подарок
-  act('guest'); sfx('coin'); toast(T('guestGot',{n:fmt(n)}));
-  refreshHud(); persist(true);
-}
-// ── твист 4: конвейер ──
-const BELT_EVERY_MS = 3500;
-let lastBelt = 0;
-function beltTick(){
-  if(!hasTwist(4) || gameOver || paused || anyModalOpen()) return;
-  const now = Date.now();
-  if(!lastBelt){ lastBelt = now; return; }
-  if(now - lastBelt < BELT_EVERY_MS) return;
-  lastBelt = now;
-  spawnBall(aimX || centerX, pickNextTier());
-  act('belt');
-}
-// ── твист 2: витрина ──
-const sellable = () => balls.filter(b=>b.t>=3).sort((a,b)=>b.t-a.t)[0] || null;
-function doSell(){
-  if(!hasTwist(2)) return false;
-  const b = sellable();
-  if(!b){ toast(T('sellNo')); sfx('error'); return false; }
-  balls.splice(balls.indexOf(b),1);
-  const n = grant(Math.round(TIERS[b.t].value*multValue()*3));   // витрина — подарок, не слияние
-  act('sell'); sfx('coin'); toast(T('sellGot',{n:fmt(n)}));
-  refreshHud(); persist(true);
-  return true;
-}
-
-// ── чек-лист остановки: собрать / достичь / сделать ──
-// Три пункта РАЗНОГО типа: одна большая цель — стена, в которую игрок упирается
-// и закрывает игру; три разнотипных гарантируют, что хотя бы один сдвинется
-// за текущий заход.
-function tasks(){
-  const d = STOPS[Math.min(LAST_STOP, S.stop)], sc = Math.pow(5, S.loop);
-  const first = S.loop===0
-    ? { id:'tier', lab:T('pTier'), text:T('tTier',{n:tierName(d.tier)}),
-        cur:S.bestTier, need:d.tier }
-    : { id:'earn', lab:T('pEarn'), text:T('tEarn',{n:fmt(d.score*20*sc)}),
-        cur:S.lifetimeEarned, need:d.score*20*sc };
-  const score = Math.round(d.score*sc);
-  return [
-    first,
-    { id:'score', lab:T('pScore'), text:T('tScore',{n:fmt(score)}), cur:S.bestScore, need:score },
-    { id:d.act, lab:T('pAct'),
-      text:T({merge:'tMerge',order:'tOrder',sell:'tSell',guest:'tGuest',belt:'tBelt',king:'tKing'}[d.act],
-             {n:d.actN}),
-      cur: d.act==='king' ? (S.bestTier>=MAX_TIER?1:0) : (S.acts[d.act]||0), need:d.actN },
-  ];
-}
-const routeReady = () => tasks().every(t => t.cur >= t.need);
-function doMove(){
-  if(!routeReady()) return false;
-  const last = S.stop >= LAST_STOP;
-  const got = grant(Math.max(200, Math.round(TIERS[Math.min(MAX_TIER,S.bestTier)].value*multValue()*40)));
-  S.acts = {};                                  // счётчики «сделать» — свои у каждой остановки
-  if(last){ S.loop++; S.stop = 0; S.seenStop = STOPS.length; }
-  else { S.stop++; S.seenStop = Math.max(S.seenStop, S.stop+1); }
-  nextTier = Math.min(topTier(), poolMax()+2);  // подарок в дорогу: особая конфета
-  rollOrder();
-  refreshHud(); persist(true); sfx('buy');
-  if(last) openFin();
-  else { toast(T('moved',{n:stopNm(STOPS[S.stop])})+" +"+fmt(got)); maybeInterstitial(); }
-  return true;
-}
-// Старый сейв без маршрута: место выводим из достигнутого тира и НИЧЕГО не
-// платим — иначе действующий игрок при первом запуске соберёт полмаршрута наград.
-function estimateStop(bestTier){
-  let i=0;
-  while(i < LAST_STOP && bestTier >= STOPS[i].tier) i++;
-  return i;
-}
-// Средний горизонт на экране: где я и что осталось до переезда.
-// Дальний (вся карта) — в одно нажатие по этой же полосе.
-function refreshRoute(){
-  const bar=$("routeBar"); if(!bar) return;
-  const d = STOPS[Math.min(LAST_STOP, S.stop)], ts = tasks(), ready = routeReady();
-  bar.classList.toggle("done", ready);
-  $("routeT").textContent = (S.stop+1)+"/"+STOPS.length+" · "+stopNm(d)
-                            + (S.loop>0 ? " · "+T('mapLoop',{n:S.loop+1}) : "");
-  $("routeR").textContent = ready ? T('moveDo') : "▸";
-  const pills=$("routePills"); pills.innerHTML='';
-  ts.forEach(t=>{
-    const el=document.createElement('div');
-    const done = t.cur >= t.need;
-    el.className = "pill"+(done?" ok":"");
-    el.textContent = done ? "✓ "+t.lab : t.lab+" "+fmt(Math.min(t.cur,t.need))+"/"+fmt(t.need);
-    pills.appendChild(el);
-  });
-  // Витрина — кнопка только там, где твист уже открыт.
-  const sb=$("sellBtn");
-  sb.classList.toggle("hidden", !hasTwist(2));
-  if(hasTwist(2)){
-    const b=sellable();
-    $("sellLab").textContent = T('sell');
-    $("sellSub").textContent = b ? "+"+fmt(Math.round(TIERS[b.t].value*multValue()*3)) : "—";
-    sb.disabled = !b;
-  }
-}
+const GIFT_CD  = 20*60*1000, SHAKE_CD = 3*60*1000;
 
 // ---------- Сейвы ----------
-function snapshot(){
-  S.balls = balls.map(b=>({x:b.x,y:b.y,t:b.t}));
-  return JSON.stringify(S);
-}
-function writeSave(raw, flush){
-  try{ localStorage.setItem(SAVE_KEY,raw); }catch(e){}
-  if(player){ try{ player.setData({save:raw}, !!flush); }catch(e){} }
-}
 function persist(force){
   const now=Date.now();
   if(!force && now-saveT<10000) return;
   saveT=now;
-  writeSave(snapshot(), false);
+  S.balls = balls.map(b=>({x:b.x,y:b.y,r:b.r,t:b.t}));
+  const raw=JSON.stringify(S);
+  try{ localStorage.setItem(SAVE_KEY,raw); }catch(e){}
+  if(player){ try{ player.setData({save:raw}); }catch(e){} }
 }
-let flushT=0;
-// Дожим при уходе со страницы: не чаще раза в 3 с, иначе дёрганое
-// переключение вкладок сожжёт лимит платформы (100 запросов / 5 минут).
-function flushSave(){
-  const now=Date.now();
-  if(now-flushT<3000) return;
-  flushT=now; saveT=now;
-  writeSave(snapshot(), true);
-}
-// Валидаторы: сейв приходит из облака — возможно, с другого устройства
-// или из другой версии игры, поэтому доверять ему нельзя ничему.
-const isTier = t => Number.isInteger(t) && t>=0 && t<=MAX_TIER;
-function num(v, def, min, max){
-  const n=Number(v);
-  if(!Number.isFinite(n)) return def;
-  return Math.min(max==null?Infinity:max, Math.max(min==null?-Infinity:min, n));
-}
-const intIn = (v,min,max) => Math.floor(num(v,min,min,max));
-const dayStr = ts => new Date(ts==null?Date.now():ts).toISOString().slice(0,10);
-const isDay  = s => typeof s==="string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
-// Возвращает true, если сейв реально прочитан (нужно, чтобы не показывать
-// ежедневку самому первому игроку на первом же запуске).
 function restore(raw){
-  S = fresh();
-  if(!raw) return false;
-  let d=null;
-  try{
-    if(typeof raw==="string") d=JSON.parse(raw);
-    else if(typeof raw==="object"){
-      if(typeof raw.save==="string") d=JSON.parse(raw.save);
-      else if(raw.save && typeof raw.save==="object") d=raw.save;
-      else d=raw;
-    }
-  }catch(e){ S=fresh(); return false; }   // мусор вместо JSON — стартуем с чистого состояния
-  if(!d || typeof d!=="object" || Array.isArray(d)){ S=fresh(); return false; }
-  const now=Date.now(), s=fresh();
-  s.coins     = Math.floor(num(d.coins,0,0));
-  s.bestTier  = isTier(d.bestTier) ? d.bestTier : 0;
-  s.bestScore = Math.floor(num(d.bestScore,0,0));
-  s.fillCoins = Math.floor(num(d.fillCoins,0,0));
-  // старым сейвам без lifetimeEarned — разумная оценка по кошельку и рекорду
-  s.lifetimeEarned = Number.isFinite(Number(d.lifetimeEarned))
-    ? Math.floor(Math.max(0,Number(d.lifetimeEarned))) : s.coins + s.bestScore;
-  const disc = Array.isArray(d.discovered) ? d.discovered.filter(isTier) : [];
-  s.discovered = Array.from(new Set(disc.concat([0]))).sort((a,b)=>a-b);
-  const u = (d.up && typeof d.up==="object" && !Array.isArray(d.up)) ? d.up : {};
-  s.up = { pool:intIn(u.pool,0,POOL_MAX), luck:intIn(u.luck,0,LUCK_MAX),
-           cap:intIn(u.cap,0,CAP_MAX),   mult:intIn(u.mult,0,MULT_MAX) };
-  s.lastGift      = Math.min(now, Math.floor(num(d.lastGift,0,0)));
-  s.lastShake     = Math.min(now, Math.floor(num(d.lastShake,0,0)));
-  s.lastSpecialAd = Math.min(now, Math.floor(num(d.lastSpecialAd,0,0)));
-  s.lastClaimDay  = isDay(d.lastClaimDay) ? d.lastClaimDay
-                    : (num(d.lastDaily,0,0)>0 ? dayStr(num(d.lastDaily,0,0)) : "");   // миграция v1
-  s.streak = intIn(d.streak,0,3650);
-  if(s.lastClaimDay && !s.streak) s.streak=1;
-  s.tips = (d.tips && typeof d.tips==="object" && !Array.isArray(d.tips)) ? Object.assign({}, d.tips) : {};
-  s.shortcutDone = !!d.shortcutDone; s.reviewDone = !!d.reviewDone;
-  s.stop     = intIn(d.stop,0,STOPS.length-1);
-  s.loop     = intIn(d.loop,0,999);
-  s.seenStop = Math.max(1, intIn(d.seenStop,1,STOPS.length));
-  // Счётчики «сделать»: только известные ключи и только конечные числа —
-  // сейв мог прийти из будущей версии или с чужого устройства.
-  s.acts = {};
-  if(d.acts && typeof d.acts==="object" && !Array.isArray(d.acts))
-    STOPS.forEach(st=>{ s.acts[st.act] = intIn(d.acts[st.act],0,1e9); });
-  // неизвестный тир — выбросить элемент, а НЕ подрезать к MAX_TIER:
-  // подрезка подарила бы игроку самую дорогую конфету бесплатно
-  s.balls = Array.isArray(d.balls)
-    ? d.balls.filter(b => b && typeof b==="object" && isTier(b.t)
-        && Number.isFinite(Number(b.x)) && Number.isFinite(Number(b.y)))
-        .map(b => ({x:Number(b.x), y:Number(b.y), t:b.t}))
-        .slice(0,90)
-    : [];
-  s.time = Math.floor(num(d.time, now, 0));
-  S = s;
-  // Старый сейв без маршрута: место выводим из достигнутого, наград не выдаём.
-  if(!Number.isFinite(Number(d.stop))){ S.stop = estimateStop(S.bestTier); S.acts = {}; }
-  S.seenStop = Math.max(S.seenStop, Math.min(STOPS.length, S.stop+1));
-  return true;
+  if(!raw) return;
+  try{ const d=(typeof raw==="string")?JSON.parse(raw):(raw.save?JSON.parse(raw.save):raw);
+       if(d&&typeof d==="object") S=Object.assign(fresh(),d); }catch(e){}
 }
 
 // ---------- Реклама ----------
-const AD_GAP_S=210, AD_WARMUP_S=90, AD_RETRY_S=45;
-let nextAdAt=0, adBusy=false;
-// Частотой управляет сама платформа: если позвать слишком часто, показа не будет
-// и onClose вернёт wasShown:false — тогда возвращаемся раньше, показ был бесплатным.
-function showInterstitial(){
-  if(adBusy || !(ysdk && ysdk.adv && ysdk.adv.showFullscreenAdv)) return;
-  adBusy=true;
-  const finish = wasShown => { adBusy=false; audioResume();
-    nextAdAt = Date.now() + (wasShown?AD_GAP_S:AD_RETRY_S)*1000; };
-  try{
-    ysdk.adv.showFullscreenAdv({callbacks:{
-      onOpen:()=>audioSuspend(), onClose:was=>finish(!!was), onError:()=>finish(false) }});
-  }catch(e){ finish(false); }
-}
-// Только в естественной паузе (конец забега), никогда во время активной игры.
+let lastAd=0;
+function adOpened(){ pauseAudio(); gameplayStop(); }   // §4.7: звук на паузу во время ролика
+function adClosed(){ resumeAudio(); gameplayStart(); }
 function maybeInterstitial(){
-  if(!booted || document.hidden || adBusy) return;
-  if(Date.now() < nextAdAt) return;
-  if(Date.now()-sessionStart < AD_WARMUP_S*1000) return;   // не встречаем игрока рекламой
-  if(anyModalOpen()) return;
-  showInterstitial();
+  if(!ysdk) return;
+  if(Date.now()-lastAd < 180000) return;
+  lastAd=Date.now();
+  try{ ysdk.adv.showFullscreenAdv({callbacks:{ onOpen:adOpened, onClose:adClosed, onError:adClosed }}); }catch(e){}
 }
-// Защёлка: onError может прийти ПОСЛЕ onRewarded — награда не должна удвоиться.
 function showRewarded(onReward){
-  if(!ysdk || !ysdk.adv){ onReward(); return; }
-  let paid=false; const pay=()=>{ if(!paid){ paid=true; onReward(); } };
-  try{
-    ysdk.adv.showRewardedVideo({callbacks:{
-      onOpen:     ()=>audioSuspend(),
-      onRewarded: pay,
-      onClose:    ()=>audioResume(),
-      onError:    ()=>{ audioResume(); pay(); },
-    }});
-  }catch(e){ onReward(); }
+  if(!ysdk){ onReward(); return; }
+  try{ ysdk.adv.showRewardedVideo({callbacks:{
+    onOpen:adOpened,
+    onRewarded:onReward,
+    onError:()=>{ adClosed(); onReward(); },
+    onClose:adClosed }}); }
+  catch(e){ onReward(); }
 }
 
+// ---------- Жизненный цикл платформы (§1.19.2, §1.3) ----------
+let readySent=false;
+function gameplayStart(){ if(!readySent) return; try{ ysdk&&ysdk.features&&ysdk.features.GameplayAPI&&ysdk.features.GameplayAPI.start(); }catch(e){} }
+function gameplayStop(){ if(!readySent) return; try{ ysdk&&ysdk.features&&ysdk.features.GameplayAPI&&ysdk.features.GameplayAPI.stop(); }catch(e){} }
+// LoadingAPI.ready() — только когда игра реально загрузилась и готова к игре (после boot)
+function notifyGameReady(){
+  if(readySent || !ysdk || !booted) return;
+  readySent=true;
+  try{ ysdk.features && ysdk.features.LoadingAPI && ysdk.features.LoadingAPI.ready(); }catch(e){}
+  try{ ysdk.features && ysdk.features.GameplayAPI && ysdk.features.GameplayAPI.start(); }catch(e){}
+}
+// смена вкладки / сворачивание: пауза звука и геймплея, при возврате — обратно
+function onFocusChange(hidden){
+  if(hidden){ pauseAudio(); gameplayStop(); }
+  else { resumeAudio(); gameplayStart(); }
+}
+document.addEventListener('visibilitychange', ()=>onFocusChange(document.hidden));
+addEventListener('pagehide', ()=>onFocusChange(true));
+addEventListener('pageshow', ()=>onFocusChange(false));
+
 // ---------- Лидерборд ----------
-// Два поколения API: у sdk.leaderboards — setScore, у getLeaderboards() — setLeaderboardScore.
-let lbT=0;
 function submitScore(v){
-  const score=Math.floor(Number(v)||0);
-  if(score<=0) return;                       // пустые записи таблицу не засоряют
-  if(!lb || !LB_NAME || !authorized) return; // писать можно только за авторизованного игрока
-  const now=Date.now();
-  if(now-lbT<1000) return;                   // лимит платформы: не чаще 1 раза в секунду
-  lbT=now;
-  try{
-    const set = (typeof lb.setScore==="function") ? lb.setScore
-              : (typeof lb.setLeaderboardScore==="function") ? lb.setLeaderboardScore : null;
-    if(!set) return;
-    const p = set.call(lb, LB_NAME, score);
-    if(p && typeof p.catch==="function") p.catch(()=>{});
-  }catch(e){}
+  try{ if(lb&&LB_NAME) lb.setLeaderboardScore(LB_NAME, Math.floor(v)); }catch(e){}
 }
 
 // ---------- HUD ----------
 const $ = id => document.getElementById(id);
-const SUF = ["","K","M","B","T","Qa","Qi"];
-// Округляем только при показе, начисления остаются точными.
-function fmt(n){
-  n = Number(n)||0;
-  const sign = n<0 ? "-" : ""; n = Math.abs(n);
-  if(n<1000) return sign+Math.floor(n).toString();
-  let i=0;
-  while(n>=1000 && i<SUF.length-1){ n/=1000; i++; }
-  if(n>=1000) return sign+n.toExponential(2).replace("e+","e");   // за пределами Qi — научная запись
-  return sign + (n<10 ? n.toFixed(2) : n<100 ? n.toFixed(1) : Math.floor(n).toString()) + SUF[i];
-}
+const fmt = n => n>=1e6 ? (n/1e6).toFixed(1)+"M" : n>=1e3 ? (n/1e3).toFixed(1)+"K" : Math.floor(n).toString();
 function refreshHud(){
   $("coinsV").textContent = fmt(S.coins);
   $("coinsL").textContent = T("coins");
@@ -794,29 +288,19 @@ function refreshHud(){
   $("bestL").textContent  = T("best");
   $("specialLab").textContent = T("special");
   $("specialSub").textContent = fmt(specialCost());
-  $("specialAdLab").textContent = T("specialAd");
   $("giftLab").textContent = T("gift");
   $("shakeLab").textContent = T("shake");
-  refreshActions();
-  refreshRoute();
+  const now=Date.now();
+  const giftLeft = GIFT_CD-(now-S.lastGift), shakeLeft = SHAKE_CD-(now-S.lastShake);
+  $("giftBtn").disabled = giftLeft>0;
+  $("giftSub").textContent = giftLeft>0 ? T("wait")+" "+Math.ceil(giftLeft/60000)+"m" : T("watch")+" (+50)";
+  $("shakeBtn").disabled = shakeLeft>0;
+  $("shakeSub").textContent = shakeLeft>0 ? T("wait")+" "+Math.ceil(shakeLeft/60000)+"m" : T("watch")+" (-3)";
+  $("specialBtn").disabled = S.coins < specialCost();
   $("shopTitle").textContent = T("shopTitle");
   $("collTitle").textContent = T("collTitle");
+  $("langBtn").textContent = lang().toUpperCase();
   renderShop(); renderCollection();
-}
-// Кулдауны rewarded-кнопок тикают сами — иначе кнопка выглядит выключенной
-// до ближайшей полной перерисовки HUD.
-function refreshActions(){
-  const now=Date.now();
-  const giftLeft = GIFT_CD-(now-S.lastGift), shakeLeft = SHAKE_CD-(now-S.lastShake),
-        spAdLeft = SPECIAL_AD_CD-(now-S.lastSpecialAd);
-  const cd = ms => T("wait")+" "+(ms>60000 ? Math.ceil(ms/60000)+"m" : Math.ceil(ms/1000)+"s");
-  $("giftBtn").disabled = giftLeft>0;
-  $("giftSub").textContent = giftLeft>0 ? cd(giftLeft) : T("watch")+" +"+fmt(giftReward());
-  $("shakeBtn").disabled = shakeLeft>0;
-  $("shakeSub").textContent = shakeLeft>0 ? cd(shakeLeft) : T("watch")+" (-3)";
-  $("specialAdBtn").disabled = spAdLeft>0;
-  $("specialAdSub").textContent = spAdLeft>0 ? cd(spAdLeft) : T("watch");
-  $("specialBtn").disabled = S.coins < specialCost();
 }
 let toastT;
 function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("on");
@@ -829,8 +313,6 @@ function renderShop(){
     {key:'pool', name:T('upPool'), desc:T('upPoolD'), lvl:S.up.pool, cost:poolCost(), buy:buyPool},
     {key:'luck', name:T('upLuck'), desc:T('upLuckD'), lvl:S.up.luck, cost:luckCost(), buy:buyLuck},
     {key:'cap',  name:T('upCap'),  desc:T('upCapD'),  lvl:S.up.cap,  cost:capCost(),  buy:buyCap},
-    {key:'mult', name:T('upMult'), desc:T('upMultD')+' (×'+multValue().toFixed(2)+')',
-                 lvl:S.up.mult, cost:multCost(), buy:buyMult},
   ];
   for(const r of rows){
     const div=document.createElement('div'); div.className='uprow';
@@ -847,23 +329,18 @@ function renderShop(){
 }
 function buyPool(){ const c=poolCost(); if(!Number.isFinite(c)||S.coins<c) return; S.coins-=c; S.up.pool++; refreshHud(); persist(true); sfx('buy'); }
 function buyLuck(){ const c=luckCost(); if(!Number.isFinite(c)||S.coins<c) return; S.coins-=c; S.up.luck++; refreshHud(); persist(true); sfx('buy'); }
-// линию переполнения пересчитываем сразу: апгрейд должен работать без перезагрузки
-function buyCap(){  const c=capCost();  if(!Number.isFinite(c)||S.coins<c) return; S.coins-=c; S.up.cap++;  computeOverflowY(); refreshHud(); persist(true); sfx('buy'); }
-function buyMult(){ const c=multCost(); if(!Number.isFinite(c)||S.coins<c) return; S.coins-=c; S.up.mult++; refreshHud(); persist(true); sfx('buy'); }
+function buyCap(){  const c=capCost();  if(!Number.isFinite(c)||S.coins<c) return; S.coins-=c; S.up.cap++;  refreshHud(); persist(true); sfx('buy'); }
 
 // ---------- Коллекция (модалка) ----------
 function renderCollection(){
-  const left=TIERS.length-S.discovered.length;
-  $("collNote").textContent = left>0 ? T("collLeft",{n:left}) : T("collAll");
   const grid=$("collGrid"); grid.innerHTML='';
   for(let t=0;t<TIERS.length;t++){
-    const known = S.discovered.indexOf(t)>=0;
-    const cell=document.createElement('div'); cell.className='ccell'+(known?'':' locked');
+    const cell=document.createElement('div'); cell.className='ccell'+(S.discovered.includes(t)?'':' locked');
     const cv2=document.createElement('canvas'); cv2.width=64; cv2.height=64;
     const c2=cv2.getContext('2d');
     drawCandy(c2,32,34,24,t,1);
     cell.appendChild(cv2);
-    const nm=document.createElement('div'); nm.className='cn'; nm.textContent = known ? T('t'+t) : '?';
+    const nm=document.createElement('div'); nm.className='cn'; nm.textContent = S.discovered.includes(t) ? T('t'+t) : '?';
     cell.appendChild(nm);
     grid.appendChild(cell);
   }
@@ -874,29 +351,18 @@ function doSpecial(){
   const c=specialCost();
   if(S.coins<c){ toast(T("need")); sfx("error"); return; }
   S.coins-=c; refreshHud(); persist(true); sfx("buy");
-  nextTier = Math.min(topTier(), poolMax()+2);
+  nextTier = Math.min(MAX_TIER, poolMax()+2);
   toast(T("specialGot"));
 }
-function doSpecialAd(){
-  if(!specialAdReady()) return;
-  showRewarded(()=>{
-    S.lastSpecialAd=Date.now();
-    nextTier = Math.min(topTier(), poolMax()+2);
-    refreshHud(); persist(true); sfx("buy");
-    toast(T("specialGot"));
-  });
-}
 function doGift(){
-  if(!giftReady()) return;
+  if(Date.now()-S.lastGift < GIFT_CD) return;
   showRewarded(()=>{
-    S.lastGift=Date.now();
-    const n=grant(giftReward());          // подарок — не заработок, метрики прогресса не двигает
-    refreshHud(); persist(true); sfx("coin");
-    toast(T("giftGot",{n:fmt(n)}));
+    S.lastGift=Date.now(); S.coins+=50; refreshHud(); persist(true); sfx("coin");
+    toast(T("giftGot",{n:50}));
   });
 }
 function doShake(){
-  if(!shakeReady()) return;
+  if(Date.now()-S.lastShake < SHAKE_CD) return;
   showRewarded(()=>{
     S.lastShake=Date.now();
     balls.sort((a,b)=>a.r-b.r);
@@ -905,46 +371,12 @@ function doShake(){
     toast(T("shakeGot",{n:removed.length}));
   });
 }
-
-// ---------- Ежедневный бонус ----------
-// Сравниваем строку даты, а не таймстемпы: иначе «сутки» едут относительно
-// того, во сколько игрок зашёл в первый раз.
-const DAILY_MULT=[1, 1.2, 1.5, 1.8, 2.2, 2.6, 4.5];   // 7 дней, заметный скачок на последнем
-function dailyBase(){
-  return Math.max(60, Math.floor(TIERS[Math.min(MAX_TIER,S.bestTier)].value*8 + S.bestScore*0.06));
-}
-const dailyDayIndex = st => ((Math.max(1,st)-1)%7)+1;      // 1..7
-function dailyReward(day){ return Math.max(20, Math.floor(dailyBase()*DAILY_MULT[Math.min(6,Math.max(0,day-1))])); }
-const dailyPending = () => S.lastClaimDay !== dayStr();
-function nextStreak(){
-  const yesterday = dayStr(Date.now()-86400000);
-  return (S.lastClaimDay === yesterday) ? S.streak+1 : 1;   // пропуск дня обнуляет серию
-}
-function renderDaily(){
-  const st=nextStreak(), cur=dailyDayIndex(st);
-  $("dailyT").textContent = T("dailyT");
-  $("dailyStreak").textContent = T("dailyStreak",{n:st});
-  const g=$("dailyGrid"); g.innerHTML='';
-  for(let d=1; d<=7; d++){
-    const cell=document.createElement('div');
-    cell.className='dcell'+(d<cur?' done':'')+(d===cur?' now':'');
-    cell.innerHTML='<div>'+d+'</div><div class="dv">+'+fmt(dailyReward(d))+'</div>';
-    g.appendChild(cell);
+function dailyBonus(){
+  const now=Date.now(), day=24*60*60*1000;
+  if(now - S.lastDaily >= day){
+    S.lastDaily = now; S.coins += 50; persist(true);
+    setTimeout(()=>toast(T("dailyGot",{n:50})), 500);
   }
-  $("dailyClaim").textContent = T("dailyClaim",{n:fmt(dailyReward(cur))});
-  $("dailyClaimX2").textContent = T("dailyClaimX2");
-}
-function claimDaily(x2){
-  if(!dailyPending()){ closeDaily(); return; }
-  const give = () => {
-    if(!dailyPending()){ closeDaily(); return; }    // в один день награда выдаётся ровно один раз
-    S.streak = nextStreak();
-    S.lastClaimDay = dayStr();
-    const n = grant(dailyReward(dailyDayIndex(S.streak)) * (x2?2:1));
-    closeDaily(); refreshHud(); persist(true); sfx("coin");
-    toast(T("dailyGot",{n:fmt(n)}));
-  };
-  if(x2) showRewarded(give); else give();
 }
 
 // ---------- Canvas ----------
@@ -959,14 +391,10 @@ function resize(){
   const jarWidth = playW*0.64;
   jarLeft = centerX - jarWidth/2; jarRight = centerX + jarWidth/2;
   jarTop = H*0.30; jarBottom = H*0.85;
-  unit = jarWidth;
-  computeOverflowY();
-  for(const b of balls) b.r = TIERS[b.t].ratio*unit;
-}
-// Линия переполнения зависит от апгрейда cap — считаем отдельно, чтобы
-// покупка «Вежливой банки» действовала сразу, без перезагрузки.
-function computeOverflowY(){
   overflowY = jarTop + (jarBottom-jarTop)*(0.08 + S.up.cap*0.03);
+  unit = jarWidth;
+  for(const b of balls) b.r = TIERS[b.t].ratio*unit;
+  SPRITES={}; // размер юнита изменился — спрайты перерисуются
 }
 addEventListener("resize",resize);
 const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -978,11 +406,8 @@ let steamPhase=0, curtainPhase=0;
 
 // ---------- Фон: кухонное окно, банка на подоконнике ----------
 function drawBackground(){
-  // Палитра — своя у каждой остановки: прогресс должен быть виден глазом,
-  // а не только в цифрах.
-  const pal = STOPS[Math.min(LAST_STOP, S.stop)].wall;
   const wallG=ctx.createLinearGradient(0,0,0,H);
-  wallG.addColorStop(0,pal[0]); wallG.addColorStop(1,pal[1]);
+  wallG.addColorStop(0,'#FBEFE0'); wallG.addColorStop(1,cssVar('--bg'));
   ctx.fillStyle=wallG; ctx.fillRect(0,0,W,H);
 
   // обои: мелкий точечный узор
@@ -1028,14 +453,36 @@ function drawBackground(){
   drawCurtain(winX-6, winY-8, winH+16, -1, cph);
   drawCurtain(winX+winW+6, winY-8, winH+16, 1, cph);
 
-  // деревянная полка/подоконник
+  // тёплый свет из окна на стену (мягкие лучи)
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  const rayA=0.05+0.02*Math.sin(performance.now()/2400);
+  ctx.fillStyle='rgba(255,232,170,'+rayA.toFixed(3)+')';
+  ctx.beginPath(); ctx.moveTo(winX+winW*0.2,winY+winH);
+  ctx.lineTo(winX+winW*0.55,winY+winH);
+  ctx.lineTo(winX-winW*0.15,H*0.9); ctx.lineTo(winX-winW*0.62,H*0.9); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(winX+winW*0.62,winY+winH);
+  ctx.lineTo(winX+winW*0.92,winY+winH);
+  ctx.lineTo(winX+winW*0.55,H*0.9); ctx.lineTo(winX+winW*0.1,H*0.9); ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  // деревянная полка/подоконник с фактурой досок
   const shelfY=jarBottom+unit*0.06;
   const woodG=ctx.createLinearGradient(0,shelfY,0,H);
-  woodG.addColorStop(0,cssVar('--wood')); woodG.addColorStop(1,cssVar('--wood-deep'));
+  woodG.addColorStop(0,shade(cssVar('--wood')||'#C89464',0.12));
+  woodG.addColorStop(0.35,cssVar('--wood')||'#C89464');
+  woodG.addColorStop(1,cssVar('--wood-deep')||'#A8763F');
   ctx.fillStyle=woodG; ctx.fillRect(0,shelfY,W,H-shelfY);
-  ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=2;
-  for(let x=0;x<W;x+=unit*0.5){ ctx.beginPath(); ctx.moveTo(x,shelfY+6); ctx.lineTo(x+10,H); ctx.stroke(); }
-  ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.fillRect(0,shelfY,W,4);
+  // светлая кромка + тень под кромкой
+  ctx.fillStyle='rgba(255,235,200,0.5)'; ctx.fillRect(0,shelfY,W,3);
+  ctx.fillStyle='rgba(0,0,0,0.16)'; ctx.fillRect(0,shelfY+3,W,3);
+  // швы досок и волокно
+  ctx.strokeStyle='rgba(90,50,20,0.22)'; ctx.lineWidth=2;
+  for(let x=0;x<W+unit;x+=unit*0.5){ ctx.beginPath(); ctx.moveTo(x,shelfY+6); ctx.lineTo(x+12,H); ctx.stroke(); }
+  ctx.strokeStyle='rgba(255,225,180,0.18)'; ctx.lineWidth=1.5;
+  for(let i=0;i<4;i++){ const yy=shelfY+10+i*(H-shelfY)*0.22;
+    ctx.beginPath(); ctx.moveTo(0,yy);
+    for(let x=0;x<=W;x+=unit*0.4) ctx.quadraticCurveTo(x+unit*0.2,yy+Math.sin(x*0.02+i)*3,x+unit*0.4,yy);
+    ctx.stroke(); }
 
   // decor: чашка с блюдцем слева на полке (пар — живой мир)
   const cupX=Math.max(30,centerX-unit*0.9), cupY=shelfY+unit*0.16;
@@ -1045,6 +492,11 @@ function drawBackground(){
   // decor: банка с печеньем справа
   const jar2X=Math.min(W-30,centerX+unit*0.95), jar2Y=shelfY+unit*0.02;
   drawCookieJar(jar2X,jar2Y,unit*0.24);
+
+  // мягкая виньетка — собирает взгляд к центру
+  const vg=ctx.createRadialGradient(centerX,H*0.52,Math.min(W,H)*0.42,centerX,H*0.52,Math.max(W,H)*0.78);
+  vg.addColorStop(0,'rgba(90,50,30,0)'); vg.addColorStop(1,'rgba(90,50,30,0.18)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
 }
 function roundRectPath(x,y,w,h,r){
   ctx.beginPath();
@@ -1116,39 +568,71 @@ function drawCookieJar(x,y,r){
 }
 
 // ---------- Мир: банка + конфеты ----------
-function drawJar(){
-  ctx.save();
+function jarPath(){
   ctx.beginPath();
   ctx.moveTo(jarLeft, jarTop);
   ctx.lineTo(jarLeft, jarBottom-14); ctx.arcTo(jarLeft,jarBottom,jarLeft+14,jarBottom,14);
   ctx.lineTo(jarRight-14, jarBottom); ctx.arcTo(jarRight,jarBottom,jarRight,jarBottom-14,14);
   ctx.lineTo(jarRight, jarTop);
+}
+function drawJar(){
+  // мягкая тень банки на полке
+  const jw=jarRight-jarLeft;
+  const shG=ctx.createRadialGradient(centerX,jarBottom+8,jw*0.05,centerX,jarBottom+8,jw*0.62);
+  shG.addColorStop(0,'rgba(70,40,20,0.28)'); shG.addColorStop(1,'rgba(70,40,20,0)');
+  ctx.fillStyle=shG;
+  ctx.beginPath(); ctx.ellipse(centerX,jarBottom+8,jw*0.62,unit*0.055,0,0,Math.PI*2); ctx.fill();
+
+  // задняя стенка стекла
+  ctx.save();
+  jarPath();
   const glassG=ctx.createLinearGradient(jarLeft,0,jarRight,0);
-  glassG.addColorStop(0,'rgba(234,246,251,0.55)'); glassG.addColorStop(0.5,'rgba(255,255,255,0.25)'); glassG.addColorStop(1,'rgba(234,246,251,0.55)');
+  glassG.addColorStop(0,'rgba(210,238,248,0.6)'); glassG.addColorStop(0.24,'rgba(255,255,255,0.22)');
+  glassG.addColorStop(0.5,'rgba(234,246,251,0.14)'); glassG.addColorStop(0.78,'rgba(255,255,255,0.2)');
+  glassG.addColorStop(1,'rgba(198,230,244,0.62)');
   ctx.fillStyle=glassG; ctx.fill();
+  // холодный отсвет у дна
+  const bt=ctx.createLinearGradient(0,jarBottom-unit*0.14,0,jarBottom);
+  bt.addColorStop(0,'rgba(160,210,230,0)'); bt.addColorStop(1,'rgba(160,210,230,0.4)');
+  ctx.fillStyle=bt; ctx.fillRect(jarLeft,jarBottom-unit*0.14,jw,unit*0.14);
   ctx.restore();
 
-  // конфеты внутри (клип по банке)
+  // конфеты внутри (клип по банке): кэшированные спрайты, «круглые» тиры катятся
   ctx.save();
   ctx.beginPath();
   ctx.rect(jarLeft-2, jarTop-200, jarRight-jarLeft+4, jarBottom-jarTop+200);
   ctx.clip();
-  for(const b of balls) drawCandy(ctx,b.x,b.y,b.r,b.t,1);
+  for(const b of balls){
+    const s=candySprite(b.t);
+    ctx.save(); ctx.translate(b.x,b.y);
+    if(ROLLS[b.t]) ctx.rotate(b.rot||0);
+    ctx.drawImage(s.cv,-s.pad,-s.pad,s.pad*2,s.pad*2);
+    ctx.restore();
+  }
   ctx.restore();
 
-  // передняя стеклянная стенка + контур + блик
-  ctx.beginPath();
-  ctx.moveTo(jarLeft, jarTop);
-  ctx.lineTo(jarLeft, jarBottom-14); ctx.arcTo(jarLeft,jarBottom,jarLeft+14,jarBottom,14);
-  ctx.lineTo(jarRight-14, jarBottom); ctx.arcTo(jarRight,jarBottom,jarRight,jarBottom-14,14);
-  ctx.lineTo(jarRight, jarTop);
+  // передняя стеклянная стенка + контур + блики
+  jarPath();
   ctx.strokeStyle=cssVar('--line'); ctx.lineWidth=4.5; ctx.stroke();
-  // горлышко/ободок
-  ctx.beginPath(); ctx.moveTo(jarLeft-6,jarTop); ctx.lineTo(jarRight+6,jarTop);
-  ctx.lineWidth=6; ctx.strokeStyle=cssVar('--line'); ctx.stroke();
-  // блик
-  ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=6; ctx.lineCap='round';
-  ctx.beginPath(); ctx.moveTo(jarLeft+ (jarRight-jarLeft)*0.16, jarTop+10); ctx.lineTo(jarLeft+(jarRight-jarLeft)*0.16, jarBottom-20); ctx.stroke();
+  // внутренняя светлая грань стекла
+  ctx.save(); jarPath(); ctx.clip();
+  ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(jarLeft+5,jarTop+4); ctx.lineTo(jarLeft+5,jarBottom-16);
+  ctx.moveTo(jarRight-5,jarTop+4); ctx.lineTo(jarRight-5,jarBottom-16);
+  ctx.stroke(); ctx.restore();
+  // горлышко: стеклянный ободок с бликом
+  const rimH=Math.max(7,unit*0.028);
+  const rimG=ctx.createLinearGradient(0,jarTop-rimH,0,jarTop+rimH);
+  rimG.addColorStop(0,'rgba(255,255,255,0.85)'); rimG.addColorStop(0.5,'rgba(214,240,250,0.9)'); rimG.addColorStop(1,'rgba(170,205,222,0.9)');
+  ctx.fillStyle=rimG; ctx.strokeStyle=cssVar('--line'); ctx.lineWidth=3.5;
+  roundRectPath(jarLeft-9,jarTop-rimH,jarRight-jarLeft+18,rimH*2,rimH*0.9);
+  ctx.fill(); ctx.stroke();
+  // длинный вертикальный блик + короткий дублёр
+  ctx.strokeStyle='rgba(255,255,255,0.65)'; ctx.lineWidth=Math.max(5,unit*0.02); ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(jarLeft+jw*0.14, jarTop+16); ctx.lineTo(jarLeft+jw*0.14, jarBottom-26); ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,0.45)'; ctx.lineWidth=Math.max(3,unit*0.011);
+  ctx.beginPath(); ctx.moveTo(jarLeft+jw*0.22, jarTop+24); ctx.lineTo(jarLeft+jw*0.22, jarTop+(jarBottom-jarTop)*0.42); ctx.stroke();
 
   // линия переполнения (тонкая, полупрозрачная, только индикатор)
   if(overflowTimer>0){
@@ -1157,89 +641,347 @@ function drawJar(){
     ctx.setLineDash([]);
   }
 }
+// ── Хелперы объёмной отрисовки ──
+const INK='#5B4636';
+function sphereFill(c,r,color,ox,oy){ // «шар»: блик сверху-слева, тень к краю
+  const g=c.createRadialGradient((ox||0)-r*0.35,(oy||0)-r*0.42,r*0.08,ox||0,oy||0,r*1.12);
+  g.addColorStop(0,shade(color,0.5)); g.addColorStop(0.42,color); g.addColorStop(1,shade(color,-0.26));
+  return g;
+}
+function vertFill(c,y0,y1,color){ // вертикальный градиент «свет сверху»
+  const g=c.createLinearGradient(0,y0,0,y1);
+  g.addColorStop(0,shade(color,0.38)); g.addColorStop(0.5,color); g.addColorStop(1,shade(color,-0.22));
+  return g;
+}
+function glossSpot(c,x,y,rx,ry,rot,alpha){ // мягкий световой блик
+  c.save(); c.translate(x,y); c.rotate(rot);
+  const g=c.createRadialGradient(0,0,0,0,0,rx);
+  g.addColorStop(0,'rgba(255,255,255,'+alpha+')'); g.addColorStop(1,'rgba(255,255,255,0)');
+  c.fillStyle=g; c.beginPath(); c.ellipse(0,0,rx,ry,0,0,Math.PI*2); c.fill(); c.restore();
+}
+function rimShade(c,r,alpha){ // тень по нижнему краю круглой формы (вызывать внутри clip)
+  const g=c.createRadialGradient(0,-r*0.25,r*0.35,0,0,r*1.05);
+  g.addColorStop(0,'rgba(60,30,20,0)'); g.addColorStop(0.72,'rgba(60,30,20,0)');
+  g.addColorStop(1,'rgba(60,30,20,'+alpha+')');
+  c.fillStyle=g; c.fillRect(-r*1.3,-r*1.3,r*2.6,r*2.6);
+}
+const SPRINKLE_COLORS=['#FF6F91','#5AC8FA','#FFD34E','#7ED957','#B98CE8','#FF9E5A'];
+
 function drawCandy(c,x,y,r,tier,alpha){
   const T2=TIERS[tier];
+  const OW=Math.max(1.6, r*0.085);
   c.save(); c.globalAlpha=alpha; c.translate(x,y);
-  c.lineWidth=Math.max(1.6, r*0.09);
-  c.strokeStyle=cssVar? cssVar('--line')||'#5B4636' : '#5B4636';
-  c.fillStyle=T2.fill;
-  if(tier===0){ // мятная конфетка: круг со спиральной полосой
-    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.22; c.beginPath();
-    for(let a=-Math.PI;a<=Math.PI;a+=0.25){ const rr=r*0.7; c.lineTo(Math.cos(a)*rr*0.9, Math.sin(a)*rr*0.5+a*r*0.12); }
-    c.stroke();
-  } else if(tier===1){ // мармеладка: приплюснутый овал с зерном сахара
-    c.beginPath(); c.ellipse(0,0,r,r*0.82,0,0,Math.PI*2); c.fill(); c.stroke();
-    c.fillStyle='rgba(255,255,255,0.5)';
-    c.beginPath(); c.ellipse(-r*0.3,-r*0.3,r*0.28,r*0.16,0.6,0,Math.PI*2); c.fill();
+  c.lineJoin='round'; c.lineCap='round';
+  c.lineWidth=OW; c.strokeStyle=INK; c.fillStyle=T2.fill;
+
+  if(tier===0){ // ── Мятная конфетка: леденец-вертушка ──
+    c.fillStyle=sphereFill(c,r,'#FDFFFE');
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.clip();
     c.fillStyle=T2.accent;
-    for(const p of [[-.4,.3],[.3,.45],[.5,-.2],[-.1,.55]]) { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.06,0,Math.PI*2); c.fill(); }
-  } else if(tier===2){ // карамелька с двумя «хвостиками» обёртки
-    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.moveTo(-r*0.95,-r*0.3); c.lineTo(-r*1.5,-r*0.55); c.lineTo(-r*1.5,r*0.05); c.closePath(); c.fill(); c.stroke();
-    c.beginPath(); c.moveTo(r*0.95,r*0.3); c.lineTo(r*1.5,r*0.55); c.lineTo(r*1.5,-r*0.05); c.closePath(); c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.1;
-    c.beginPath(); c.moveTo(-r*0.5,-r*0.5); c.lineTo(r*0.5,r*0.5); c.moveTo(-r*0.1,-r*0.65); c.lineTo(r*0.65,r*0.05); c.stroke();
-  } else if(tier===3){ // трюфель: шар с завитком и фольгой у основания
-    c.beginPath(); c.arc(0,r*0.05,r*0.92,0,Math.PI*2); c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.moveTo(-r*0.5,-r*0.3);
-    c.bezierCurveTo(-r*0.2,-r*0.9,r*0.2,-r*0.9,r*0.5,-r*0.3);
-    c.bezierCurveTo(r*0.2,-r*0.45,-r*0.2,-r*0.45,-r*0.5,-r*0.3);
-    c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.16;
-    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.15,r*0.85); c.lineTo(i*r*0.15,r*1.05); c.stroke(); }
-  } else if(tier===4){ // пончик: кольцо с глазурью и полосками
-    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill(); c.stroke();
-    c.beginPath(); c.arc(0,0,r*0.4,0,Math.PI*2); c.fillStyle=cssVar('--bg')||'#FCE8D8'; c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.arc(0,-r*0.12,r*0.92,Math.PI*1.02,Math.PI*1.98); c.arc(0,0,r*0.42,Math.PI*1.98,Math.PI*1.02,true); c.closePath(); c.fill();
-    c.strokeStyle='#fff'; c.lineWidth=r*0.09; c.lineCap='round';
-    for(const a of [-1.3,-0.9,-0.5,-0.1]) { c.beginPath(); c.moveTo(Math.cos(a)*r*0.55,Math.sin(a)*r*0.55-r*0.05); c.lineTo(Math.cos(a)*r*0.85,Math.sin(a)*r*0.85-r*0.05); c.stroke(); }
-  } else if(tier===5){ // капкейк: гофрированная чашка + завиток крема
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.moveTo(-r*0.68,r*0.15); c.lineTo(-r*0.5,r*0.95); c.lineTo(r*0.5,r*0.95); c.lineTo(r*0.68,r*0.15); c.closePath(); c.fill(); c.stroke();
-    c.strokeStyle=T2.accent; c.lineWidth=r*0.06;
-    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.22,r*0.2); c.lineTo(i*r*0.18,r*0.9); c.stroke(); }
-    c.fillStyle=T2.fill; c.strokeStyle=cssVar('--line');
-    c.beginPath();
-    c.arc(-r*0.35,-r*0.05,r*0.4,0,Math.PI*2);
-    c.arc(0,-r*0.35,r*0.42,0,Math.PI*2);
-    c.arc(r*0.35,-r*0.05,r*0.4,0,Math.PI*2);
-    c.fill(); c.stroke();
-    c.fillStyle=T2.accent; c.beginPath(); c.arc(0,-r*0.6,r*0.12,0,Math.PI*2); c.fill(); c.stroke();
-  } else if(tier===6){ // кусок торта: клин с кремовыми слоями
-    c.beginPath(); c.moveTo(0,-r); c.lineTo(r*0.95,r*0.75); c.lineTo(-r*0.95,r*0.75); c.closePath();
-    c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.rect(-r*0.63,r*0.05,r*1.26,r*0.22); c.fill();
-    c.beginPath(); c.moveTo(-r*0.3,-r*0.4); c.quadraticCurveTo(0,-r*0.65,r*0.3,-r*0.4); c.quadraticCurveTo(0,-r*0.15,-r*0.3,-r*0.4); c.fillStyle='#fff'; c.fill(); c.stroke();
-  } else { // праздничные торты: двухъярусный + свечка, у королевских — ярусы и корона
-    c.fillStyle=T2.fill;
-    if(tier>=8){ c.beginPath(); roundRectLocal(c,-r*1.0,r*0.5,r*2.0,r*0.4,r*0.12); c.fill(); c.stroke(); }
-    c.beginPath(); roundRectLocal(c,-r*0.85,r*0.1,r*1.7,r*0.55,r*0.12); c.fill(); c.stroke();
-    c.beginPath(); roundRectLocal(c,-r*0.55,-r*0.45,r*1.1,r*0.55,r*0.1); c.fill(); c.stroke();
-    c.fillStyle=T2.accent;
-    c.beginPath(); c.rect(-r*0.85,r*0.32,r*1.7,r*0.1); c.fill();
-    c.beginPath(); c.rect(-r*0.55,-r*0.22,r*1.1,r*0.08); c.fill();
-    c.strokeStyle=T2.accent; c.fillStyle='#FFF6DE';
-    c.beginPath(); c.rect(-r*0.05,-r*0.85,r*0.1,r*0.4); c.fill(); c.stroke();
-    c.fillStyle='#F2C14E';
-    c.beginPath(); c.moveTo(0,-r*0.85); c.quadraticCurveTo(r*0.14,-r*1.02,0,-r*1.12); c.quadraticCurveTo(-r*0.14,-r*1.02,0,-r*0.85); c.fill();
-    if(tier>=9){  // корона: последний десерт маршрута видно с одного взгляда
-      c.fillStyle='#F2C14E'; c.strokeStyle=cssVar('--line');
-      c.beginPath();
-      c.moveTo(-r*0.42,-r*0.5); c.lineTo(-r*0.3,-r*0.82); c.lineTo(-r*0.14,-r*0.56);
-      c.lineTo(0,-r*0.9); c.lineTo(r*0.14,-r*0.56); c.lineTo(r*0.3,-r*0.82);
-      c.lineTo(r*0.42,-r*0.5); c.closePath(); c.fill(); c.stroke();
+    for(let i=0;i<5;i++){ // пять спиральных лепестков
+      c.save(); c.rotate(i*Math.PI*2/5);
+      c.beginPath(); c.moveTo(0,0);
+      c.quadraticCurveTo(r*0.5,-r*0.28, r*1.05,-r*0.18);
+      c.lineTo(r*1.05,r*0.42);
+      c.quadraticCurveTo(r*0.42,r*0.3, 0,0);
+      c.closePath(); c.fill();
+      c.restore();
     }
+    c.fillStyle='rgba(255,255,255,0.35)';
+    c.beginPath(); c.arc(0,0,r*0.22,0,Math.PI*2); c.fill();
+    rimShade(c,r,0.22);
+    c.restore();
+    glossSpot(c,-r*0.38,-r*0.42,r*0.42,r*0.28,-0.6,0.75);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke();
+  } else if(tier===1){ // ── Мармеладка: полупрозрачное желе в сахаре ──
+    const ry=r*0.82;
+    c.save(); c.beginPath(); c.ellipse(0,0,r,ry,0,0,Math.PI*2); c.clip();
+    c.fillStyle=vertFill(c,-ry,ry,T2.fill);
+    c.fillRect(-r,-ry,r*2,ry*2);
+    // «желейное» внутреннее свечение снизу
+    const jg=c.createRadialGradient(0,ry*0.45,r*0.1,0,ry*0.3,r*0.95);
+    jg.addColorStop(0,rgba('#FFC7D4',0.55)); jg.addColorStop(1,'rgba(255,199,212,0)');
+    c.fillStyle=jg; c.fillRect(-r,-ry,r*2,ry*2);
+    rimShade(c,r,0.26);
+    // сахарные кристаллики
+    for(const p of [[-.55,.15],[-.2,.5],[.25,.55],[.55,.25],[.45,-.3],[.05,-.55],[-.4,-.35],[-.05,.1]]){
+      c.fillStyle='rgba(255,255,255,'+(0.55+0.3*((p[0]+p[1]+2)%1))+')';
+      c.save(); c.translate(p[0]*r,p[1]*ry); c.rotate(p[0]*3);
+      c.fillRect(-r*0.045,-r*0.045,r*0.09,r*0.09); c.restore();
+    }
+    c.restore();
+    glossSpot(c,-r*0.34,-ry*0.42,r*0.4,r*0.22,-0.5,0.8);
+    c.beginPath(); c.ellipse(0,0,r,ry,0,0,Math.PI*2); c.stroke();
+  } else if(tier===2){ // ── Карамелька в обёртке с хвостиками ──
+    // хвостики обёртки (с фактурой складок)
+    for(const s of [-1,1]){
+      c.save(); c.scale(s,s);
+      const wg=c.createLinearGradient(-r*1.5,0,-r*0.9,0);
+      wg.addColorStop(0,shade(T2.accent,-0.25)); wg.addColorStop(1,shade(T2.accent,0.25));
+      c.fillStyle=wg;
+      c.beginPath(); c.moveTo(-r*0.92,-r*0.26);
+      c.quadraticCurveTo(-r*1.28,-r*0.52,-r*1.5,-r*0.5);
+      c.quadraticCurveTo(-r*1.42,-r*0.2,-r*1.5,r*0.1);
+      c.quadraticCurveTo(-r*1.24,r*0.05,-r*0.92,r*0.22);
+      c.closePath(); c.fill(); c.stroke();
+      c.strokeStyle=rgba('#5B4636',0.45); c.lineWidth=OW*0.5;
+      c.beginPath(); c.moveTo(-r*1.0,-r*0.1); c.lineTo(-r*1.34,-r*0.28); c.stroke();
+      c.beginPath(); c.moveTo(-r*1.0,r*0.05); c.lineTo(-r*1.36,-r*0.02); c.stroke();
+      c.restore(); c.strokeStyle=INK; c.lineWidth=OW;
+    }
+    // тело карамельки
+    c.fillStyle=sphereFill(c,r,T2.fill);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.clip();
+    c.save(); c.rotate(-0.65); c.fillStyle=rgba(T2.accent,0.85);
+    for(let i=-2;i<=2;i++){ c.fillRect(i*r*0.52-r*0.11,-r*1.2,r*0.22,r*2.4); }
+    c.restore();
+    rimShade(c,r,0.26);
+    c.restore();
+    glossSpot(c,-r*0.36,-r*0.4,r*0.4,r*0.26,-0.6,0.7);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke();
+  } else if(tier===3){ // ── Трюфель в золотой розетке ──
+    // шар шоколада
+    c.fillStyle=sphereFill(c,r*0.92,T2.fill,0,-r*0.02);
+    c.beginPath(); c.arc(0,-r*0.02,r*0.92,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,-r*0.02,r*0.92,0,Math.PI*2); c.clip();
+    // какао-пудра
+    c.fillStyle='rgba(46,26,16,0.35)';
+    for(const p of [[-.5,-.1],[-.15,-.5],[.3,-.35],[.55,.1],[.15,.3],[-.35,.35],[.0,-.05],[.45,-.6]])
+      { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.045,0,Math.PI*2); c.fill(); }
+    // молочная глазурь-зигзаг
+    c.strokeStyle=shade(T2.fill,0.55); c.lineWidth=r*0.11;
+    c.beginPath(); c.moveTo(-r*0.85,-r*0.25);
+    for(let i=0;i<5;i++) c.quadraticCurveTo(-r*0.65+i*r*0.36,-r*0.55+(i%2)*r*0.5,-r*0.5+i*r*0.36,-r*0.18);
+    c.stroke();
+    rimShade(c,r*0.92,0.3);
+    c.restore();
+    glossSpot(c,-r*0.32,-r*0.42,r*0.34,r*0.22,-0.6,0.5);
+    c.strokeStyle=INK; c.lineWidth=OW;
+    c.beginPath(); c.arc(0,-r*0.02,r*0.92,0,Math.PI*2); c.stroke();
+    // золотая гофрированная розетка
+    const cupG=c.createLinearGradient(0,r*0.3,0,r*0.98);
+    cupG.addColorStop(0,'#E8C878'); cupG.addColorStop(1,'#B98F3E');
+    c.fillStyle=cupG;
+    c.beginPath(); c.moveTo(-r*0.78,r*0.34); c.lineTo(-r*0.58,r*0.96); c.lineTo(r*0.58,r*0.96); c.lineTo(r*0.78,r*0.34);
+    c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle='rgba(91,70,54,0.5)'; c.lineWidth=OW*0.55;
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.3,r*0.36); c.lineTo(i*r*0.23,r*0.94); c.stroke(); }
+  } else if(tier===4){ // ── Пончик с глазурью и посыпкой ──
+    // тесто-тор
+    c.fillStyle=sphereFill(c,r,T2.fill);
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill();
+    c.save(); c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.clip(); rimShade(c,r,0.3); c.restore();
+    c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke();
+    // розовая глазурь с волнистыми подтёками
+    const gz=c.createLinearGradient(0,-r,0,r*0.45);
+    gz.addColorStop(0,shade(T2.accent,0.3)); gz.addColorStop(1,shade(T2.accent,-0.12));
+    c.fillStyle=gz;
+    c.beginPath();
+    c.arc(0,0,r*0.99,Math.PI*1.0,Math.PI*2.0);
+    // волнистый нижний край: подтёки
+    const drips=[[0.82,0.28],[0.5,0.55],[0.12,0.3],[-0.28,0.6],[-0.62,0.32],[-0.9,0.12]];
+    let first=true;
+    for(const d of drips){
+      const dx=d[0]*r, dy=d[1]*r*0.9;
+      c.quadraticCurveTo(dx+r*0.14, dy+r*0.16, dx, dy);
+      c.quadraticCurveTo(dx-r*0.14, dy-r*0.16, dx-r*0.24, dy-r*0.2);
+      first=false;
+    }
+    c.closePath(); c.fill(); c.stroke();
+    // дырка
+    c.fillStyle='#E8B583';
+    c.beginPath(); c.arc(0,0,r*0.34,0,Math.PI*2); c.fill();
+    const hg=c.createRadialGradient(0,0,r*0.05,0,0,r*0.34);
+    hg.addColorStop(0,'rgba(90,50,25,0.55)'); hg.addColorStop(1,'rgba(90,50,25,0)');
+    c.fillStyle=hg; c.beginPath(); c.arc(0,0,r*0.34,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(0,0,r*0.34,0,Math.PI*2); c.stroke();
+    // посыпка
+    c.lineWidth=Math.max(1.4,r*0.075); c.lineCap='round';
+    const spr=[[-0.62,-0.5,0.5],[-0.3,-0.72,-0.4],[0.05,-0.6,0.9],[0.42,-0.66,0.2],[0.68,-0.4,-0.7],[0.62,-0.05,0.4],[-0.75,-0.15,-0.2],[-0.45,-0.2,1.2],[0.25,-0.3,-1.0]];
+    spr.forEach((p,i)=>{ c.strokeStyle=SPRINKLE_COLORS[i%SPRINKLE_COLORS.length];
+      c.save(); c.translate(p[0]*r,p[1]*r); c.rotate(p[2]);
+      c.beginPath(); c.moveTo(-r*0.09,0); c.lineTo(r*0.09,0); c.stroke(); c.restore(); });
+    glossSpot(c,-r*0.4,-r*0.48,r*0.34,r*0.2,-0.55,0.55);
+    c.strokeStyle=INK; c.lineWidth=OW;
+  } else if(tier===5){ // ── Капкейк с кремом и вишенкой ──
+    // гофрированная чашечка
+    const wr=c.createLinearGradient(0,r*0.1,0,r*0.95);
+    wr.addColorStop(0,shade(T2.accent,0.3)); wr.addColorStop(1,shade(T2.accent,-0.2));
+    c.fillStyle=wr;
+    c.beginPath(); c.moveTo(-r*0.7,r*0.12); c.lineTo(-r*0.52,r*0.95); c.lineTo(r*0.52,r*0.95); c.lineTo(r*0.7,r*0.12);
+    c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle=rgba('#5B4636',0.4); c.lineWidth=OW*0.55;
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*r*0.26,r*0.15); c.lineTo(i*r*0.2,r*0.92); c.stroke(); }
+    c.strokeStyle=INK; c.lineWidth=OW;
+    // крем: три яруса взбитых волн
+    const cr=T2.fill;
+    const tiers=[[0,r*0.02,r*0.66],[0,-r*0.3,r*0.5],[0,-r*0.56,r*0.32]];
+    tiers.forEach((tt,i)=>{
+      c.fillStyle=vertFill(c,tt[1]-tt[2]*0.6,tt[1]+tt[2]*0.6,cr);
+      c.beginPath();
+      c.moveTo(tt[0]-tt[2],tt[1]+tt[2]*0.3);
+      c.quadraticCurveTo(tt[0]-tt[2]*1.05,tt[1]-tt[2]*0.45,tt[0],tt[1]-tt[2]*0.5);
+      c.quadraticCurveTo(tt[0]+tt[2]*1.05,tt[1]-tt[2]*0.45,tt[0]+tt[2],tt[1]+tt[2]*0.3);
+      c.quadraticCurveTo(tt[0],tt[1]+tt[2]*0.62,tt[0]-tt[2],tt[1]+tt[2]*0.3);
+      c.closePath(); c.fill(); c.stroke();
+    });
+    // посыпка на креме
+    c.lineWidth=Math.max(1.3,r*0.06); c.lineCap='round';
+    [[-0.35,-0.15,0.6],[0.3,-0.2,-0.5],[-0.1,-0.42,1.1],[0.15,0.02,0.2]].forEach((p,i)=>{
+      c.strokeStyle=SPRINKLE_COLORS[(i+2)%SPRINKLE_COLORS.length];
+      c.save(); c.translate(p[0]*r,p[1]*r); c.rotate(p[2]);
+      c.beginPath(); c.moveTo(-r*0.07,0); c.lineTo(r*0.07,0); c.stroke(); c.restore(); });
+    c.strokeStyle=INK; c.lineWidth=OW;
+    // вишенка
+    c.strokeStyle='#5B7A3A'; c.lineWidth=Math.max(1.5,r*0.05);
+    c.beginPath(); c.moveTo(0,-r*0.78); c.quadraticCurveTo(r*0.08,-r*0.95,r*0.16,-r*1.0); c.stroke();
+    c.fillStyle=sphereFill(c,r*0.15,'#E0393E',0,-r*0.72);
+    c.strokeStyle=INK; c.lineWidth=OW*0.8;
+    c.beginPath(); c.arc(0,-r*0.72,r*0.15,0,Math.PI*2); c.fill(); c.stroke();
+    glossSpot(c,-r*0.05,-r*0.77,r*0.06,r*0.045,-0.5,0.9);
+  } else if(tier===6){ // ── Кусок торта: бисквит, крем, клубника ──
+    // клин
+    c.save();
+    c.beginPath(); c.moveTo(0,-r); c.lineTo(r*0.95,r*0.75); c.lineTo(-r*0.95,r*0.75); c.closePath();
+    c.clip();
+    // бисквитные слои
+    const spg=c.createLinearGradient(0,-r,0,r*0.75);
+    spg.addColorStop(0,shade(T2.fill,0.25)); spg.addColorStop(1,shade(T2.fill,-0.12));
+    c.fillStyle=spg; c.fillRect(-r,-r,r*2,r*2);
+    c.fillStyle=rgba(T2.accent,0.95); c.fillRect(-r,-r*0.08,r*2,r*0.13);  // джем
+    c.fillStyle='#FFFDF6'; c.fillRect(-r,r*0.36,r*2,r*0.13);              // крем
+    // золотистая корочка по скошенным граням
+    c.strokeStyle='rgba(196,138,60,0.55)'; c.lineWidth=r*0.09;
+    c.beginPath(); c.moveTo(-r*0.04,-r*0.92); c.lineTo(r*0.88,r*0.72); c.stroke();
+    c.beginPath(); c.moveTo(r*0.04,-r*0.92); c.lineTo(-r*0.88,r*0.72); c.stroke();
+    // текстура бисквита — пузырьки
+    c.fillStyle='rgba(150,100,55,0.18)';
+    for(const p of [[-.3,.14],[.25,.2],[-.15,.5],[.4,.48],[-.5,.62],[.1,-.3],[-.25,-.42]])
+      { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.05,0,Math.PI*2); c.fill(); }
+    c.restore();
+    c.beginPath(); c.moveTo(0,-r); c.lineTo(r*0.95,r*0.75); c.lineTo(-r*0.95,r*0.75); c.closePath(); c.stroke();
+    // шапка крема на вершине
+    c.fillStyle=vertFill(c,-r*1.05,-r*0.45,'#FFFDF6');
+    c.beginPath();
+    c.moveTo(-r*0.34,-r*0.42);
+    c.quadraticCurveTo(-r*0.2,-r*0.75,0,-r*0.78);
+    c.quadraticCurveTo(r*0.2,-r*0.75,r*0.34,-r*0.42);
+    c.quadraticCurveTo(r*0.18,-r*0.28,0,-r*0.3);
+    c.quadraticCurveTo(-r*0.18,-r*0.28,-r*0.34,-r*0.42);
+    c.closePath(); c.fill(); c.stroke();
+    // клубничка
+    c.fillStyle=sphereFill(c,r*0.17,'#E0393E',0,-r*0.66);
+    c.beginPath(); c.moveTo(-r*0.15,-r*0.72); c.quadraticCurveTo(0,-r*0.9,r*0.15,-r*0.72);
+    c.quadraticCurveTo(r*0.1,-r*0.5,0,-r*0.46); c.quadraticCurveTo(-r*0.1,-r*0.5,-r*0.15,-r*0.72);
+    c.closePath(); c.fill(); c.stroke();
+    c.fillStyle='rgba(255,240,200,0.8)';
+    for(const p of [[-0.06,-0.7],[0.05,-0.63],[-0.02,-0.55]]) { c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.02,0,Math.PI*2); c.fill(); }
+    glossSpot(c,-r*0.3,r*0.1,r*0.25,r*0.5,0.35,0.28);
+  } else { // ── Праздничный торт: два яруса, свечка, конфетти ──
+    // нижний ярус
+    const g1=c.createLinearGradient(0,r*0.1,0,r*0.68);
+    g1.addColorStop(0,shade(T2.fill,0.3)); g1.addColorStop(1,shade(T2.fill,-0.14));
+    c.fillStyle=g1;
+    c.beginPath(); roundRectLocal(c,-r*0.88,r*0.1,r*1.76,r*0.58,r*0.12); c.fill(); c.stroke();
+    // верхний ярус
+    const g2=c.createLinearGradient(0,-r*0.48,0,r*0.12);
+    g2.addColorStop(0,shade(T2.fill,0.36)); g2.addColorStop(1,shade(T2.fill,-0.1));
+    c.fillStyle=g2;
+    c.beginPath(); roundRectLocal(c,-r*0.56,-r*0.48,r*1.12,r*0.6,r*0.1); c.fill(); c.stroke();
+    // глазурь с фестонами на обоих ярусах
+    c.fillStyle=shade(T2.accent,0.12);
+    for(const tt of [[-r*0.88,r*0.1,r*1.76,7],[-r*0.56,-r*0.48,r*1.12,5]]){
+      const [tx,ty,tw,n]=tt; const seg=tw/n;
+      c.beginPath(); c.moveTo(tx,ty);
+      c.lineTo(tx+tw,ty); c.lineTo(tx+tw,ty+r*0.06);
+      for(let i=n;i>0;i--) c.arc(tx+seg*(i-0.5),ty+r*0.06,seg*0.5,0,Math.PI);
+      c.closePath(); c.fill(); c.stroke();
+    }
+    // точки-жемчужины по низу ярусов
+    c.fillStyle='#FFF6DE';
+    for(let i=-3;i<=3;i++){ c.beginPath(); c.arc(i*r*0.24,r*0.58,r*0.045,0,Math.PI*2); c.fill(); }
+    for(let i=-2;i<=2;i++){ c.beginPath(); c.arc(i*r*0.22,r*0.02,r*0.04,0,Math.PI*2); c.fill(); }
+    // конфетти на ярусах
+    [[-0.6,0.34],[-0.2,0.42],[0.3,0.3],[0.65,0.4],[-0.35,-0.2],[0.1,-0.3],[0.4,-0.14]].forEach((p,i)=>{
+      c.fillStyle=SPRINKLE_COLORS[i%SPRINKLE_COLORS.length];
+      c.beginPath(); c.arc(p[0]*r,p[1]*r,r*0.045,0,Math.PI*2); c.fill(); });
+    // свечка с сиянием
+    const cg=c.createLinearGradient(0,-r*0.9,0,-r*0.48);
+    cg.addColorStop(0,'#FFF6DE'); cg.addColorStop(1,'#F2C9D8');
+    c.fillStyle=cg;
+    c.beginPath(); roundRectLocal(c,-r*0.06,-r*0.9,r*0.12,r*0.42,r*0.03); c.fill(); c.stroke();
+    c.strokeStyle=rgba('#E8637C',0.75); c.lineWidth=OW*0.5;
+    c.beginPath(); c.moveTo(-r*0.05,-r*0.82); c.lineTo(r*0.05,-r*0.76); c.moveTo(-r*0.05,-r*0.68); c.lineTo(r*0.05,-r*0.62); c.stroke();
+    const halo=c.createRadialGradient(0,-r*1.0,0,0,-r*1.0,r*0.3);
+    halo.addColorStop(0,'rgba(255,220,120,0.65)'); halo.addColorStop(1,'rgba(255,220,120,0)');
+    c.fillStyle=halo; c.beginPath(); c.arc(0,-r*1.0,r*0.3,0,Math.PI*2); c.fill();
+    const fg=c.createLinearGradient(0,-r*1.14,0,-r*0.9);
+    fg.addColorStop(0,'#FFDF7E'); fg.addColorStop(1,'#F2913D');
+    c.fillStyle=fg;
+    c.beginPath(); c.moveTo(0,-r*0.9); c.quadraticCurveTo(r*0.13,-r*1.02,0,-r*1.14);
+    c.quadraticCurveTo(-r*0.13,-r*1.02,0,-r*0.9); c.fill();
+    c.strokeStyle=INK; c.lineWidth=OW;
   }
   c.restore();
 }
 function roundRectLocal(c,x,y,w,h,r){
   c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
   c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+}
+
+// ---------- Кэш спрайтов конфет (детальная модель рисуется один раз на тир) ----------
+let SPRITES={};
+const ROLLS=[1,1,1,1,1,0,0,0]; // какие тиры «катятся» (вращаются) в банке
+function candySprite(t){
+  const r=TIERS[t].ratio*unit;
+  const key=t+':'+Math.round(r*4);
+  let s=SPRITES[key];
+  if(!s){
+    const pad=Math.ceil(r*2.3);
+    const oc=document.createElement('canvas');
+    oc.width=pad*2*DPR; oc.height=pad*2*DPR;
+    const g=oc.getContext('2d'); g.setTransform(DPR,0,0,DPR,0,0);
+    drawCandy(g,pad,pad,r,t,1);
+    s=SPRITES[key]={cv:oc,pad};
+  }
+  return s;
+}
+
+// ---------- Эффекты слияния: искры + всплывающие очки ----------
+let fx=[];
+function burstFx(x,y,tier){
+  const col=TIERS[tier].accent;
+  for(let i=0;i<10;i++){
+    const a=Math.random()*Math.PI*2, sp=60+Math.random()*160;
+    fx.push({type:'p', x,y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp-60, life:1,
+      col: i%3===0 ? '#FFE9A6' : col, r:2.5+Math.random()*2.5});
+  }
+  fx.push({type:'t', x, y:y-10, vy:-46, life:1, txt:'+'+TIERS[tier].value});
+}
+function stepFx(dt){
+  for(let i=fx.length-1;i>=0;i--){
+    const p=fx[i];
+    if(p.type==='p'){ p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=500*dt; p.life-=dt*2.2; }
+    else { p.y+=p.vy*dt; p.life-=dt*1.4; }
+    if(p.life<=0) fx.splice(i,1);
+  }
+}
+function drawFx(){
+  for(const p of fx){
+    ctx.globalAlpha=Math.max(0,p.life);
+    if(p.type==='p'){
+      ctx.fillStyle=p.col;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*(0.5+p.life*0.5),0,Math.PI*2); ctx.fill();
+    } else {
+      ctx.font='900 '+Math.max(14,unit*0.055)+'px Nunito, sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.lineWidth=4; ctx.strokeStyle='rgba(255,248,230,0.9)'; ctx.strokeText(p.txt,p.x,p.y);
+      ctx.fillStyle='#B23A54'; ctx.fillText(p.txt,p.x,p.y);
+    }
+  }
+  ctx.globalAlpha=1;
 }
 
 // сахарная искра, парящая рядом с банкой
@@ -1283,7 +1025,7 @@ let balls=[]; // {x,y,vx,vy,r,t}
 const GRAVITY=1400;
 function spawnBall(x,t,yOverride){
   const r=TIERS[t].ratio*unit;
-  balls.push({x:Math.max(jarLeft+r,Math.min(jarRight-r,x)), y:yOverride!=null?yOverride:jarTop-40, vx:0, vy:0, r, t});
+  balls.push({x:Math.max(jarLeft+r,Math.min(jarRight-r,x)), y:yOverride!=null?yOverride:jarTop-40, vx:0, vy:0, r, t, rot:0});
   if(balls.length>90) balls.shift();
 }
 function doDrop(x){
@@ -1307,6 +1049,7 @@ function physicsSub(dt){
   for(const b of balls){
     b.vy += GRAVITY*dt;
     b.x += b.vx*dt; b.y += b.vy*dt;
+    b.rot = (b.rot||0) + (b.vx/Math.max(b.r,1))*dt; // качение
     if(b.x-b.r<jarLeft){ b.x=jarLeft+b.r; b.vx*=-0.28; }
     if(b.x+b.r>jarRight){ b.x=jarRight-b.r; b.vx*=-0.28; }
     if(b.y+b.r>jarBottom){ b.y=jarBottom-b.r; b.vy*=-0.22; b.vx*=0.9; }
@@ -1319,24 +1062,18 @@ function physicsSub(dt){
     for(let i=0;i<balls.length;i++){
       for(let j=i+1;j<balls.length;j++){
         const a=balls[i], b=balls[j];
-        if(a.t!==b.t || a.t>=topTier()) continue;
+        if(a.t!==b.t || a.t>=MAX_TIER) continue;
         const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy);
         if(d < (a.r+b.r)*0.92){
           const nt=a.t+1;
           const nx=(a.x+b.x)/2, ny=(a.y+b.y)/2;
           balls.splice(j,1); balls.splice(i,1);
           const nr=TIERS[nt].ratio*unit;
-          balls.push({x:nx,y:Math.min(ny, jarBottom-nr), vx:(a.vx+b.vx)*0.2, vy:Math.min((a.vy+b.vy)*0.2,-60), r:nr, t:nt});
-          // Заказ ярмарки платит вдвое: это и есть весь твист, одной строкой.
-          const order = hasTwist(1) && nt===orderTier;
-          const gain = earn(Math.max(1, Math.round(TIERS[nt].value*multValue()*stopMult()*(order?2:1))));
-          S.fillCoins += gain;
-          act('merge');
-          if(order){ act('order'); toast(T('orderDone',{n:fmt(gain)})); rollOrder(); }
+          balls.push({x:nx,y:Math.min(ny, jarBottom-nr), vx:(a.vx+b.vx)*0.2, vy:Math.min((a.vy+b.vy)*0.2,-60), r:nr, t:nt, rot:0});
+          burstFx(nx, Math.min(ny, jarBottom-nr), nt);
+          S.coins += TIERS[nt].value; S.fillCoins += TIERS[nt].value;
           if(nt>S.bestTier) S.bestTier=nt;
-          if(nt>runBestTier) runBestTier=nt;
-          if(S.discovered.indexOf(nt)<0) S.discovered.push(nt);
-          if(nt===topTier()) maybeReview();   // яркое событие — момент для запроса оценки
+          if(!S.discovered.includes(nt)) S.discovered.push(nt);
           sfx('coin');
           merged=true;
           break outer;
@@ -1375,31 +1112,39 @@ function physicsSub(dt){
     if(overflowTimer>2.6) triggerJarFull();
   } else overflowTimer=Math.max(0, overflowTimer-dt*2);
 }
+function triggerJarFull(){
+  const bonus = Math.max(10, Math.floor(S.fillCoins*0.4));
+  S.coins += bonus;
+  if(S.fillCoins>S.bestScore){ S.bestScore=S.fillCoins; submitScore(S.bestScore); }
+  toast(T('jarFull',{n:bonus}));
+  balls.length=0; S.fillCoins=0; overflowTimer=0;
+  maybeInterstitial();
+  persist(true);
+  refreshHud();
+}
 
 // ---------- Отрисовка мира ----------
 function drawWorld(){
   drawJar();
   drawSparkle();
-  if(!anyModalOpen() && !gameOver) drawGhost();
+  if(!shopOpen && !collOpen) drawGhost();
 }
 
 let lastT=performance.now();
 function frame(now){
-  window.__firstFrame = true;                 // тест-хук: первый кадр отрисован
   let dt=Math.max(0,Math.min(50, now-lastT)); lastT=now;
-  if(!paused) stepPhysics(dt);
-  guestTick(); beltTick();
+  stepPhysics(dt);
+  stepFx(dt/1000);
   ctx.clearRect(0,0,W,H);
   drawBackground();
   drawWorld();
+  drawFx();
   refreshCoinsOnly();
-  tipsTick();
   requestAnimationFrame(frame);
 }
-let hudThrottle=0, actThrottle=0;
+let hudThrottle=0;
 function refreshCoinsOnly(){
   const now=performance.now();
-  if(now-actThrottle>1000){ actThrottle=now; refreshActions(); refreshRoute(); }
   if(now-hudThrottle<200) return; hudThrottle=now;
   $("coinsV").textContent=fmt(S.coins);
   $("bestV").textContent=fmt(S.bestScore);
@@ -1409,232 +1154,17 @@ function refreshCoinsOnly(){
 
 // ---------- Ввод ----------
 function pointerX(e){ const rect=cv.getBoundingClientRect(); const cx=(e.touches?e.touches[0].clientX:e.clientX); return cx-rect.left; }
-// Второй и третий палец не должны ни уводить прицел, ни ронять конфету сами по себе.
-const primary = e => e.isPrimary !== false;
-cv.addEventListener('pointerdown', e=>{ if(anyModalOpen()||gameOver||!primary(e)) return; aiming=true; aimX=pointerX(e); });
-cv.addEventListener('pointermove', e=>{ if(anyModalOpen()||gameOver||!primary(e)) return; if(aiming) aimX=pointerX(e); });
-cv.addEventListener('pointerup', e=>{ if(anyModalOpen()||gameOver||!primary(e)) return; if(aiming){ doDrop(aimX); } aiming=false; });
+cv.addEventListener('pointerdown', e=>{ if(shopOpen||collOpen) return; aiming=true; aimX=pointerX(e); });
+cv.addEventListener('pointermove', e=>{ if(shopOpen||collOpen) return; if(aiming) aimX=pointerX(e); });
+cv.addEventListener('pointerup', e=>{ if(shopOpen||collOpen) return; if(aiming){ doDrop(aimX); } aiming=false; });
 cv.addEventListener('pointercancel', ()=>{ aiming=false; });
-
-// ---------- Модалки ----------
-let shopOpen=false, collOpen=false, dailyOpen=false, overOpen=false, scOpen=false,
-    mapOpen=false, finOpen=false;
-const anyModalOpen = () => shopOpen||collOpen||dailyOpen||overOpen||scOpen||mapOpen||finOpen;
-// Карта с туманом: ближние места названы, дальние — силуэты. Игрок видит,
-// что путь длинный и что у него есть конец, но не видит спойлеров.
-function renderMap(){
-  $("mapTitle").textContent = T('mapTitle')+(S.loop>0?" · "+T('mapLoop',{n:S.loop+1}):"");
-  $("mapKeep").textContent  = T('moveKeep');
-  const list=$("mapList"); list.innerHTML='';
-  const ts=tasks();
-  STOPS.forEach((d,i)=>{
-    const past=i<S.stop, now=i===S.stop, fog=i>Math.max(S.seenStop, S.stop+1);
-    const el=document.createElement('div');
-    el.className="mstop"+(past?" past":"")+(now?" now":"")+(fog?" fog":"");
-    const num=document.createElement('div'); num.className="num";
-    num.textContent = past ? "✓" : String(i+1); el.appendChild(num);
-    const mi=document.createElement('div'); mi.className="mi";
-    mi.innerHTML='<div class="mn">'+(fog?T('mapFog'):stopNm(d))+'</div>'
-                +'<div class="md">'+(fog?T('mapFogD'):stopTw(d))+'</div>';
-    if(now){
-      const tw=document.createElement('div'); tw.className="tasks";
-      ts.forEach(t=>{
-        const done=t.cur>=t.need;
-        const r=document.createElement('div'); r.className="task"+(done?" ok":"");
-        r.innerHTML='<span class="bx">'+(done?"✓":"")+'</span><span>'+t.text+'</span>'
-                   +'<span class="tv">'+fmt(Math.min(t.cur,t.need))+"/"+fmt(t.need)+'</span>';
-        tw.appendChild(r);
-      });
-      mi.appendChild(tw);
-    }
-    el.appendChild(mi); list.appendChild(el);
-  });
-  const act=$("mapAct"); act.innerHTML='';
-  if(routeReady()){
-    const b=document.createElement('button'); b.className="mbtn"; b.textContent=T('moveDo');
-    b.onclick=()=>{ closeMap(); doMove(); }; act.appendChild(b);
-  } else {
-    const h=document.createElement('div'); h.className="mkeep"; h.textContent=T('moveSoon');
-    act.appendChild(h);
-  }
-}
-function openMap(){ hideTip(); mapOpen=true; renderMap(); $("mapModal").classList.add('on'); }
-function closeMap(){ mapOpen=false; $("mapModal").classList.remove('on'); }
-function openFin(){
-  hideTip(); finOpen=true;
-  $("finT").textContent = T('finT');
-  $("finD").textContent = T('finD')+" "+T('moveBonus',{n:stopMult().toFixed(2)});
-  $("finGo").textContent = T('finGo');
-  $("finModal").classList.add('on');
-}
-function closeFin(){ finOpen=false; $("finModal").classList.remove('on'); maybeInterstitial(); }
-function openShop(){ hideTip(); shopOpen=true; renderShop(); $("shopModal").classList.add('on'); }
-function closeShop(){ shopOpen=false; $("shopModal").classList.remove('on'); }
-function openColl(){ hideTip(); collOpen=true; renderCollection(); $("collectionModal").classList.add('on'); }
-function closeColl(){ collOpen=false; $("collectionModal").classList.remove('on'); }
-function openDaily(){ hideTip(); dailyOpen=true; renderDaily(); $("dailyModal").classList.add('on'); }
-function closeDaily(){ dailyOpen=false; $("dailyModal").classList.remove('on'); }
-function closeOver(){ overOpen=false; $("overModal").classList.remove('on'); }
-function openShortcut(){
-  hideTip(); scOpen=true;
-  $("scT").textContent = T("scT");
-  $("scD").textContent = T("scD",{n:SHORTCUT_REWARD});
-  $("scYes").textContent = T("scYes"); $("scNo").textContent = T("scNo");
-  $("scModal").classList.add('on');
-}
-function closeShortcut(){ scOpen=false; $("scModal").classList.remove('on'); }
-function dailyCheck(){ if(dailyPending()) openDaily(); }
-
-// ---------- Конец забега ----------
-// Переполнение — честный фейл-стейт: награда за забег зависит от достигнутого
-// тира, а не от того, как быстро игрок завалил банку.
-function triggerJarFull(){
-  if(gameOver) return;
-  gameOver=true; paused=true; overflowTimer=0;
-  const bonus = grant(Math.max(10, Math.floor(TIERS[Math.min(MAX_TIER,runBestTier)].value*2.5)));
-  const record = S.fillCoins>S.bestScore;
-  if(record) S.bestScore=S.fillCoins;
-  submitScore(S.bestScore);
-  sfx('error');
-  overOpen=true;
-  $("overT").textContent = T("overT");
-  $("overRun").textContent  = T("overRun",{n:fmt(S.fillCoins)});
-  $("overBonus").textContent = T("overBonus",{n:fmt(bonus)});
-  $("overBest").textContent = record ? T("overBest") : "";
-  $("overContLab").textContent = T("overCont");
-  $("overContSub").textContent = T("overContSub");
-  $("overRestart").textContent = T("overRestart");
-  $("overModal").classList.add('on');
-  persist(true); refreshHud();
-}
-function restartRun(){
-  closeOver();
-  balls.length=0; S.fillCoins=0; overflowTimer=0; runBestTier=0;
-  gameOver=false; paused=false;
-  persist(true); refreshHud();
-  maybeInterstitial();                     // реклама только в паузе между забегами
-  setTimeout(maybeShortcut, 900);
-}
-// Rewarded «Продолжить»: убрать 5 самых мелких конфет и не терять забег.
-function continueRun(){
-  if(!gameOver) return;
-  showRewarded(()=>{
-    balls.sort((a,b)=>a.r-b.r);
-    const removed = balls.splice(0, Math.min(5, balls.length));
-    for(const b of balls) b.vy=Math.min(b.vy, 0);
-    overflowTimer=0; gameOver=false; paused=false;
-    closeOver(); refreshHud(); persist(true); sfx('coin');
-    toast(T('contGot',{n:removed.length}));
-  });
-}
-
-// ---------- Ярлык на главный экран ----------
-let shortcutCan=false;
-function checkShortcut(){
-  try{
-    if(!(ysdk && ysdk.shortcut && ysdk.shortcut.canShowPrompt)) return;
-    const p = ysdk.shortcut.canShowPrompt();
-    if(p && p.then) p.then(r=>{ shortcutCan = !!(r && r.canShow); }).catch(()=>{});
-  }catch(e){}
-}
-// Предлагаем один раз и только втянувшемуся игроку, не на старте.
-function maybeShortcut(){
-  if(S.shortcutDone || !shortcutCan || anyModalOpen() || !booted) return;
-  if(S.lifetimeEarned < 400 || S.bestTier < 3) return;
-  openShortcut();
-}
-function acceptShortcut(){
-  S.shortcutDone=true; closeShortcut(); persist(true);
-  try{
-    const p = ysdk.shortcut.showPrompt();      // строго из обработчика нажатия игрока
-    if(p && p.then) p.then(res=>{
-      if(res && res.outcome==='accepted'){
-        const n=grant(SHORTCUT_REWARD); refreshHud(); persist(true); sfx('coin');
-        toast(T('scGot',{n:fmt(n)}));
-      }
-    }).catch(()=>{});
-  }catch(e){}
-}
-function declineShortcut(){ S.shortcutDone=true; closeShortcut(); persist(true); }
-
-// ---------- Запрос оценки ----------
-// Момент — сразу после яркого события (первый праздничный торт), не на старте
-// и не после провала. Запасной сценарий: оценка недоступна — молча выходим
-// и пробуем в следующей сессии.
-let reviewTried=false;
-function maybeReview(){
-  if(S.reviewDone || reviewTried) return;
-  reviewTried=true;
-  if(!(ysdk && ysdk.feedback && ysdk.feedback.canReview)) return;
-  try{
-    const p = ysdk.feedback.canReview();
-    if(!(p && p.then)) return;
-    p.then(can=>{
-      if(!(can && can.value)) return;          // недоступно — ничего не показываем
-      S.reviewDone=true; persist(true);
-      const r = ysdk.feedback.requestReview();
-      if(r && r.catch) r.catch(()=>{});
-    }).catch(()=>{});
-  }catch(e){}
-}
-
-// ---------- Контекстные подсказки ----------
-// Отдельная от туториала система: 3 подсказки на всю игру, по одной за раз,
-// один раз навсегда (флаг в сейве), только когда механикой уже можно
-// воспользоваться, и никогда поверх открытой модалки.
-const TIPS = [
-  { id:'gift',  target:'giftBtn',  text:()=>T('tipGift'),  when:()=>S.bestTier>=2 && giftReady() },
-  { id:'shake', target:'shakeBtn', text:()=>T('tipShake'), when:()=>shakeReady() && overflowTimer>0.6 },
-  { id:'route', target:'routeBar', text:()=>T('tipRoute'), when:()=>S.lifetimeEarned>0 && S.stop===0 && S.loop===0 },
-  { id:'move',  target:'routeBar', text:()=>T('tipMove'),  when:()=>routeReady() },
-  { id:'shop',  target:'shopBtn',  text:()=>T('tipShop'),  when:()=>S.up.mult===0 && S.coins>=multCost() },
-];
-let tipActive=null, tipHideT=0, tipTickT=0;
-function hideTip(){
-  if(!tipActive) return;
-  const el=$("tip"), tgt=$(tipActive.target);
-  el.classList.remove('on');
-  if(tgt) tgt.classList.remove('tip-target');
-  clearTimeout(tipHideT); tipActive=null;
-}
-function showTip(tip){
-  const tgt=$(tip.target); if(!tgt) return;
-  tipActive=tip;
-  if(!S.tips || typeof S.tips!=='object') S.tips={};
-  S.tips[tip.id]=1; persist(true);
-  const el=$("tip");
-  el.textContent = tip.text();
-  const r=tgt.getBoundingClientRect(), half=el.offsetWidth/2 || 100;
-  el.style.left = Math.max(half+8, Math.min(innerWidth-half-8, r.left+r.width/2))+'px';
-  el.style.top  = Math.max(el.offsetHeight+8, r.top-10)+'px';
-  el.classList.add('on');
-  tgt.classList.add('tip-target');
-  clearTimeout(tipHideT); tipHideT=setTimeout(hideTip, 11000);   // сама исчезает
-}
-function tipsTick(){
-  const now=performance.now();
-  if(now-tipTickT<500) return; tipTickT=now;
-  if(tipActive || anyModalOpen() || !booted) return;             // ждёт закрытия модалки
-  if(!S.tips || typeof S.tips!=='object') S.tips={};
-  for(const t of TIPS){
-    if(S.tips[t.id]) continue;
-    let ok=false; try{ ok=!!t.when(); }catch(e){}
-    if(ok){ showTip(t); return; }
-  }
-}
-addEventListener('pointerdown', ()=>{ if(tipActive) hideTip(); }, true);   // любой тап снимает
 
 // ---------- Тест-хуки ----------
 window.render_game_to_text = () => JSON.stringify({
   coins:S.coins, bestTier:S.bestTier, bestScore:S.bestScore, fillCoins:S.fillCoins,
-  lifetimeEarned:S.lifetimeEarned, streak:S.streak, lastClaimDay:S.lastClaimDay,
   discovered:S.discovered.slice(), ballCount:balls.length, nextTier:nextTier,
-  up:{pool:S.up.pool, luck:S.up.luck, cap:S.up.cap, mult:S.up.mult},
+  up:{pool:S.up.pool, luck:S.up.luck, cap:S.up.cap},
   overflowing: overflowTimer>0, specialCost:specialCost(),
-  overflowY:Math.round(overflowY), gameOver:gameOver, paused:paused,
-  tips:Object.assign({}, S.tips), shortcutDone:S.shortcutDone, reviewDone:S.reviewDone,
-  stop:S.stop, loop:S.loop, seenStop:S.seenStop, routeReady:routeReady(),
-  stopMult:stopMult(), topTier:topTier(), acts:Object.assign({},S.acts), orderTier:orderTier,
 });
 window.advanceTime = ms => { stepPhysics(ms); refreshHud(); };
 window.testDrop = (xFrac, tier) => {
@@ -1642,73 +1172,35 @@ window.testDrop = (xFrac, tier) => {
   const x=jarLeft + (jarRight-jarLeft)*xFrac;
   spawnBall(x, t, jarTop+ (jarBottom-jarTop)*0.3);
 };
-window.testClearJar = () => { balls.length=0; overflowTimer=0; gameOver=false; paused=false; closeOver(); };
+window.testClearJar = () => { balls.length=0; overflowTimer=0; };
 window.testSetCoins = n => { S.coins=n; refreshHud(); };
-window.testForceOverflow = () => { overflowTimer=3; triggerJarFull(); restartRun(); };
-window.testGameOver = () => { overflowTimer=3; triggerJarFull(); };
+window.testForceOverflow = () => { overflowTimer=3; triggerJarFull(); };
 window.testSetState = patch => { Object.assign(S, patch); refreshHud(); };
-window.testDailyCheck = () => dailyCheck();
-window.testDailyInfo = () => ({pending:dailyPending(), streak:nextStreak(), day:dailyDayIndex(nextStreak()),
-  reward:dailyReward(dailyDayIndex(nextStreak()))});
-window.testBallTiers = () => balls.map(b=>b.t);
-window.testSubmit = v => submitScore(v);
-window.testShowInterstitial = () => showInterstitial();
-window.testMaybeInterstitial = () => maybeInterstitial();
-window.testAdInfo = () => ({nextAdAt:nextAdAt, adBusy:adBusy, gap:AD_GAP_S, retry:AD_RETRY_S, warmup:AD_WARMUP_S});
-window.testTips = () => { tipTickT=0; tipsTick(); };
-window.testFlush = () => flushSave();
-window.testRoute = () => ({
-  stop:S.stop, loop:S.loop, seen:S.seenStop, ready:routeReady(),
-  name:stopNm(STOPS[Math.min(LAST_STOP,S.stop)]),
-  tasks: tasks().map(t=>({id:t.id, cur:t.cur, need:t.need, done:t.cur>=t.need})) });
-window.testMove = () => doMove();
-window.testAct = (k,n) => { act(k, n==null?1:n); refreshHud(); };
-window.testSell = () => doSell();
-window.testGuest = () => { lastGuest = Date.now() - GUEST_EVERY_MS - 1; guestTick(); };
-window.testSetOrder = t => { orderTier = t; };
+
+// ---------- Модалки ----------
+let shopOpen=false, collOpen=false;
+function openShop(){ shopOpen=true; renderShop(); $("shopModal").classList.add('on'); }
+function closeShop(){ shopOpen=false; $("shopModal").classList.remove('on'); }
+function openColl(){ collOpen=true; renderCollection(); $("collectionModal").classList.add('on'); }
+function closeColl(){ collOpen=false; $("collectionModal").classList.remove('on'); }
 
 // ---------- Boot ----------
-function sendReady(){
-  if(readySent) return; readySent=true;
-  try{
-    if(ysdk && ysdk.features && ysdk.features.LoadingAPI && ysdk.features.LoadingAPI.ready)
-      ysdk.features.LoadingAPI.ready();
-  }catch(e){}
-}
 function boot(raw){
   if(booted) return; booted=true;
-  const hadSave = restore(raw);
+  restore(raw);
+  document.documentElement.setAttribute("lang", lang());
   resize();
   nextTier=pickNextTier();
-  for(const b of S.balls){
-    if(!isTier(b.t)) continue;                       // чужой/битый сейв не должен ронять запуск
-    balls.push({x:Number(b.x)||centerX, y:Number(b.y)||jarTop, r:TIERS[b.t].ratio*unit, t:b.t, vx:0, vy:0});
-  }
-  // самому первому игроку ежедневку на первом запуске не показываем:
-  // серия начинается со второго захода
-  if(!hadSave){ S.lastClaimDay=dayStr(); S.streak=0; }
+  for(const b of (S.balls||[])) balls.push({x:b.x,y:b.y,r:TIERS[b.t].ratio*unit,t:b.t,vx:0,vy:0,rot:0});
+  dailyBonus();
   refreshHud();
   $("shopBtn").onclick=openShop; $("closeShop").onclick=closeShop;
+  $("langBtn").onclick=toggleLang;
   $("collectionBtn").onclick=openColl; $("closeColl").onclick=closeColl;
-  $("specialBtn").onclick=doSpecial; $("specialAdBtn").onclick=doSpecialAd;
-  $("giftBtn").onclick=doGift; $("shakeBtn").onclick=doShake;
-  // Готов переезд — одно нажатие едет; не готов — открывается карта целиком.
-  $("routeBar").onclick=()=>{ if(routeReady()) doMove(); else openMap(); };
-  $("closeMap").onclick=closeMap;
-  $("mapModal").addEventListener('pointerdown', e=>{ if(e.target.id==='mapModal') closeMap(); });
-  $("sellBtn").onclick=doSell;
-  $("finGo").onclick=closeFin;
-  $("dailyClaim").onclick=()=>claimDaily(false);
-  $("dailyClaimX2").onclick=()=>claimDaily(true);
-  $("closeDaily").onclick=closeDaily;
-  $("overCont").onclick=continueRun; $("overRestart").onclick=restartRun;
-  $("scYes").onclick=acceptShortcut; $("scNo").onclick=declineShortcut;
+  $("specialBtn").onclick=doSpecial; $("giftBtn").onclick=doGift; $("shakeBtn").onclick=doShake;
   startMusic();
-  window.__uiReady = true;          // тест-хук: интерфейс собран и готов к действиям игрока
-  sendReady();                      // GameReady — ровно перед тем, как игра станет доступна
   requestAnimationFrame(frame);
-  if(hadSave) dailyCheck();
-  persist(true);
+  notifyGameReady(); // §1.19.2: готовность — после реальной загрузки игры
 }
 (function initSDK(){
   let localRaw=null; try{ localRaw=localStorage.getItem(SAVE_KEY); }catch(e){}
@@ -1716,34 +1208,18 @@ function boot(raw){
     if(window.YaGames && !window.__noSDK){
       YaGames.init().then(sdk=>{
         ysdk=sdk;
-        readSdkLang();                          // I18N: свойство читается до первой отрисовки
-        try{ lb = sdk.leaderboards || null; }catch(e){}
-        try{
-          if(!lb && typeof sdk.getLeaderboards==="function")
-            sdk.getLeaderboards().then(x=>{ lb=x; }).catch(()=>{});
-        }catch(e){}
-        checkShortcut();
-        return sdk.getPlayer({scopes:false}).then(p=>{
-          player=p;
-          try{ authorized = !!(p.isAuthorized && p.isAuthorized()); }catch(e){ authorized=false; }
-          return p.getData(["save"]);
-        }).then(d=>boot(d&&d.save?d.save:localRaw)).catch(()=>boot(localRaw));
+        notifyGameReady(); // если boot уже прошёл по таймауту-страховке — сигналим готовность сейчас
+        const pReady = sdk.getPlayer({scopes:false}).then(p=>{player=p;return p.getData(["save"]);})
+          .then(d=>boot(d&&d.save?d.save:localRaw)).catch(()=>boot(localRaw));
+        try{ lb = sdk.leaderboards; }catch(e){}
+        return pReady;
       }).catch(()=>boot(localRaw));
-      setTimeout(()=>boot(localRaw),4000);      // страховка: игра стартует и без ответа SDK
+      setTimeout(()=>boot(localRaw),4000);
     } else boot(localRaw);
   }
   if(window.__noSDK || window.YaGames) start();
   else window.__onSdkScriptDone = start;
 })();
-
-// ---------- Фон/фокус: звук и дожим сейва ----------
-// Реклама фокус не отнимает — там глушим вручную в onOpen/onClose (см. showRewarded).
-addEventListener('visibilitychange', ()=>{
-  if(document.hidden){ audioSuspend(); flushSave(); }
-  else if(!adBusy){ audioResume(); }
-});
-addEventListener('pagehide', ()=>{ audioSuspend(); flushSave(); });
-
 </script>
 </body>
 </html>

@@ -22,6 +22,20 @@ function ensureAudio(){
 // разблокировка звука по первому касанию (автоплей-политики браузеров/WebView)
 addEventListener("pointerdown", ()=>{ const ctx=ensureAudio(); if(ctx&&ctx.state!=="running") ctx.resume().catch(()=>{}); }, {once:true, passive:true});
 
+// Пауза/возврат звука (урок модерации §1.3 и §4.7): вызывается игрой при потере
+// фокуса вкладки и на время показа рекламы. resumeAudio возвращает звук только
+// если паузу ставили мы (не ломает autoplay-политику до первого тапа игрока).
+let audioPausedByGame=false;
+function pauseAudio(){
+  audioPausedByGame=true;
+  if(audioCtx) audioCtx.suspend().catch(()=>{});
+}
+function resumeAudio(){
+  if(!audioPausedByGame) return;
+  audioPausedByGame=false;
+  if(audioCtx && !document.hidden) audioCtx.resume().catch(()=>{});
+}
+
 const rand = (a=1,b=0) => b+(a-b)*Math.random();
 
 // ---------- ZzFXMicro: генерация сэмплов по параметрам ----------
@@ -87,46 +101,45 @@ const SFX = {
 };
 function sfx(name){ try{ zzfx(...SFX[name]); }catch(e){} }
 
-// ---------- Сладкая Банка: лёгкий мажорный пэд (до-мажор, терция) под уют кондитерской ----------
+// ---------- Сладкая Банка: фоновая музыка — генеративный луп «уютная кондитерская» ----------
+// Композиция один раз рендерится в буфер (~20 c, до-мажор, 96 BPM) из синтезированных
+// нот ZzFX — пэд-аккорды C–Am–F–G, мягкий треугольный бас и колокольчиковая мелодия
+// пентатоникой, — затем крутится бесшовным лупом. Никаких аудиофайлов.
 let musicSrc=null;
+const NOTE_HZ = m => 440*Math.pow(2,(m-69)/12); // midi -> Гц
+function mixInto(mix, samples, offset, gain){
+  for(let i=0;i<samples.length;i++){ const j=offset+i; if(j<mix.length) mix[j]+=samples[i]*gain; }
+}
+function buildSong(){
+  const sr=audioDefaultSampleRate, beat=60/96, BEATS=32;
+  const mix=new Float32Array(Math.round(BEATS*beat*sr));
+  const at=(b,arr,gain)=>mixInto(mix,arr,Math.round(b*beat*sr),gain);
+  // пэды по 4 доли: C — Am — F — G (два круга)
+  const pads=[[48,52,55],[45,48,52],[41,45,48],[43,47,50]];
+  for(let bar=0;bar<8;bar++){
+    const ch=pads[bar%4];
+    ch.forEach((m,i)=> at(bar*4, zzfxG(.5,0,NOTE_HZ(m),.6,beat*2.6,1.1,0,1,0,0,0,0,0,0,0,0,0,.75,.1), .15-i*.02));
+    at(bar*4,   zzfxG(.6,0,NOTE_HZ(ch[0]-12),.05,beat*1.1,.4,1,1.3,0,0,0,0,0,0,0,0,0,.7,.06), .2);  // бас на сильной доле
+    at(bar*4+2, zzfxG(.5,0,NOTE_HZ(ch[0]-12),.05,beat*.8,.35,1,1.3,0,0,0,0,0,0,0,0,0,.7,.06), .13);
+  }
+  // мелодия-«колокольчики» пентатоникой до-мажора
+  const mel=[[0,76,1],[1,79,.5],[1.5,81,.5],[2,79,2],
+             [4,76,1],[5,74,.5],[5.5,76,.5],[6,72,2],
+             [8,69,1],[9,72,.5],[9.5,74,.5],[10,76,1.5],[11.5,74,.5],
+             [12,74,1],[13,71,1],[14,67,2],
+             [16,79,1],[17,76,1],[18,74,.5],[18.5,76,.5],[19,79,1],
+             [20,81,1.5],[21.5,79,.5],[22,76,2],
+             [24,72,1],[25,74,.5],[25.5,76,.5],[26,74,1],[27,72,1],
+             [28,74,1],[29,71,1],[30,72,2]];
+  mel.forEach(p=> at(p[0], zzfxG(.5,0,NOTE_HZ(p[1]),.01,beat*p[2]*.5,.5,0,1.6,0,0,0,0,0,0,0,0,0,.6,.08), .15));
+  // нормализация с запасом от клиппинга
+  let peak=0; for(let i=0;i<mix.length;i++){ const a=Math.abs(mix[i]); if(a>peak) peak=a; }
+  if(peak>0){ const k=.8/peak; for(let i=0;i<mix.length;i++) mix[i]*=k; }
+  return mix;
+}
 function startMusic(){
   if(musicSrc) return;
   const ctx=ensureAudio(); if(!ctx) return;
-  try{
-    const a=zzfxG(.22,0,131,.9,4.2,4,0,1,0,0,0,0,0,0,0,0,.3,.9,1);   // до (низкий пэд)
-    const b=zzfxG(.16,0,164.8,.9,4.2,4,0,1,0,0,0,0,0,0,0,0,.3,.85,1); // ми (терция сверху)
-    const len=Math.max(a.length,b.length);
-    const mix=new Float32Array(len);
-    for(let i=0;i<len;i++) mix[i]=(a[i]||0)+(b[i]||0);
-    musicSrc=playBuffer(mix, .32, true);
-  }catch(e){}
+  try{ musicSrc=playBuffer(buildSong(), .4, true); }catch(e){}
 }
 function stopMusic(){ if(musicSrc){ try{ musicSrc.stop(); }catch(e){} musicSrc=null; } }
-
-// ---------- Глушение звука (реклама, уход вкладки в фон) ----------
-// Требование модерации: во время рекламы и при потере фокуса звука быть не должно.
-// Глушим masterGain, а не останавливаем контекст — контекст остаётся живым,
-// иначе после возврата первый звук приходит с задержкой (а в WebView может и не прийти).
-let audioMuted = 0, audioLevel = .6;
-function audioSuspend(){
-  audioMuted++;
-  if(audioMuted>1) return;
-  try{
-    if(!masterGain) return;
-    audioLevel = masterGain.gain.value || audioLevel;
-    if(masterGain.gain.setTargetAtTime && audioCtx) masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, .02);
-    else masterGain.gain.value = 0;
-  }catch(e){}
-}
-function audioResume(){
-  audioMuted = Math.max(0, audioMuted-1);
-  if(audioMuted>0) return;
-  try{
-    if(!masterGain) return;
-    if(audioCtx && audioCtx.state!=="running") audioCtx.resume().catch(()=>{});
-    if(masterGain.gain.setTargetAtTime && audioCtx) masterGain.gain.setTargetAtTime(audioLevel, audioCtx.currentTime, .02);
-    else masterGain.gain.value = audioLevel;
-  }catch(e){}
-}
-// тест-хук: заглушён ли звук прямо сейчас
-window.__audioMuted = () => audioMuted>0;
